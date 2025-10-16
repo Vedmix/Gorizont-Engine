@@ -1,0 +1,15 @@
+.vscode/
+*.code-workspace
+
+build/
+bin/
+*.log
+
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+*.dll
+*.dylib

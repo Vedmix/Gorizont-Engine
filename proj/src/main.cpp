@@ -3,7 +3,7 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Two Circles");
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "ZOMBE_BAZOOKA_GTA");
 
     Point2D blueCirclePos(200, 300);
     Circle blueCircle(blueCirclePos, 80);

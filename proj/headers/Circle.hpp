@@ -4,7 +4,7 @@
 
 class Circle : public Object2D
 {
-private:
+protected:
     sf::CircleShape circle;
     double radius;
 public:

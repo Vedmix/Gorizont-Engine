@@ -5,6 +5,7 @@ Circle::Circle(const Point2D& _position, double _radius) :Object2D(_position), r
     circle.setRadius(radius);
     circle.setPosition(position.getX(),position.getY());
     circle.setFillColor(sf::Color::White);
+    objType = CIRCLE;
 }
 
 void Circle::setRadius(double _radius){

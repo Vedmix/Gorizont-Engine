@@ -23,3 +23,5 @@ void Object2D::setPos(const Point2D& _position)
 {
     this->position = _position;
 }
+
+ObjectType Object2D::getObjectType(){return objType;}

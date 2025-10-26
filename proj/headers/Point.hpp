@@ -15,6 +15,8 @@ public:
     Point& operator=(const Point& other);
     Point operator+(const Point& other)const;
     Point operator-(const Point& other)const;
+    bool operator==(const Point& other)const;
+    bool operator!=(const Point& other)const;
 
     int getX()const;
     int getY()const;

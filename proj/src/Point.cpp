@@ -33,6 +33,14 @@ Point Point::operator-(const Point& other)const{
     return res;
 }
 
+bool Point::operator==(const Point& other)const{
+    return this->x == other.x && this->y == other.y;
+}
+
+bool Point::operator!=(const Point& other)const{
+    return !(this->x == other.x && this->y == other.y);
+}
+
 int Point::getX()const{return x;}
 int Point::getY()const{return y;}
 void Point::setX(const size_t _x){x=_x;}

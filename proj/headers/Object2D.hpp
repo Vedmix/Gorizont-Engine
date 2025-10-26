@@ -11,9 +11,9 @@ protected:
 public:
     Object2D();
     Object2D(const Point2D& _position);
-    ~Object2D();
+    virtual ~Object2D()=default;
     ObjectType getObjectType();
     Point2D getPos() const;
     void setPos(const Point2D& _position);
-    virtual void draw(sf::RenderWindow& window)const;
+    virtual void draw(sf::RenderWindow& window)=0;
 };

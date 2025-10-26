@@ -9,11 +9,6 @@ Object2D::Object2D(const Point2D& _position):position(_position)
 
 }
 
-Object2D::~Object2D()
-{
-
-}
-
 Point2D Object2D::getPos() const
 {
     return position;

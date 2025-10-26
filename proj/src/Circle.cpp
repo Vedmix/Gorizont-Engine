@@ -8,6 +8,8 @@ Circle::Circle(const Point2D& _position, double _radius) :Object2D(_position), r
     objType = CIRCLE;
 }
 
+Circle::~Circle(){}
+
 void Circle::setRadius(double _radius){
     this->radius = _radius;
     circle.setRadius(radius);
@@ -22,7 +24,7 @@ void Circle::setOutLine(const sf::Color &_color, double _thickness){
     circle.setOutlineThickness(_thickness);
 }
 
-void Circle::draw(sf::RenderWindow& window) const {
+void Circle::draw(sf::RenderWindow& window){
     window.draw(circle);
 }
 

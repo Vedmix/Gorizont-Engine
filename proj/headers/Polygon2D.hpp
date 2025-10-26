@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include "Object2D.hpp"
 
@@ -9,6 +10,6 @@ public:
     Polygon2D();
     Polygon2D(const Point2D& _position, const std::vector<Point2D>& _points);
     Polygon2D(const Polygon2D& other);
-    void draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window)const;
     ~Polygon2D();
 };

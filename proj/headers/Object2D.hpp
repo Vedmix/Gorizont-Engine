@@ -15,4 +15,5 @@ public:
     ObjectType getObjectType();
     Point2D getPos() const;
     void setPos(const Point2D& _position);
+    virtual void draw(sf::RenderWindow& window)const;
 };

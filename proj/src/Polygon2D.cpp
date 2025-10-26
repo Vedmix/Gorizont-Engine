@@ -18,7 +18,7 @@ Polygon2D::Polygon2D(const Polygon2D& other){
 
 Polygon2D::~Polygon2D(){}
 
-void Polygon2D::draw(sf::RenderWindow& window){
+void Polygon2D::draw(sf::RenderWindow& window)const{
     sf::ConvexShape polygon;
     polygon.setPointCount(points.size());
     int i=0;

@@ -1,5 +1,6 @@
 #include "../headers/Object2D.hpp"
 #include "../headers/Circle.hpp"
+#include "../headers/Polygon2D.hpp"
 
 int main()
 {
@@ -12,6 +13,9 @@ int main()
     Point2D redCirclePos(500, 300);
     Circle redCircle(redCirclePos, 60);
     redCircle.setFillColor(sf::Color::Red);
+
+    std::vector<Point2D> rectPoints = {Point2D(0, 0), Point2D(100, 0), Point2D(100, 100), Point2D(80, 120),Point2D(0, 100)};
+    Polygon2D pol(Point2D(0, 0), rectPoints);
 
     while (window.isOpen())
     {
@@ -26,7 +30,7 @@ int main()
 
         blueCircle.draw(window);
         redCircle.draw(window);
-
+        pol.draw(window);
         window.display();
     }
 

@@ -8,6 +8,7 @@ private:
 public:
     Polygon2D();
     Polygon2D(const Point2D& _position, const std::vector<Point2D>& _points);
-    void draw();
+    Polygon2D(const Polygon2D& other);
+    void draw(sf::RenderWindow& window);
     ~Polygon2D();
 };

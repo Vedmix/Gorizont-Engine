@@ -6,12 +6,12 @@ class Circle : public Object2D
 {
 private:
     sf::CircleShape circle;
-    float radius;
+    double radius;
 public:
-    Circle(const Point& _position, float _radius);
-    void setRadius(float _radius);
+    Circle(const Point2D& _position, double _radius);
+    void setRadius(double _radius);
     void setFillColor(const sf::Color& _color);
-    void setOutLine(const sf::Color& _color, float _thickness);
+    void setOutLine(const sf::Color& _color, double _thickness);
     void draw(sf::RenderWindow& window) const;
-    float getRadius() const;
+    double getRadius() const;
 };

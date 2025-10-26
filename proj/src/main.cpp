@@ -1,4 +1,3 @@
-#include "../headers/Point.hpp"
 #include "../headers/Object2D.hpp"
 #include "../headers/Circle.hpp"
 
@@ -6,11 +5,11 @@ int main()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Two Circles");
 
-    Point blueCirclePos(200, 300);
+    Point2D blueCirclePos(200, 300);
     Circle blueCircle(blueCirclePos, 80);
     blueCircle.setFillColor(sf::Color::Blue);
 
-    Point redCirclePos(500, 300);
+    Point2D redCirclePos(500, 300);
     Circle redCircle(redCirclePos, 60);
     redCircle.setFillColor(sf::Color::Red);
 

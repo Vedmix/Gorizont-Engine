@@ -4,7 +4,7 @@ Object2D::Object2D():position(0,0)
 {
 
 }
-Object2D::Object2D(const Point& _position):position(_position)
+Object2D::Object2D(const Point2D& _position):position(_position)
 {
 
 }
@@ -14,12 +14,12 @@ Object2D::~Object2D()
 
 }
 
-Point Object2D::getPos() const
+Point2D Object2D::getPos() const
 {
     return position;
 }
 
-void Object2D::setPos(const Point& _position)
+void Object2D::setPos(const Point2D& _position)
 {
     this->position = _position;
 }

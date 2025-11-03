@@ -1,6 +1,6 @@
 #include "../headers/Object2D.hpp"
 
-Object2D::Object2D(const Point2D& _position, std::vector<Point2D> _points, const unsigned int _color):position(_position),points(_points)
+Object2D::Object2D(const Point2D& _position, const std::vector<Point2D> _points, const unsigned int _color):position(_position),points(_points)
 {
     color = sf::Color(_color);
 }

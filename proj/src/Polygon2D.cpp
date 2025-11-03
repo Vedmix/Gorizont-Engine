@@ -1,6 +1,6 @@
 #include "../headers/Polygon2D.hpp"
 
-Polygon2D::Polygon2D(const Point2D& _position, std::vector<Point2D> _points, unsigned int _color) :Object2D(_position, _points, _color)
+Polygon2D::Polygon2D(const Point2D& _position, const std::vector<Point2D> _points, unsigned int _color) :Object2D(_position, _points, _color)
 {
     objType = POLYGON;
 }

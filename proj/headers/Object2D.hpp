@@ -1,5 +1,5 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "settings.hpp"
 #include "Point2D.hpp"
 #include "ObjectType.hpp"
 

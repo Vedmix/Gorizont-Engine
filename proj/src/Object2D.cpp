@@ -34,7 +34,7 @@ void Object2D::draw(sf::RenderWindow& window){
         polygon.setPoint(i, sf::Vector2f(point.getX(), point.getY()));
         i++;
     }
-    polygon.setFillColor(sf::Color::Red);
+    polygon.setFillColor(color);
     polygon.setPosition(position.getX(), position.getY());
     window.draw(polygon);
 }

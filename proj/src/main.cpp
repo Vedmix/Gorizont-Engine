@@ -1,10 +1,11 @@
+#include "../headers/settings.hpp"
 #include "../headers/Object2D.hpp"
 #include "../headers/Circle.hpp"
 #include "../headers/Polygon2D.hpp"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1920, 1080), "ZOMBE_BAZOOKA_GTA");
+    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "ZOMBE_BAZOOKA_GTA");
 
     std::vector<Point2D> rectPoints = {Point2D(0, 0), Point2D(100, 0), Point2D(100, 100), Point2D(80, 120),Point2D(0, 100)};
     Polygon2D pol(Point2D(50, 50), rectPoints, 0xFF0000FF);

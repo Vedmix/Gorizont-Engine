@@ -8,6 +8,7 @@ class Point2D
 private:
     double x, y;
 public:
+    Point2D();
     Point2D(double _x, double _y);
     Point2D(const Point2D& other);
     ~Point2D();

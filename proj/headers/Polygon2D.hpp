@@ -4,8 +4,11 @@
 
 class Polygon2D:public Object2D
 {
+private:
+    std::vector<Point2D> points;
 public:
     Polygon2D(const Point2D& _position, const std::vector<Point2D> _points, unsigned int _color);
     Polygon2D(const Polygon2D& other);
+    void draw(sf::RenderWindow& window) override;
     ~Polygon2D();
 };

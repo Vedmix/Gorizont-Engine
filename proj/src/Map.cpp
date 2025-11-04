@@ -16,7 +16,7 @@ void Map::addObject(std::shared_ptr<Object2D> object){
     objectSet.insert(object);
 }
 
-void Map::draw(sf::RenderWindow& window){
+void Map::render(sf::RenderWindow& window){
     for(auto& obj:objectSet){
         obj->draw(window);
     }

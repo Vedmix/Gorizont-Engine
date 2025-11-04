@@ -1,7 +1,8 @@
 #pragma once
 #include <memory>
 #include <set>
-#include "../headers/Object2D.hpp"
+#include "../headers/Circle.hpp"
+#include "../headers/Polygon2D.hpp"
 
 class Map
 {
@@ -12,7 +13,7 @@ public:
     Map(const Map& other);
     Map(std::vector<std::shared_ptr<Object2D>> objects);
     void addObject(std::shared_ptr<Object2D> object);
-    void draw(sf::RenderWindow& window);
+    void render(sf::RenderWindow& window);
     ~Map();
     friend class World;
     friend class Camera;

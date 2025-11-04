@@ -12,4 +12,5 @@ public:
     ~Circle();
     void setRadius(double _radius);
     double getRadius() const;
+    void draw(sf::RenderWindow& window) override;
 };

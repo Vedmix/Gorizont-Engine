@@ -31,7 +31,7 @@ int main()
 
         window.clear(sf::Color::Black);
 
-        map.draw(window);
+        map.render(window);
         window.display();
     }
 

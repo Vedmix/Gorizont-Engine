@@ -19,8 +19,8 @@ public:
     bool operator==(const Point2D& other)const;
     bool operator!=(const Point2D& other)const;
 
-    int getX()const;
-    int getY()const;
+    double getX()const;
+    double getY()const;
     void setX(const double _x);
     void setY(const double _y);
     void setPoint(const double _x, const double _y);

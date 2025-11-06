@@ -1,7 +1,7 @@
 #Compiler/Compiler settings
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Iheaders -IC:/Users/vedmix/SFML-2.6.2/include
-LIBS = -LC:/Users/vedmix/SFML-2.6.2/lib -lsfml-graphics -lsfml-window -lsfml-system
+CXXFLAGS = -Wall -Wextra -Iheaders -IC:/Users/vedmix/SFML-2.6.2/include -DSFML_STATIC
+LIBS = -LC:/Users/vedmix/SFML-2.6.2/lib -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lsfml-main -static -static-libgcc -static-libstdc++ -lgdi32 -lopengl32 -lfreetype -lwinmm
 
 #Project folders
 SRC_DIR = src
@@ -31,13 +31,4 @@ clean:
 	@if exist "$(BIN_DIR)" rmdir /s /q "$(BIN_DIR)"
 	@echo Project cleaned
 
-# Copy SFML DLLs to bin directory
-copy-dlls:
-	@if not exist "$(BIN_DIR)" mkdir "$(BIN_DIR)"
-	@copy "C:\Users\vedmix\SFML-2.6.2\bin\*.dll" "$(BIN_DIR)" >nul 2>&1 && echo SFML DLLs copied to bin directory || echo No DLLs found to copy
-
-# Build and copy DLLs
-run: all copy-dlls
-	@echo Build complete! Run $(TARGET)
-
-.PHONY: all clean copy-dlls run
+.PHONY: all clean

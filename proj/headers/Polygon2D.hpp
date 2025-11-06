@@ -4,7 +4,7 @@
 
 class Polygon2D:public Object2D
 {
-private:
+protected:
     std::vector<Point2D> points;
 public:
     Polygon2D(const Point2D& _position, const std::vector<Point2D> _points, unsigned int _color);

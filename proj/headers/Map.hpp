@@ -12,9 +12,12 @@ public:
     Map();
     Map(const Map& other);
     Map(std::vector<std::shared_ptr<Object2D>> objects);
-    void addObject(std::shared_ptr<Object2D> object);
-    void render(sf::RenderWindow& window);
     ~Map();
+
+    void addObject(std::shared_ptr<Object2D> object);
+    Map& operator=(const Map& other);
+    void render(sf::RenderWindow& window);
+    
     friend class World;
     friend class Camera;
 };

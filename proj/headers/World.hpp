@@ -7,7 +7,18 @@ class World
 private:
     Map map;
     Camera player;
-public:
+    sf::RenderWindow window;
+    bool isRunning;
+
+public:   
     World();
     ~World();
+    void setMap(const Map& newMap);
+    const Map& getMap() const;
+    void addObject(std::shared_ptr<Object2D> object);
+    void run();
+
+private:
+    void handleEvents();
+    void render();
 };

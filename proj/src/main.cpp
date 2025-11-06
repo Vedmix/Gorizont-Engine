@@ -8,7 +8,7 @@ int main()
 {
     std::vector<Point2D> rectPoints = {Point2D(0, 0), Point2D(100, 0), Point2D(100, 100), Point2D(80, 120),Point2D(0, 100)};
     Polygon2D pol(Point2D(50, 50), rectPoints, 0xFF0000FF);
-    Wall wall(Point2D(100, 100), 10, 50, 0xFF0000FF);
+    Wall wall(Point2D(100, 100), 100, 500, 0xFF0000FF);
     Circle crl(Point2D(500, 500), 25, 0x00FF00FF);
 
     std::shared_ptr<Object2D> wallPtr(new Polygon2D(pol));

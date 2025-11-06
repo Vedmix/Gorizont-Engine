@@ -1,7 +1,7 @@
 #Compiler/Compiler settings
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Iheaders -IC:/Users/vedmix/SFML-2.6.2/include -DSFML_STATIC
-LIBS = -LC:/Users/vedmix/SFML-2.6.2/lib -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lsfml-main -static -static-libgcc -static-libstdc++ -lgdi32 -lopengl32 -lfreetype -lwinmm
+CXXFLAGS = -Wall -Wextra -Iheaders -IC:/Users/vedmix/SFML-2.6.2/include
+LIBS = -LC:/Users/vedmix/SFML-2.6.2/lib -lsfml-graphics -lsfml-window -lsfml-system
 
 #Project folders
 SRC_DIR = src
@@ -19,8 +19,10 @@ all: $(TARGET)
 
 $(TARGET): $(OBJ)
 	@if not exist "$(BIN_DIR)" mkdir "$(BIN_DIR)"
-	$(CXX) $(OBJ) -o $@ $(LIBS)
+	$(CXX) $(OBJ) -o $@ $(LIBS) -static-libgcc -static-libstdc++
 	@echo Project successfully assembled to $(TARGET)
+	@echo Copying DLL files...
+	@copy "C:\Users\vedmix\SFML-2.6.2\bin\*.dll" "$(BIN_DIR)" >nul
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@if not exist "$(BUILD_DIR)" mkdir "$(BUILD_DIR)"

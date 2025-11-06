@@ -8,6 +8,7 @@ private:
     Map map;
     Camera player;
     sf::RenderWindow window;
+    sf::Color color;
     bool isRunning;
 
 public:   

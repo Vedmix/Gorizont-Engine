@@ -6,21 +6,27 @@
 #include "../headers/Wall.hpp"
 int main()
 {
-    std::vector<Point2D> rectPoints = {Point2D(0, 0), Point2D(100, 0), Point2D(100, 100), Point2D(80, 120),Point2D(0, 100)};
-    Polygon2D pol(Point2D(50, 50), rectPoints, 0xFF0000FF);
-    Wall wall(Point2D(100, 100), 100, 500, 0xFF0000FF);
-    Circle crl(Point2D(500, 500), 25, 0x00FF00FF);
 
-    std::shared_ptr<Object2D> wallPtr(new Polygon2D(pol));
-    std::shared_ptr<Object2D> polPtr(new Wall(wall));
-    std::shared_ptr<Object2D> crlPtr(new Circle(crl));
+    Wall wallNorth(Point2D(960, 15), 30, 1920, 0x3E3C32FF);
+    Wall wallSouth(Point2D(960, 1065), 30, 1920, 0x3E3C32FF);
+    Wall wallWest(Point2D(15, 540), 1890, 30, 0x3E3C32FF);
+    Wall wallEast(Point2D(1905, 540), 1890, 30, 0x3E3C32FF);
+    Wall wallCenter(Point2D(960, 540), 30, 1500, 0x3E3C32FF);
+
+    std::shared_ptr<Object2D> wallPtrN(new Wall(wallNorth));
+    std::shared_ptr<Object2D> wallPtrS(new Wall(wallSouth));
+    std::shared_ptr<Object2D> wallPtrW(new Wall(wallWest));
+    std::shared_ptr<Object2D> wallPtrE(new Wall(wallEast));
+    std::shared_ptr<Object2D> wallPtrC(new Wall(wallCenter));
 
     World world;
 
-    world.addObject(polPtr);
-    world.addObject(crlPtr);
-    world.addObject(wallPtr);
-
+    world.addObject(wallPtrN);
+    world.addObject(wallPtrS);
+    world.addObject(wallPtrW);
+    world.addObject(wallPtrE);
+    world.addObject(wallPtrC);
+ 
     world.run();
 
     return 0;

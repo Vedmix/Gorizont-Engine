@@ -1,7 +1,6 @@
 #include "../headers/World.hpp"
 
 World::World():map(), player(), window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "GORIZONT"), isRunning(true){
-
 }
 
 World::~World(){}
@@ -34,7 +33,7 @@ void World::handleEvents(){
     }
 }
 void World::render(){
-    window.clear(sf::Color::Black);
+    window.clear(sf::Color(0x3E753BFF));
     map.render(window);
     window.display();
 }

@@ -12,5 +12,6 @@ public:
     ~Circle();
     void setRadius(double _radius);
     double getRadius() const;
+    bool isCrossing(const Point2D& point) override;
     void draw(sf::RenderWindow& window) override;
 };

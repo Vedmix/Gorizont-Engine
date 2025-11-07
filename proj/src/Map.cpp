@@ -26,6 +26,9 @@ void Map::addObject(std::shared_ptr<Object2D> object){
 
 void Map::render(sf::RenderWindow& window){
     for(auto& obj:objectSet){
+        /*if(obj->getObjectType()==ObjectType::CIRCLE){
+            std::cout << "ok\n";
+        }*/
         obj->draw(window);
     }
 }

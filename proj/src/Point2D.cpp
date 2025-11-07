@@ -46,6 +46,10 @@ bool Point2D::operator!=(const Point2D& other)const{
     return !(this->x == other.x && this->y == other.y);
 }
 
+double Point2D::distance(const Point2D& other)const{
+    return sqrt(pow(this->x - other.x, 2) + pow(this->y - other.y, 2));
+}
+
 double Point2D::getX()const{return x;}
 double Point2D::getY()const{return y;}
 void Point2D::setX(const double _x){x=_x;}

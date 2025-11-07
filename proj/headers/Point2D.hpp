@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <cmath>
 
 class Point2D
 {
@@ -19,6 +20,7 @@ public:
     bool operator==(const Point2D& other)const;
     bool operator!=(const Point2D& other)const;
 
+    double distance(const Point2D& other)const;
     double getX()const;
     double getY()const;
     void setX(const double _x);

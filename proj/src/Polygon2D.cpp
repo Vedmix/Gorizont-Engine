@@ -24,3 +24,7 @@ void Polygon2D::draw(sf::RenderWindow& window){
     polygon.setPosition(position.getX(), position.getY());
     window.draw(polygon);
 }
+
+bool Polygon2D::isCrossing(const Point2D& point){
+    return false;
+}

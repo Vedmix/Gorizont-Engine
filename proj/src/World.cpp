@@ -23,6 +23,11 @@ void World::setMapOption1(){
 
     //Wall cornerWall(Point2D(100, 100), 100, 100, 0x0000FFFF);
     Circle circle(Point2D(0, 0), 100, 0x3E3C32FF);
+    Circle circle1(Point2D(600, 600), 100, 0x3E3C32FF);
+    Circle circle2(Point2D(345, 876), 100, 0x3E3C32FF);
+    Circle circle3(Point2D(999,34), 100, 0x3E3C32FF);
+    Circle circle4(Point2D(2, 600), 100, 0x3E3C32FF);
+
 
     std::vector<std::shared_ptr<Object2D>> objects;
 
@@ -32,6 +37,10 @@ void World::setMapOption1(){
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallCenter1)));
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallCenter2)));
     objects.push_back(std::shared_ptr<Object2D>(new Circle(circle)));
+    objects.push_back(std::shared_ptr<Object2D>(new Circle(circle1)));
+    objects.push_back(std::shared_ptr<Object2D>(new Circle(circle2)));
+    objects.push_back(std::shared_ptr<Object2D>(new Circle(circle3)));
+    objects.push_back(std::shared_ptr<Object2D>(new Circle(circle4)));
     //objects.push_back(std::shared_ptr<Object2D>(new Wall(cornerWall)));
 
     map.setMap(objects);
@@ -69,7 +78,7 @@ void World::handleEvents(){
 
 void World::update(double deltaTime){
     window.clear(color);
-    camera.setMap(map);
+    //camera.setMap(map); ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
     camera.moveWithKeyboard(deltaTime);
 }
 

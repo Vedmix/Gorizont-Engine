@@ -27,3 +27,7 @@ void Circle::draw(sf::RenderWindow& window){
     cirShape.setOrigin(radius, radius);
     window.draw(cirShape);
 }
+
+bool Circle::isCrossing(const Point2D& point){
+    return position.distance(point) <= radius;
+}

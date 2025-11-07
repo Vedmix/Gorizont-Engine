@@ -5,6 +5,7 @@ class Camera:public Circle
 {
 private:
     Map map;
+    double velocity;
     double fov;
     double renderDistance;
 public:
@@ -13,5 +14,6 @@ public:
     Camera(const Camera& other);
     void setMap(const Map& _map);
     void render(sf::RenderWindow& window);
+    void moveWithKeyboard(double deltaTime);
     ~Camera();
 };

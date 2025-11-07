@@ -68,6 +68,7 @@ void World::handleEvents(){
 void World::update(double deltaTime){
     window.clear(color);
     camera.setMap(map);
+    camera.moveWithKeyboard(deltaTime);
 }
 
 void World::setCircleMovable(double deltaTime){

@@ -3,7 +3,7 @@
 Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color){
     map=_map;
     fov = PI/2;
-    renderDistance = 2000;
+    renderDistance = 900;
     objType = ObjectType::CAMERA;
 }
 

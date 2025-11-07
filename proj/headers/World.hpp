@@ -23,7 +23,9 @@ public:
     void setMapOption1();
 
 private:
+    void setCircleMovable(double deltaTime);
     void handleEvents();
-    void update(float deltaTime);
+    void update(double deltaTime);
     void render();
+    void display2DMap(sf::RenderWindow& window);
 };

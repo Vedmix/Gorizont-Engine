@@ -17,13 +17,11 @@ void World::setMapOption1(){
     //Wall wallNorth(Point2D(960, 15), 30, 1920, 0x3E3C32FF);
     Wall wallSouth(Point2D(960, 1065), 30, 1920, 0x3E3C32FF);
     Wall wallWest(Point2D(15, 540), 1890, 30, 0x3E3C32FF);
-    Wall wallEast(Point2D(1905, 540), 1890, 30, 0x3E3C32FF);
+    Wall wallEast(Point2D(1850, 540), 1890, 30, 0x3E3C32FF);
     Wall wallCenter1(Point2D(690, 540), 30, 500, 0x3E3C32FF);
     Wall wallCenter2(Point2D(1290, 540), 30, 500, 0x3E3C32FF);
 
     Circle circle(Point2D(100, 100), 50, 0x3E3C32FF);
-
-    //std::shared_ptr<Object2D> wallPtrN(new Wall(wallNorth));
 
     std::vector<std::shared_ptr<Object2D>> objects;
 
@@ -31,7 +29,6 @@ void World::setMapOption1(){
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallWest)));
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallEast)));
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallCenter1)));
-    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallSouth)));
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallCenter2)));
     objects.push_back(std::shared_ptr<Object2D>(new Circle(circle)));
 
@@ -54,7 +51,7 @@ void World::run(){
     while (isRunning && window.isOpen()){
         float deltaTime = clock.restart().asSeconds();
         handleEvents();
-       // update(deltaTime);
+        update(deltaTime);
         render();
     }
 }
@@ -68,9 +65,12 @@ void World::handleEvents(){
     }
 }
 
-void World::update(float deltaTime){
-    auto& objects = map.getObjects();
-    
+void World::update(double deltaTime){
+    window.clear(color);
+    camera.setMap(map);
+}
+
+void World::setCircleMovable(double deltaTime){
     static int currentDirection = 0;
     
     float moveSpeed = 500.0f;
@@ -79,7 +79,7 @@ void World::update(float deltaTime){
     float top = 100;
     float bottom = SCREEN_HEIGHT - 200;
     
-    for(auto& obj : objects) {
+    for(auto& obj:map.objectSet) {
         if (obj->getObjectType() != ObjectType::CIRCLE) {
             continue;
         }
@@ -108,10 +108,12 @@ void World::update(float deltaTime){
     }
 }
 
-void World::render(){
-    window.clear(color);
-    camera.setMap(map);
-    camera.render(window);
+void World::display2DMap(sf::RenderWindow& window){
     map.render(window);
+    camera.render(window);
+}
+
+void World::render(){
+    display2DMap(window);
     window.display();
 }

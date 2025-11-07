@@ -26,4 +26,6 @@ public:
     void setX(const double _x);
     void setY(const double _y);
     void setPoint(const double _x, const double _y);
+
+    friend class Polygon2D;
 };

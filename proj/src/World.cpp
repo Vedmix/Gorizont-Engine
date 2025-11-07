@@ -42,7 +42,7 @@ void World::setMapOption1(){
     objects.push_back(std::shared_ptr<Object2D>(new Circle(circle3)));
     objects.push_back(std::shared_ptr<Object2D>(new Circle(circle4)));
     //objects.push_back(std::shared_ptr<Object2D>(new Wall(cornerWall)));
-
+    
     map.setMap(objects);
 }
 
@@ -73,6 +73,7 @@ void World::handleEvents(){
     {
         if (event.type == sf::Event::Closed)
             isRunning = false;
+
     }
 }
 

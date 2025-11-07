@@ -27,6 +27,7 @@ void Camera::render(sf::RenderWindow& window){
 void Camera::drawRays(sf::RenderWindow& window){
     Point2D currRayEnd;
     bool isCrossed=false;
+    double currRayDir;
 
     currRayEnd.setX(this->position.getX()+renderDistance*cos(direction));
     currRayEnd.setY(this->position.getY()+renderDistance*sin(direction));
@@ -35,23 +36,31 @@ void Camera::drawRays(sf::RenderWindow& window){
     ray[0].position = sf::Vector2f(this->position.getX(), this->position.getY());
     ray[0].color = sf::Color::Green;
 
-    for(int i=0;i<renderDistance && !isCrossed;i++){
-        for(auto& obj:map.objectSet){
-            if(obj->getObjectType()==ObjectType::CAMERA){
-                continue;
-            }
-            currRayEnd.setX(this->position.getX()+i*cos(direction));
-            currRayEnd.setY(this->position.getY()+i*sin(direction));
-            if(obj->isCrossing(currRayEnd)){
-                isCrossed=true;
-                break;
+    double rightExtRay = direction + fov/2;
+    double leftExtRay = direction - fov/2;
+
+    double rayInterval = fov/NUMBER_OF_RAYS_IN_FOV;
+
+    for(double i=leftExtRay;i<rightExtRay;i+=rayInterval){
+        currRayDir = i;
+        isCrossed=false;
+        for(int j=0;j<renderDistance && !isCrossed;j+=8){
+            for(auto& obj:map.objectSet){
+                if(obj->getObjectType()==ObjectType::CAMERA){
+                    continue;
+                }
+                currRayEnd.setX(this->position.getX()+j*cos(currRayDir));
+                currRayEnd.setY(this->position.getY()+j*sin(currRayDir));
+                if(obj->isCrossing(currRayEnd)){
+                    isCrossed=true;
+                    break;
+                }
             }
         }
+        ray[1].position = sf::Vector2f(currRayEnd.getX(), currRayEnd.getY());
+        ray[1].color = sf::Color::Green;
+        window.draw(ray);
     }
-    //std::cout << currRayEnd.getX() << '\n';
-    ray[1].position = sf::Vector2f(currRayEnd.getX(), currRayEnd.getY());
-    ray[1].color = sf::Color::Green;
-    window.draw(ray);
 }
 
 void Camera::moveWithKeyboard(double deltaTime){

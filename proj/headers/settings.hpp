@@ -10,6 +10,6 @@ constexpr double PI = 3.14159265358979323846;
 constexpr double MINIMAP_WIDTH = SCREEN_WIDTH/16;
 constexpr double MINIMAP_HEIGHT = SCREEN_HEIGHT/16;
 
-constexpr int NUMBER_OF_RAYS_IN_FOV = SCREEN_WIDTH;
+constexpr int NUMBER_OF_RAYS_IN_FOV = 15;
 
 #define CIRCLE_FACES_NUMBER 64

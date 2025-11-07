@@ -2,7 +2,7 @@
 
 Polygon2D::Polygon2D(const Point2D& _position, const std::vector<Point2D> _points, unsigned int _color) :Object2D(_position, _color)
 {
-    objType = POLYGON;
+    objType = ObjectType::POLYGON;
     points = _points;
 }
 

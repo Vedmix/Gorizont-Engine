@@ -1,6 +1,8 @@
 #pragma once
-enum ObjectType{
-    POLYGON,
+
+enum class ObjectType {
     CIRCLE,
-    CAMERA
+    POLYGON,
+    WALL,
+    UNKNOWN
 };

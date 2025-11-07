@@ -11,7 +11,7 @@ Wall::Wall(const Point2D& _position, const int _width, const int _lenght, unsign
     points[3]=(Point2D(-lenght, -width));
     points[0]=(Point2D(-lenght, +width));
     pointsOnPlane.resize(points.size());
-    for(int i=0; i<points.size();i++){
+    for(size_t i=0; i<points.size();i++){
         pointsOnPlane[i] = points[i]+position;
     }
 }

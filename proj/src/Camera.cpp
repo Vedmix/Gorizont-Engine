@@ -97,3 +97,8 @@ void Camera::moveWithKeyboard(double deltaTime){
 }
 
 Camera::~Camera(){}
+
+void Camera::setFOV(const double _fov){fov=_fov;}
+void Camera::setVelocity(const double vel){velocity=vel;}
+void Camera::setRenderDistance(const double dist){RENDER_DISTANCE=dist;}
+void Camera::setNumberRaysInFov(const int numRays){NUMBER_OF_RAYS_IN_FOV = numRays;}

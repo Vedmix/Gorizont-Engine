@@ -5,7 +5,7 @@ Polygon2D::Polygon2D(const Point2D& _position, const std::vector<Point2D> _point
     objType = ObjectType::POLYGON;
     points = _points;
     pointsOnPlane.resize(points.size());
-    for(int i=0; i<points.size();i++){
+    for(size_t i=0; i<points.size();i++){
         pointsOnPlane[i] = points[i]+position;
     }
 }

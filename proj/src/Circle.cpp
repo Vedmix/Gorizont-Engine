@@ -24,5 +24,6 @@ void Circle::draw(sf::RenderWindow& window){
     cirShape.setRadius(radius);
     cirShape.setPosition(position.getX(), position.getY());
     cirShape.setFillColor(color);
+    cirShape.setOrigin(radius, radius);
     window.draw(cirShape);
 }

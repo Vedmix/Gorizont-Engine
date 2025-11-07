@@ -6,8 +6,10 @@ class Camera:public Circle
 private:
     Map map;
     double velocity;
+    double direction;
     double fov;
     double renderDistance;
+    void drawRays(sf::RenderWindow& window);
 public:
     Camera();
     Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map);

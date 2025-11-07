@@ -3,6 +3,7 @@
 Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color){
     map=_map;
     velocity = 300;
+    direction = 0;
     fov = PI/2;
     renderDistance = 900;
     objType = ObjectType::CAMERA;
@@ -11,6 +12,7 @@ Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, co
 Camera::Camera(const Camera& other):Circle(other){
     velocity = other.velocity;
     map = other.map;
+    direction = other.direction;
 }
 
 void Camera::setMap(const Map& _map){
@@ -19,6 +21,18 @@ void Camera::setMap(const Map& _map){
 
 void Camera::render(sf::RenderWindow& window){
     this->draw(window);
+    this->drawRays(window);
+}
+
+void Camera::drawRays(sf::RenderWindow& window){
+    double endRayX = renderDistance*cos(direction);
+    double endRayY = renderDistance*sin(direction);
+    sf::VertexArray ray(sf::Lines, 2);
+    ray[0].position = sf::Vector2f(this->position.getX(), this->position.getY());
+    ray[0].color = sf::Color::Green;
+    ray[1].position = sf::Vector2f(this->position.getX()+endRayX, this->position.getY()+endRayY);
+    ray[1].color = sf::Color::Green;
+    window.draw(ray);
 }
 
 void Camera::moveWithKeyboard(double deltaTime){
@@ -40,7 +54,19 @@ void Camera::moveWithKeyboard(double deltaTime){
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
         currX += velocity * deltaTime;
     }
-    this->setPos(Point2D(currX, currY));
+
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
+        deltaTime=0.000003;
+        direction -= velocity*deltaTime;
+    }
+
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+        deltaTime=0.000003;
+        direction += velocity*deltaTime;
+    }
+
+    position.setX(currX);
+    position.setY(currY);
 }
 
 Camera::~Camera(){}

@@ -21,7 +21,8 @@ void World::setMapOption1(){
     Wall wallCenter1(Point2D(690, 540), 30, 500, 0x3E3C32FF);
     Wall wallCenter2(Point2D(1290, 540), 30, 500, 0x3E3C32FF);
 
-    Circle circle(Point2D(100, 100), 50, 0x3E3C32FF);
+    //Wall cornerWall(Point2D(100, 100), 100, 100, 0x0000FFFF);
+    Circle circle(Point2D(0, 0), 100, 0x3E3C32FF);
 
     std::vector<std::shared_ptr<Object2D>> objects;
 
@@ -31,6 +32,7 @@ void World::setMapOption1(){
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallCenter1)));
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallCenter2)));
     objects.push_back(std::shared_ptr<Object2D>(new Circle(circle)));
+    //objects.push_back(std::shared_ptr<Object2D>(new Wall(cornerWall)));
 
     map.setMap(objects);
 }
@@ -49,7 +51,7 @@ void World::setColor(unsigned int _color){
 
 void World::run(){
     while (isRunning && window.isOpen()){
-        float deltaTime = clock.restart().asSeconds();
+        double deltaTime = clock.restart().asSeconds();
         handleEvents();
         update(deltaTime);
         render();

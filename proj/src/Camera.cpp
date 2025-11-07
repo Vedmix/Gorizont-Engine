@@ -43,7 +43,7 @@ void Camera::drawRays(sf::RenderWindow& window){
     for(double i=leftExtRay;i<rightExtRay;i+=rayInterval){
         currRayDir = i;
         isCrossed=false;
-        for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=1){
+        for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=2){
             for(auto& obj:map.objectSet){
                 if(obj->getObjectType()==ObjectType::CAMERA){
                     continue;

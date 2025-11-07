@@ -1,15 +1,14 @@
 #include "../headers/Camera.hpp"
 
-Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color){
+Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), RENDER_DISTANCE(550), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/8){
     map=_map;
     velocity = 300;
     direction = 0;
     fov = PI/2;
-    renderDistance = 400;
     objType = ObjectType::CAMERA;
 }
 
-Camera::Camera(const Camera& other):Circle(other){
+Camera::Camera(const Camera& other):Circle(other), RENDER_DISTANCE(other.RENDER_DISTANCE), NUMBER_OF_RAYS_IN_FOV(other.NUMBER_OF_RAYS_IN_FOV){
     velocity = other.velocity;
     map = other.map;
     direction = other.direction;
@@ -29,8 +28,8 @@ void Camera::drawRays(sf::RenderWindow& window){
     bool isCrossed=false;
     double currRayDir;
 
-    currRayEnd.setX(this->position.getX()+renderDistance*cos(direction));
-    currRayEnd.setY(this->position.getY()+renderDistance*sin(direction));
+    currRayEnd.setX(this->position.getX()+RENDER_DISTANCE*cos(direction));
+    currRayEnd.setY(this->position.getY()+RENDER_DISTANCE*sin(direction));
 
     sf::VertexArray ray(sf::Lines, 2);
     ray[0].position = sf::Vector2f(this->position.getX(), this->position.getY());
@@ -44,7 +43,7 @@ void Camera::drawRays(sf::RenderWindow& window){
     for(double i=leftExtRay;i<rightExtRay;i+=rayInterval){
         currRayDir = i;
         isCrossed=false;
-        for(int j=0;j<renderDistance && !isCrossed;j+=8){
+        for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=5){
             for(auto& obj:map.objectSet){
                 if(obj->getObjectType()==ObjectType::CAMERA){
                     continue;
@@ -84,12 +83,12 @@ void Camera::moveWithKeyboard(double deltaTime){
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-        deltaTime=0.00001;
+        deltaTime=0.0001;
         direction += velocity*deltaTime;
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-        deltaTime=0.00001;
+        deltaTime=0.0001;
         direction -= velocity*deltaTime;
     }
 

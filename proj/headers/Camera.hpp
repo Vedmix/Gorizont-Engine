@@ -4,11 +4,12 @@
 class Camera:public Circle
 {
 private:
+    const double RENDER_DISTANCE;
+    const int NUMBER_OF_RAYS_IN_FOV;
     Map map;
     double velocity;
     double direction;
     double fov;
-    double renderDistance;
     void drawRays(sf::RenderWindow& window);
 public:
     Camera();

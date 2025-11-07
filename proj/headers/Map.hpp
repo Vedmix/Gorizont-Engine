@@ -18,6 +18,7 @@ public:
     Map(std::vector<std::shared_ptr<Object2D>> objects);
     Map& operator=(const Map& other);
     void addObject(std::shared_ptr<Object2D> object);
+    void setMap(std::vector<std::shared_ptr<Object2D>> objects);
     void render(sf::RenderWindow& window);
     const std::set<std::shared_ptr<Object2D>>& getObjects() const;
     

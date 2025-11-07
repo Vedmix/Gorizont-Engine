@@ -6,7 +6,7 @@ class World
 {
 private:
     Map map;
-    Camera player;
+    Camera camera;
     sf::RenderWindow window;
     sf::Color color;
     bool isRunning;
@@ -20,6 +20,7 @@ public:
     void addObject(std::shared_ptr<Object2D> object);
     void run();
     void setColor(unsigned int _color);
+    void setMapOption1();
 
 private:
     void handleEvents();

@@ -1,7 +1,9 @@
 #include "../headers/World.hpp"
 
-World::World():map(), player(), window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "GORIZONT"), isRunning(true)
+World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "TUT KAK V ZHIZNI"), isRunning(true)
 {
+    this->setMapOption1();
+    camera.setMap(this->map);
     color = sf::Color::Black;
 }
 
@@ -9,6 +11,31 @@ World::~World(){}
 
 void World::setMap(const Map& newMap){
     map = newMap;
+}
+
+void World::setMapOption1(){
+    //Wall wallNorth(Point2D(960, 15), 30, 1920, 0x3E3C32FF);
+    Wall wallSouth(Point2D(960, 1065), 30, 1920, 0x3E3C32FF);
+    Wall wallWest(Point2D(15, 540), 1890, 30, 0x3E3C32FF);
+    Wall wallEast(Point2D(1905, 540), 1890, 30, 0x3E3C32FF);
+    Wall wallCenter1(Point2D(690, 540), 30, 500, 0x3E3C32FF);
+    Wall wallCenter2(Point2D(1290, 540), 30, 500, 0x3E3C32FF);
+
+    Circle circle(Point2D(100, 100), 50, 0x3E3C32FF);
+
+    //std::shared_ptr<Object2D> wallPtrN(new Wall(wallNorth));
+
+    std::vector<std::shared_ptr<Object2D>> objects;
+
+    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallSouth)));
+    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallWest)));
+    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallEast)));
+    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallCenter1)));
+    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallSouth)));
+    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallCenter2)));
+    objects.push_back(std::shared_ptr<Object2D>(new Circle(circle)));
+
+    map.setMap(objects);
 }
 
 const Map& World::getMap() const{
@@ -83,6 +110,8 @@ void World::update(float deltaTime){
 
 void World::render(){
     window.clear(color);
+    camera.setMap(map);
+    camera.render(window);
     map.render(window);
     window.display();
 }

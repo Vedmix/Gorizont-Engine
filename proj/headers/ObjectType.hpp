@@ -3,6 +3,5 @@
 enum class ObjectType {
     CIRCLE,
     POLYGON,
-    WALL,
-    UNKNOWN
+    CAMERA
 };

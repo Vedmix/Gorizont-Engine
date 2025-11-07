@@ -30,6 +30,13 @@ void Map::render(sf::RenderWindow& window){
     }
 }
 
+void Map::setMap(std::vector<std::shared_ptr<Object2D>> objects){
+    objectSet.clear();
+    for(auto& obj:objects){
+        objectSet.insert(obj);
+    }
+}
+
 const std::set<std::shared_ptr<Object2D>>& Map::getObjects() const {
     return objectSet;
 }

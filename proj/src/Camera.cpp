@@ -1,6 +1,6 @@
 #include "../headers/Camera.hpp"
 
-Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), RENDER_DISTANCE(100), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/2){
+Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), RENDER_DISTANCE(100), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/8){
     map=_map;
     velocity = 300;
     direction = 0;
@@ -43,7 +43,7 @@ void Camera::drawRays(sf::RenderWindow& window){
     for(double i=leftExtRay;i<rightExtRay;i+=rayInterval){
         currRayDir = i;
         isCrossed=false;
-        for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=2){
+        for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=1){
             for(auto& obj:map.objectSet){
                 if(obj->getObjectType()==ObjectType::CAMERA){
                     continue;

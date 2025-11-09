@@ -49,7 +49,7 @@ bool Polygon2D::pointOnSegment(const Point2D& a, const Point2D& b, const Point2D
 
 bool Polygon2D::isCrossing(const Point2D& p) {
     size_t n = points.size();
-    if (n > 0)
+    if (n < 3)
         return false;
 
     const double eps = 1e-9;
@@ -70,10 +70,10 @@ bool Polygon2D::isCrossing(const Point2D& p) {
     }
 
     // Сначала проверяем, лежит ли точка на каком-то ребре
-    /*for (size_t i = 0, j = n - 1; i < n; j = i++) {
+    for (size_t i = 0, j = n - 1; i < n; j = i++) {
         if (pointOnSegment(pointsOnPlane[j], pointsOnPlane[i], p))
             return true; // на границе считаем попавшей
-    }*/
+    }
 
     // Алгоритм even-odd (ray casting)
     bool inside = false;

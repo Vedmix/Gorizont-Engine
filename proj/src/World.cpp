@@ -15,11 +15,13 @@ void World::setMap(const Map& newMap){
 
 void World::setMapOption1(){
     //Wall wallNorth(Point2D(960, 15), 30, 1920, 0x3E3C32FF);
-    Wall wallSouth(Point2D(960, 1065), 30, 1920, 0x3E3C32FF);
-    Wall wallWest(Point2D(15, 540), 1890, 30, 0x3E3C32FF);
-    Wall wallEast(Point2D(1850, 540), 1890, 30, 0x3E3C32FF);
+    Wall wallSouth(Point2D(0, 1050), 1920, 30, 0x3E3C32FF);
+    Wall wallWest(Point2D(0, 0), 30, 1050, 0x3E3C32FF);
+    Wall wallEast(Point2D(1890, 0), 30, 1050, 0x3E3C32FF);
     Wall wallCenter1(Point2D(690, 540), 30, 500, 0x3E3C32FF);
     Wall wallCenter2(Point2D(1290, 540), 30, 500, 0x3E3C32FF);
+
+    //Wall wallcorner(Point2D(0, 0), 300, 300, 0x0000FFFF);
 
     //Wall cornerWall(Point2D(100, 100), 100, 100, 0x0000FFFF);
     Circle circle(Point2D(0, 0), 100, 0x3E3C32FF);
@@ -31,6 +33,7 @@ void World::setMapOption1(){
 
     std::vector<std::shared_ptr<Object2D>> objects;
 
+    //objects.push_back(std::shared_ptr<Object2D>(new Wall(wallcorner)));
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallSouth)));
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallWest)));
     objects.push_back(std::shared_ptr<Object2D>(new Wall(wallEast)));

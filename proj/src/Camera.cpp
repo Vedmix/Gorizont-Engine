@@ -83,12 +83,12 @@ void Camera::moveWithKeyboard(double deltaTime){
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-        deltaTime=0.0001;
+        deltaTime=0.00025;
         direction += velocity*deltaTime;
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-        deltaTime=0.0001;
+        deltaTime=0.00025;
         direction -= velocity*deltaTime;
     }
 

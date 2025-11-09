@@ -9,8 +9,8 @@ protected:
     Point2D position;
     sf::Color color;
     ObjectType objType;
-    
 public:
+    static constexpr double height = 1080;
     Object2D(const Point2D& _position, const unsigned int _color);
     Object2D(const Object2D& other);
     virtual ~Object2D() = default;

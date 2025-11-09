@@ -20,14 +20,19 @@ void Camera::setMap(const Map& _map){
 
 void Camera::render(sf::RenderWindow& window){
     this->draw(window, map.MAP_SCALE);
-    this->drawRays(window);
+    this->drawCameraView(window);
 }
 
-void Camera::drawRays(sf::RenderWindow& window){
+void Camera::drawOneCameraSigment(sf::RenderWindow& window, double distance){
+    double height = Object2D::height;
+    
+}
+
+void Camera::drawCameraView(sf::RenderWindow& window){
     Point2D currRayEnd;
     bool isCrossed=false;
     double currRayDir;
-
+    double rayDistance;
     currRayEnd.setX(this->position.getX()+RENDER_DISTANCE*cos(direction));
     currRayEnd.setY(this->position.getY()+RENDER_DISTANCE*sin(direction));
 
@@ -37,7 +42,7 @@ void Camera::drawRays(sf::RenderWindow& window){
 
     double rightExtRay = direction + fov/2;
     double leftExtRay = direction - fov/2;
-
+    double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;
     double rayInterval = fov/NUMBER_OF_RAYS_IN_FOV;
 
     for(double i=leftExtRay;i<rightExtRay;i+=rayInterval){
@@ -52,9 +57,13 @@ void Camera::drawRays(sf::RenderWindow& window){
                 currRayEnd.setY(this->position.getY()+j*sin(currRayDir));
                 if(obj->isCrossing(currRayEnd)){
                     isCrossed=true;
+                    rayDistance = j;
                     break;
                 }
             }
+        }
+        if(isCrossed){
+            drawOneCameraSigment(window, rayDistance);
         }
         ray[1].position = sf::Vector2f(currRayEnd.getX()*map.MAP_SCALE, currRayEnd.getY()*map.MAP_SCALE);
         ray[1].color = sf::Color::Green;

@@ -10,7 +10,8 @@ private:
     double velocity;
     double direction;
     double fov;
-    void drawRays(sf::RenderWindow& window);
+    void drawCameraView(sf::RenderWindow& window);
+    void drawOneCameraSigment(sf::RenderWindow& window, double distance);
 public:
     Camera();
     Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map);

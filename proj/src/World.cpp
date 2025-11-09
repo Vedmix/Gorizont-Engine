@@ -1,10 +1,14 @@
 #include "../headers/World.hpp"
 
-World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "TUT KAK V ZHIZNI"), isRunning(true)
-{
+World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map), window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Gorizont"), isRunning(true),debugPanel(window){
     this->setMapOption1();
     camera.setMap(this->map);
+    camera.setFOV(PI / 2);                    
+    camera.setRenderDistance(100);            
+    camera.setNumberRaysInFov(SCREEN_WIDTH/8); 
+    camera.setVelocity(300);  
     color = sf::Color::Black;
+    debugPanel.setCamera(&camera);
 }
 
 World::~World(){}
@@ -14,20 +18,17 @@ void World::setMap(const Map& newMap){
 }
 
 void World::setMapOption1(){
-    //Wall wallNorth(Point2D(960, 15), 30, 1920, 0x3E3C32FF);
     Wall wallSouth(Point2D(960, 1065), 30, 1920, 0x3E3C32FF);
     Wall wallWest(Point2D(15, 540), 1890, 30, 0x3E3C32FF);
     Wall wallEast(Point2D(1850, 540), 1890, 30, 0x3E3C32FF);
     Wall wallCenter1(Point2D(690, 540), 30, 500, 0x3E3C32FF);
     Wall wallCenter2(Point2D(1290, 540), 30, 500, 0x3E3C32FF);
 
-    //Wall cornerWall(Point2D(100, 100), 100, 100, 0x0000FFFF);
     Circle circle(Point2D(0, 0), 100, 0x3E3C32FF);
     Circle circle1(Point2D(600, 600), 100, 0x3E3C32FF);
     Circle circle2(Point2D(345, 876), 100, 0x3E3C32FF);
     Circle circle3(Point2D(999,34), 100, 0x3E3C32FF);
     Circle circle4(Point2D(2, 600), 100, 0x3E3C32FF);
-
 
     std::vector<std::shared_ptr<Object2D>> objects;
 
@@ -41,7 +42,6 @@ void World::setMapOption1(){
     objects.push_back(std::shared_ptr<Object2D>(new Circle(circle2)));
     objects.push_back(std::shared_ptr<Object2D>(new Circle(circle3)));
     objects.push_back(std::shared_ptr<Object2D>(new Circle(circle4)));
-    //objects.push_back(std::shared_ptr<Object2D>(new Wall(cornerWall)));
     
     map.setMap(objects);
 }
@@ -74,13 +74,15 @@ void World::handleEvents(){
         if (event.type == sf::Event::Closed)
             isRunning = false;
 
+        debugPanel.handleEvent(event);
     }
 }
 
 void World::update(double deltaTime){
     window.clear(color);
-    //camera.setMap(map); ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
     camera.moveWithKeyboard(deltaTime);
+    
+    debugPanel.update(deltaTime);
 }
 
 void World::setCircleMovable(double deltaTime){
@@ -128,5 +130,8 @@ void World::display2DMap(sf::RenderWindow& window){
 
 void World::render(){
     display2DMap(window);
+    
+    debugPanel.render();
+    
     window.display();
 }

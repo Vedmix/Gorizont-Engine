@@ -11,3 +11,5 @@ constexpr double MINIMAP_WIDTH = SCREEN_WIDTH/16;
 constexpr double MINIMAP_HEIGHT = SCREEN_HEIGHT/16;
 
 #define CIRCLE_FACES_NUMBER 64
+
+#define UI_PANEL_WIDTH 400

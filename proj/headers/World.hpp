@@ -1,6 +1,7 @@
 #pragma once
 #include "Map.hpp"
 #include "Camera.hpp"
+#include "DebugPanel.hpp"
 
 class World
 {
@@ -11,6 +12,7 @@ private:
     sf::Color color;
     bool isRunning;
     sf::Clock clock;
+    DebugPanel debugPanel;
 
 public:   
     World();
@@ -23,6 +25,7 @@ public:
     void setMapOption1();
 
 private:
+    void initializeUI(); // Добавить эту строку
     void setCircleMovable(double deltaTime);
     void handleEvents();
     void update(double deltaTime);

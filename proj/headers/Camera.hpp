@@ -20,8 +20,10 @@ public:
 
     void setMap(const Map& _map);
     void setRenderDistance(const double dist);
+    const Map& getMap() const { return map; };
     void setNumberRaysInFov(const int numRays); //Качество графики (чем больше лучей, тем чётче)
     void setVelocity(const double vel);
     void setFOV(const double _fov);
+    int getNumberRaysInFov() const { return NUMBER_OF_RAYS_IN_FOV; }
     ~Camera();
 };

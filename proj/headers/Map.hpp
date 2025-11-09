@@ -10,7 +10,7 @@ class Map
 {
 private:
     std::set<std::shared_ptr<Object2D>> objectSet;
-    
+    static constexpr double MAP_SCALE = 1;
 public:
     Map();
     Map(const Map& other);

@@ -19,12 +19,12 @@ double Circle::getRadius() const{
     return radius;
 }
 
-void Circle::draw(sf::RenderWindow& window){
+void Circle::draw(sf::RenderWindow& window, const double mapScale){
     sf::CircleShape cirShape;
-    cirShape.setRadius(radius);
-    cirShape.setPosition(position.getX(), position.getY());
+    cirShape.setRadius(radius*mapScale);
+    cirShape.setPosition(position.getX()*mapScale, position.getY()*mapScale);
     cirShape.setFillColor(color);
-    cirShape.setOrigin(radius, radius);
+    cirShape.setOrigin(radius*mapScale, radius*mapScale);
     window.draw(cirShape);
 }
 

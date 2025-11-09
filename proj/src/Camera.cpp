@@ -1,6 +1,6 @@
 #include "../headers/Camera.hpp"
 
-Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), RENDER_DISTANCE(300), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/16){
+Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), RENDER_DISTANCE(100), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/2){
     map=_map;
     velocity = 300;
     direction = 0;
@@ -19,7 +19,7 @@ void Camera::setMap(const Map& _map){
 }
 
 void Camera::render(sf::RenderWindow& window){
-    this->draw(window);
+    this->draw(window, map.MAP_SCALE);
     this->drawRays(window);
 }
 
@@ -32,7 +32,7 @@ void Camera::drawRays(sf::RenderWindow& window){
     currRayEnd.setY(this->position.getY()+RENDER_DISTANCE*sin(direction));
 
     sf::VertexArray ray(sf::Lines, 2);
-    ray[0].position = sf::Vector2f(this->position.getX(), this->position.getY());
+    ray[0].position = sf::Vector2f(this->position.getX()*map.MAP_SCALE, this->position.getY()*map.MAP_SCALE);
     ray[0].color = sf::Color::Green;
 
     double rightExtRay = direction + fov/2;
@@ -56,7 +56,7 @@ void Camera::drawRays(sf::RenderWindow& window){
                 }
             }
         }
-        ray[1].position = sf::Vector2f(currRayEnd.getX(), currRayEnd.getY());
+        ray[1].position = sf::Vector2f(currRayEnd.getX()*map.MAP_SCALE, currRayEnd.getY()*map.MAP_SCALE);
         ray[1].color = sf::Color::Green;
         window.draw(ray);
     }

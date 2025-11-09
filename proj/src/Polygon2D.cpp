@@ -14,16 +14,16 @@ Polygon2D::Polygon2D(const Polygon2D& other):Object2D(other), points(other.point
 
 Polygon2D::~Polygon2D(){}
 
-void Polygon2D::draw(sf::RenderWindow& window){
+void Polygon2D::draw(sf::RenderWindow& window, const double mapScale){
     sf::ConvexShape polygon;
     polygon.setPointCount(points.size());
     int i=0;
     for(auto& point:points){
-        polygon.setPoint(i, sf::Vector2f(point.getX(), point.getY()));
+        polygon.setPoint(i, sf::Vector2f(point.getX()*mapScale, point.getY()*mapScale));
         i++;
     }
     polygon.setFillColor(color);
-    polygon.setPosition(position.getX(), position.getY());
+    polygon.setPosition(position.getX()*mapScale, position.getY()*mapScale);
     window.draw(polygon);
 }
 
@@ -49,7 +49,7 @@ bool Polygon2D::pointOnSegment(const Point2D& a, const Point2D& b, const Point2D
 
 bool Polygon2D::isCrossing(const Point2D& p) {
     size_t n = points.size();
-    if (n < 3)
+    if (n > 0)
         return false;
 
     const double eps = 1e-9;
@@ -70,10 +70,10 @@ bool Polygon2D::isCrossing(const Point2D& p) {
     }
 
     // Сначала проверяем, лежит ли точка на каком-то ребре
-    for (size_t i = 0, j = n - 1; i < n; j = i++) {
+    /*for (size_t i = 0, j = n - 1; i < n; j = i++) {
         if (pointOnSegment(pointsOnPlane[j], pointsOnPlane[i], p))
             return true; // на границе считаем попавшей
-    }
+    }*/
 
     // Алгоритм even-odd (ray casting)
     bool inside = false;

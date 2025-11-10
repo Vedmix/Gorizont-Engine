@@ -10,13 +10,13 @@ private:
     double velocity;
     double direction;
     double fov;
-    void drawCameraView(sf::RenderWindow& window);
-    void drawOneCameraSigment(sf::RenderWindow& window, double distance);
+    void drawOneCameraSigment(sf::RenderWindow& window, double distance, int sigmentNum, double sectorWidth);
 public:
     Camera();
     Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map);
     Camera(const Camera& other);
-    void render(sf::RenderWindow& window);
+    void drawCameraOnMap(sf::RenderWindow& window);
+    void drawCameraView(sf::RenderWindow& window);
     void moveWithKeyboard(double deltaTime);
 
     void setMap(const Map& _map);

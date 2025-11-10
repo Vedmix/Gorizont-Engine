@@ -31,7 +31,7 @@ void Map::render(sf::RenderWindow& window){
     background.setPoint(1, sf::Vector2f(SCREEN_WIDTH*MAP_SCALE, 0));
     background.setPoint(2, sf::Vector2f(SCREEN_WIDTH*MAP_SCALE, SCREEN_HEIGHT*MAP_SCALE));
     background.setPoint(3, sf::Vector2f(0, SCREEN_HEIGHT*MAP_SCALE));
-    background.setFillColor(sf::Color::White);
+    background.setFillColor(sf::Color::Black);
     background.setPosition(0, 0);
     window.draw(background);
 

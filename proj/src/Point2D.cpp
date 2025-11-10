@@ -31,9 +31,6 @@ Point2D Point2D::operator+(const Point2D& other)const{
     return res;
 }
 Point2D Point2D::operator-(const Point2D& other)const{
-    if(x<other.x || y<other.y){
-        throw std::invalid_argument("Result Point2D coordinates must be more than 0!\n");
-    }
     Point2D res(x-other.x, y-other.y);
     return res;
 }

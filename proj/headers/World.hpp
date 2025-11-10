@@ -21,7 +21,8 @@ public:
     void run();
     void setColor(unsigned int _color);
     void setMapOption1();
-
+    void setMapOption2();
+    void setMapOption3();
 private:
     void setCircleMovable(double deltaTime);
     void handleEvents();

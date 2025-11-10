@@ -12,16 +12,29 @@ Map::Map(std::vector<std::shared_ptr<Object2D>> objects){
     }
 }
 
-Map& Map::operator=(const Map& other){
-    if(this != &other){
-        this->objectSet = other.objectSet;
-        return *this;
-    }
-    return *this;
-}
-
 void Map::addObject(std::shared_ptr<Object2D> object){
     objectSet.insert(object);
+}
+
+std::vector<std::shared_ptr<Object2D>> Map::getObjectsAtPosition(const Point2D& position) const {
+    std::vector<std::shared_ptr<Object2D>> result;
+    
+    for (const auto& obj : objectSet) {
+        if (obj->getObjectType() == ObjectType::CIRCLE) {
+            Circle* circle = dynamic_cast<Circle*>(obj.get());
+            if (circle && circle->isCrossing(position)) {
+                result.push_back(obj);
+            }
+        }
+        else if (obj->getObjectType() == ObjectType::POLYGON) {
+            Polygon2D* polygon = dynamic_cast<Polygon2D*>(obj.get());
+            if (polygon && polygon->isCrossing(position)) {
+                result.push_back(obj);
+            }
+        }
+    }
+    
+    return result;
 }
 
 void Map::render(sf::RenderWindow& window){
@@ -39,6 +52,10 @@ void Map::setMap(std::vector<std::shared_ptr<Object2D>> objects){
 
 const std::set<std::shared_ptr<Object2D>>& Map::getObjects() const {
     return objectSet;
+}
+
+void Map::removeObject(std::shared_ptr<Object2D> object) {
+    objectSet.erase(object);
 }
 
 Map::~Map(){}

@@ -1,29 +1,33 @@
 #include "../headers/Camera.hpp"
 
-Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), RENDER_DISTANCE(300), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/16){
-    map=_map;
+Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, Map* _map)
+    :Circle(_position, _radius, _color), RENDER_DISTANCE(300), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/16)
+{
+    map = _map;  // Сохраняем указатель
     velocity = 300;
     direction = 0;
     fov = PI/2;
+    RENDER_DISTANCE = 300;                    // Обычное присваивание
+    NUMBER_OF_RAYS_IN_FOV = SCREEN_WIDTH/16;
     objType = ObjectType::CAMERA;
 }
 
-Camera::Camera(const Camera& other):Circle(other), RENDER_DISTANCE(other.RENDER_DISTANCE), NUMBER_OF_RAYS_IN_FOV(other.NUMBER_OF_RAYS_IN_FOV){
+Camera::Camera(const Camera& other)
+    :Circle(other), RENDER_DISTANCE(other.RENDER_DISTANCE), NUMBER_OF_RAYS_IN_FOV(other.NUMBER_OF_RAYS_IN_FOV)
+{
+    map = other.map;  // Копируем указатель
     velocity = other.velocity;
-    map = other.map;
     direction = other.direction;
+    fov = other.fov;
 }
 
-void Camera::setMap(const Map& _map){
-    map=_map;
-}
-
-void Camera::render(sf::RenderWindow& window){
-    this->draw(window);
-    this->drawRays(window);
+void Camera::setMap(Map* _map){
+    map = _map;
 }
 
 void Camera::drawRays(sf::RenderWindow& window){
+    if (!map) return;  // Проверяем что указатель не нулевой
+    
     Point2D currRayEnd;
     bool isCrossed=false;
     double currRayDir;
@@ -44,7 +48,8 @@ void Camera::drawRays(sf::RenderWindow& window){
         currRayDir = i;
         isCrossed=false;
         for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=2){
-            for(auto& obj:map.objectSet){
+            // Используем указатель для доступа к объектам
+            for(auto& obj : map->getObjects()){
                 if(obj->getObjectType()==ObjectType::CAMERA){
                     continue;
                 }
@@ -57,7 +62,7 @@ void Camera::drawRays(sf::RenderWindow& window){
             }
         }
         ray[1].position = sf::Vector2f(currRayEnd.getX(), currRayEnd.getY());
-        ray[1].color = sf::Color::Green;
+        ray[1].color = isCrossed ? sf::Color::Red : sf::Color::Green;
         window.draw(ray);
     }
 }

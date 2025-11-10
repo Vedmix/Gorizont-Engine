@@ -1,48 +1,47 @@
 #include "../headers/World.hpp"
+#include <iostream>
 
-World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map), window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Gorizont"), isRunning(true),debugPanel(window){
+World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, &map), 
+               window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Gorizont"), 
+               isRunning(true),
+               debugPanel(window)
+{
+
     this->setMapOption1();
-    camera.setMap(this->map);
+
     camera.setFOV(PI / 2);                    
-    camera.setRenderDistance(100);            
+    camera.setRenderDistance(300);            
     camera.setNumberRaysInFov(SCREEN_WIDTH/8); 
     camera.setVelocity(300);  
     color = sf::Color::Black;
+    
     debugPanel.setCamera(&camera);
+    debugPanel.setMap(&map);
+    
 }
 
 World::~World(){}
 
 void World::setMap(const Map& newMap){
-    map = newMap;
+    // Преобразуем set в vector
+    const auto& objectsSet = newMap.getObjects();
+    std::vector<std::shared_ptr<Object2D>> objectsVector(objectsSet.begin(), objectsSet.end());
+    map.setMap(objectsVector);
 }
 
 void World::setMapOption1(){
     Wall wallSouth(Point2D(960, 1065), 30, 1920, 0x3E3C32FF);
     Wall wallWest(Point2D(15, 540), 1890, 30, 0x3E3C32FF);
     Wall wallEast(Point2D(1850, 540), 1890, 30, 0x3E3C32FF);
-    Wall wallCenter1(Point2D(690, 540), 30, 500, 0x3E3C32FF);
-    Wall wallCenter2(Point2D(1290, 540), 30, 500, 0x3E3C32FF);
-
-    Circle circle(Point2D(0, 0), 100, 0x3E3C32FF);
-    Circle circle1(Point2D(600, 600), 100, 0x3E3C32FF);
-    Circle circle2(Point2D(345, 876), 100, 0x3E3C32FF);
-    Circle circle3(Point2D(999,34), 100, 0x3E3C32FF);
-    Circle circle4(Point2D(2, 600), 100, 0x3E3C32FF);
+    Wall wallNorth(Point2D(960, 15), 30, 1920, 0x3E3C32FF);
 
     std::vector<std::shared_ptr<Object2D>> objects;
 
-    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallSouth)));
-    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallWest)));
-    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallEast)));
-    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallCenter1)));
-    objects.push_back(std::shared_ptr<Object2D>(new Wall(wallCenter2)));
-    objects.push_back(std::shared_ptr<Object2D>(new Circle(circle)));
-    objects.push_back(std::shared_ptr<Object2D>(new Circle(circle1)));
-    objects.push_back(std::shared_ptr<Object2D>(new Circle(circle2)));
-    objects.push_back(std::shared_ptr<Object2D>(new Circle(circle3)));
-    objects.push_back(std::shared_ptr<Object2D>(new Circle(circle4)));
-    
+    objects.push_back(std::make_shared<Wall>(wallSouth));
+    objects.push_back(std::make_shared<Wall>(wallWest));
+    objects.push_back(std::make_shared<Wall>(wallEast));
+    objects.push_back(std::make_shared<Wall>(wallNorth));
+
     map.setMap(objects);
 }
 
@@ -81,7 +80,6 @@ void World::handleEvents(){
 void World::update(double deltaTime){
     window.clear(color);
     camera.moveWithKeyboard(deltaTime);
-    
     debugPanel.update(deltaTime);
 }
 
@@ -94,7 +92,7 @@ void World::setCircleMovable(double deltaTime){
     float top = 100;
     float bottom = SCREEN_HEIGHT - 200;
     
-    for(auto& obj:map.objectSet) {
+    for(auto& obj:map.getObjects()) {
         if (obj->getObjectType() != ObjectType::CIRCLE) {
             continue;
         }
@@ -123,15 +121,26 @@ void World::setCircleMovable(double deltaTime){
     }
 }
 
+// World.cpp
 void World::display2DMap(sf::RenderWindow& window){
+    // Рендерим все объекты карты
     map.render(window);
-    camera.render(window);
+    
+    // Вместо camera.render() рисуем камеру и лучи отдельно
+    camera.draw(window);      // Рисуем саму камеру
+    camera.drawRays(window);  // Рисуем лучи камеры
 }
 
 void World::render(){
+    // Очищаем экран
+    window.clear(color);
+    
+    // Рендерим карту и объекты
     display2DMap(window);
     
+    // Рендерим DebugPanel поверх всего
     debugPanel.render();
     
+    // Отображаем всё
     window.display();
 }

@@ -21,3 +21,11 @@ Wall::Wall(const Wall& other):Polygon2D(other){
 }
 
 Wall::~Wall(){}
+
+void Wall::setRotation(double angle) {
+    rotation = angle;
+}
+
+double Wall::getRotation() const {
+    return rotation;
+}

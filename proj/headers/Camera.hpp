@@ -1,29 +1,26 @@
 #pragma once
 #include "Map.hpp"
 
-class Camera:public Circle
-{
+class Camera : public Circle {
 private:
-    double RENDER_DISTANCE;
-    int NUMBER_OF_RAYS_IN_FOV;
-    Map map;
+    Map* map;  // Указатель на карту, а не копия
     double velocity;
     double direction;
     double fov;
-    void drawRays(sf::RenderWindow& window);
+    double RENDER_DISTANCE;
+    int NUMBER_OF_RAYS_IN_FOV;
+    
 public:
-    Camera();
-    Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map);
+    Camera(const Point2D& _position, double _radius, unsigned int _color, Map* _map); // Изменить на указатель
     Camera(const Camera& other);
-    void render(sf::RenderWindow& window);
-    void moveWithKeyboard(double deltaTime);
-
-    void setMap(const Map& _map);
-    void setRenderDistance(const double dist);
-    const Map& getMap() const { return map; };
-    void setNumberRaysInFov(const int numRays); //Качество графики (чем больше лучей, тем чётче)
-    void setVelocity(const double vel);
-    void setFOV(const double _fov);
-    int getNumberRaysInFov() const { return NUMBER_OF_RAYS_IN_FOV; }
     ~Camera();
+    
+    void setMap(Map* _map); // Изменить на указатель
+    void drawRays(sf::RenderWindow& window);
+    void moveWithKeyboard(double deltaTime);
+    
+    void setFOV(const double _fov);
+    void setVelocity(const double vel);
+    void setRenderDistance(const double dist);
+    void setNumberRaysInFov(const int numRays);
 };

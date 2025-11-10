@@ -77,6 +77,7 @@ private:
     bool isPlacingObject;
     double currentRotation;
     double currentSize;
+    double lastWallRotation;
     
 public:
     DebugPanel(sf::RenderWindow& window);
@@ -102,7 +103,8 @@ private:
     void updateSliderValue(Slider& slider, double mouseX);
     bool isMouseOverPanel(const sf::Vector2f& mousePos) const;
     void resetSlidersToDefault();
-    
+    void resetPlacementParams();
+
     // Методы для управления объектами
     void handleObjectEditing(const sf::Vector2f& mousePos, const sf::Event& event);
     void handleAddObject(const Point2D& position);

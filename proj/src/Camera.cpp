@@ -26,7 +26,7 @@ void Camera::setMap(Map* _map){
 }
 
 void Camera::drawRays(sf::RenderWindow& window){
-    if (!map) return;  // Проверяем что указатель не нулевой
+    if (!map) return;
     
     Point2D currRayEnd;
     bool isCrossed=false;
@@ -37,7 +37,7 @@ void Camera::drawRays(sf::RenderWindow& window){
 
     sf::VertexArray ray(sf::Lines, 2);
     ray[0].position = sf::Vector2f(this->position.getX(), this->position.getY());
-    ray[0].color = sf::Color::Green;
+    ray[0].color = sf::Color::Green;  // Начало луча
 
     double rightExtRay = direction + fov/2;
     double leftExtRay = direction - fov/2;
@@ -48,7 +48,6 @@ void Camera::drawRays(sf::RenderWindow& window){
         currRayDir = i;
         isCrossed=false;
         for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=2){
-            // Используем указатель для доступа к объектам
             for(auto& obj : map->getObjects()){
                 if(obj->getObjectType()==ObjectType::CAMERA){
                     continue;
@@ -62,7 +61,8 @@ void Camera::drawRays(sf::RenderWindow& window){
             }
         }
         ray[1].position = sf::Vector2f(currRayEnd.getX(), currRayEnd.getY());
-        ray[1].color = isCrossed ? sf::Color::Red : sf::Color::Green;
+        // ВСЕГДА ЗЕЛЕНЫЙ ЦВЕТ, независимо от пересечения
+        ray[1].color = sf::Color::Green;
         window.draw(ray);
     }
 }

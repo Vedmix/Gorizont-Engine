@@ -12,7 +12,8 @@ DebugPanel::DebugPanel(sf::RenderWindow& window) :
     window(window), camera(nullptr), map(nullptr),
     currentEditMode(EditMode::NONE), currentAddMode(AddObjectMode::NONE),
     isObjectSelected(false), isDrawingPolygon(false),
-    isPlacingObject(false), currentRotation(0), currentSize(50.0)  // Добавить инициализацию
+    isPlacingObject(false), currentRotation(0.0), currentSize(50.0),
+    lastWallRotation(0.0) // Инициализируем последнее вращение
 {
     font.loadFromFile("../font.ttf");
     PanelInit();
@@ -88,10 +89,12 @@ void DebugPanel::initButtons(){
     addButton("Add Wall", Point2D(startX + 20, 200), [this](){ 
         currentAddMode = AddObjectMode::WALL;
         currentEditMode = EditMode::ADD_OBJECT;
-        addModeText.setString("Add Mode: WALL - Click to place");
+        resetPlacementParams();
+        // Восстанавливаем последнее вращение для стены
+        currentRotation = lastWallRotation;
+        addModeText.setString("Add Mode: WALL - Click for center, drag for size, wheel for rotation");
         editModeText.setString("Edit Mode: ADD OBJECT");
-        isDrawingPolygon = false;
-        polygonPoints.clear();
+        std::cout << "DEBUG: Switched to WALL mode - currentRotation=" << currentRotation << "°" << std::endl;
     });
     
     addButton("Add Circle", Point2D(startX + 20, 240), [this](){ 
@@ -275,7 +278,12 @@ void DebugPanel::update(double deltaTime){
         slider.valueText.setString(valueStream.str());
     }
 }
-
+void DebugPanel::resetPlacementParams() {
+    currentSize = 50.0;
+    isPlacingObject = false;
+    isDrawingPolygon = false;
+    polygonPoints.clear();
+}
 void DebugPanel::handleEvent(const sf::Event& event){
     if (event.type == sf::Event::MouseButtonPressed){
         sf::Vector2f mousePos(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y));
@@ -285,8 +293,13 @@ void DebugPanel::handleEvent(const sf::Event& event){
             if (currentAddMode != AddObjectMode::NONE && !isPlacingObject && event.mouseButton.button == sf::Mouse::Left) {
                 objectStartPos = Point2D(mousePos.x, mousePos.y);
                 isPlacingObject = true;
-                currentRotation = 0;
-                currentSize = 50.0; // Начальный размер
+                
+                // Для стены используем последнее сохраненное вращение
+                if (currentAddMode == AddObjectMode::WALL) {
+                    currentRotation = lastWallRotation;
+                }
+                
+                std::cout << "DEBUG: Started placing object - currentRotation=" << currentRotation << "°" << std::endl;
                 return;
             }
             handleObjectEditing(mousePos, event);
@@ -356,8 +369,10 @@ void DebugPanel::handleEvent(const sf::Event& event){
         }
     }
     else if (event.type == sf::Event::MouseWheelScrolled){
-        // Обработка вращения колесом мыши только для прямоугольников и треугольников
-        if (isPlacingObject && (currentAddMode == AddObjectMode::SQUARE || currentAddMode == AddObjectMode::TRIANGLE)) {
+    // Обработка вращения колесом мыши для стен, квадратов и треугольников
+        if (isPlacingObject && (currentAddMode == AddObjectMode::WALL || 
+                            currentAddMode == AddObjectMode::SQUARE || 
+                            currentAddMode == AddObjectMode::TRIANGLE)) {
             if (event.mouseWheelScroll.delta > 0) {
                 currentRotation += 15.0; // Поворот по часовой на 15 градусов
             } else {
@@ -367,6 +382,17 @@ void DebugPanel::handleEvent(const sf::Event& event){
             // Ограничиваем вращение в диапазоне 0-360 градусов
             while (currentRotation >= 360.0) currentRotation -= 360.0;
             while (currentRotation < 0.0) currentRotation += 360.0;
+            
+            // Сохраняем вращение для стен
+            if (currentAddMode == AddObjectMode::WALL) {
+                lastWallRotation = currentRotation;
+            }
+            
+            std::cout << "DEBUG: Mouse wheel - currentRotation=" << currentRotation << "°, lastWallRotation=" << lastWallRotation << "°" << std::endl;
+            
+            // Обновляем предпросмотр с новым вращением
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            updateObjectPreview(Point2D(static_cast<double>(mousePos.x), static_cast<double>(mousePos.y)));
         }
     }
 }
@@ -379,9 +405,9 @@ void DebugPanel::updateObjectPreview(const Point2D& currentMousePos){
     
     switch(currentAddMode){
         case AddObjectMode::WALL:
-            // Для стен вычисляем угол поворота
-            currentRotation = std::atan2(dy, dx) * 180.0 / M_PI;
+            // Для стены вычисляем ширину и высоту
             currentSize = distance;
+            std::cout << "DEBUG: updateObjectPreview WALL - currentRotation=" << currentRotation << "°" << std::endl;
             break;
             
         case AddObjectMode::CIRCLE:
@@ -390,13 +416,15 @@ void DebugPanel::updateObjectPreview(const Point2D& currentMousePos){
             break;
             
         case AddObjectMode::SQUARE:
-            // Для прямоугольника сохраняем конечную позицию
-            currentSize = distance;
+            // Для квадрата используем расстояние как размер стороны
+            currentSize = std::max(10.0, distance);
+            std::cout << "DEBUG: updateObjectPreview SQUARE - currentRotation=" << currentRotation << "°" << std::endl;
             break;
             
         case AddObjectMode::TRIANGLE:
             // Для треугольника используем расстояние как размер
             currentSize = std::max(10.0, distance);
+            std::cout << "DEBUG: updateObjectPreview TRIANGLE - currentRotation=" << currentRotation << "°" << std::endl;
             break;
             
         default:
@@ -433,40 +461,36 @@ void DebugPanel::finishObjectPlacement(const Point2D& endPos){
     editModeText.setString("Edit Mode: NONE");
 }
 
-void DebugPanel::createWallInteractive(const Point2D& startPos, const Point2D& endPos, double size, double rotation){
-    // Вычисляем центр стены
-    Point2D center((startPos.getX() + endPos.getX()) / 2, 
-                   (startPos.getY() + endPos.getY()) / 2);
+void DebugPanel::createWallInteractive(const Point2D& center, const Point2D& endPos, double size, double rotation){
+    // Вычисляем ширину и длину стены относительно центра
+    double width = std::abs(endPos.getX() - center.getX()) * 2;
+    double length = std::abs(endPos.getY() - center.getY()) * 2;
     
-    // Вычисляем ширину и высоту (расстояние между точками)
-    double width = std::abs(endPos.getX() - startPos.getX());
-    double height = std::abs(endPos.getY() - startPos.getY());
-    
-    // Минимальный размер
+    // Минимальные размеры
     width = std::max(10.0, width);
-    height = std::max(10.0, height);
+    length = std::max(10.0, length);
     
-    // Толщина стены (фиксированная)
-    float wallThickness = 10.0f;
+    std::cout << "DEBUG: Creating wall with rotation=" << rotation << "°" << std::endl;
     
-    Wall* newWall = nullptr;
+    // Сохраняем вращение для следующей стены
+    lastWallRotation = rotation;
     
-    // Определяем ориентацию стены и создаем соответствующую стену
-    if (width > height) {
-        // Горизонтальная стена
-        newWall = new Wall(center, static_cast<int>(wallThickness), static_cast<int>(width), 0x3E3C32FF);
-    } else {
-        // Вертикальная стена
-        newWall = new Wall(center, static_cast<int>(height), static_cast<int>(wallThickness), 0x3E3C32FF);
-    }
+    // Создаем стену с double параметрами
+    Wall* newWall = new Wall(center, width, length, 0x3E3C32FF);
+    
+    // Тест 1: без коррекции
+    // newWall->setRotation(rotation * M_PI / 180.0);
+    
+    // Тест 2: с коррекцией +180°
+    double correctedRotation = (rotation + 180.0) * M_PI / 180.0;
+    newWall->setRotation(correctedRotation);
+    std::cout << "DEBUG: Corrected rotation to " << (rotation + 180.0) << "° (" << correctedRotation << " radians)" << std::endl;
     
     map->addObject(std::shared_ptr<Wall>(newWall));
     
-    std::cout << "✅ Added wall: " << width << "x" << height << std::endl;
+    std::cout << "✅ Added wall: " << width << "x" << length << std::endl;
     
-    // Убираем предупреждения о неиспользуемых параметрах
     (void)size;
-    (void)rotation;
 }
 
 void DebugPanel::createCircleInteractive(const Point2D& center, double radius, double rotation){
@@ -480,36 +504,36 @@ void DebugPanel::createCircleInteractive(const Point2D& center, double radius, d
     // Убрать предупреждение о неиспользуемых параметрах
     (void)rotation;
 }
+
 void DebugPanel::createSquareInteractive(const Point2D& startPos, const Point2D& endPos, double size, double rotation){
     // Вычисляем центр квадрата
     Point2D center((startPos.getX() + endPos.getX()) / 2, 
                    (startPos.getY() + endPos.getY()) / 2);
     
-    // Вычисляем ширину и высоту
-    double width = std::abs(endPos.getX() - startPos.getX());
-    double height = std::abs(endPos.getY() - startPos.getY());
-    
-    // Для квадрата берем максимальную сторону
-    double side = std::max(width, height);
+    // Вычисляем сторону квадрата (расстояние между точками)
+    double side = startPos.distance(endPos);
     side = std::max(20.0, side); // Минимальный размер
     
-    Wall newSquare(center, static_cast<int>(side), static_cast<int>(side), 0x3E3C32FF);
+    // Создаем квадрат
+    Wall* newSquare = new Wall(center, static_cast<int>(side), static_cast<int>(side), 0x3E3C32FF);
     
-    map->addObject(std::make_shared<Wall>(newSquare));
+    // Устанавливаем вращение (в радианах)
+    newSquare->setRotation(rotation * M_PI / 180.0);
     
-    std::cout << "✅ Added square: " << side << "x" << side << std::endl;
+    map->addObject(std::shared_ptr<Wall>(newSquare));
     
-    // Убираем предупреждения о неиспользуемых параметрах
+    std::cout << "✅ Added square: " << side << "x" << side << ", rotation=" << rotation << "°" << std::endl;
+    
     (void)size;
-    (void)rotation;
 }
 
 void DebugPanel::addSquareAtPosition(const Point2D& position){
     if (!map) return;
    
-    Wall newSquare(position, 80, 80, 0x3E3C32FF); // Квадрат одинаковые width и height
+    Wall newSquare(position, 80, 80, 0x3E3C32FF);
     map->addObject(std::make_shared<Wall>(newSquare));
 }
+
 void DebugPanel::createTriangleInteractive(const Point2D& center, double size, double rotation){
     // Угол вращения в радианах
     double angle = rotation * M_PI / 180.0;
@@ -607,7 +631,8 @@ void DebugPanel::addWallAtPosition(const Point2D& position){
     unsigned int color = (colorDist(gen) << 24) | (colorDist(gen) << 16) | 
                         (colorDist(gen) << 8) | 0xFF;
     
-    Wall newWall(position, 80, 40, color);
+    // Создаем стену с фиксированными размерами (используем int конструктор для совместимости)
+    Wall newWall(position, 80, 120, color);
     map->addObject(std::make_shared<Wall>(newWall));
 }
 
@@ -757,49 +782,43 @@ void DebugPanel::drawObjectPreview(){
     // Предпросмотр в зависимости от типа объекта
     switch(currentAddMode){
         case AddObjectMode::WALL: {
-            // Прямоугольник от начальной до текущей позиции мыши
-            double minX = std::min(objectStartPos.getX(), currentMousePos.getX());
-            double minY = std::min(objectStartPos.getY(), currentMousePos.getY());
-            double width = std::abs(currentMousePos.getX() - objectStartPos.getX());
-            double height = std::abs(currentMousePos.getY() - objectStartPos.getY());
-            
-            // Для стены определяем ориентацию
-            sf::RectangleShape wallPreview;
-            if (width > height) {
-                // Горизонтальная стена
-                wallPreview.setSize(sf::Vector2f(static_cast<float>(width), 10.0f));
-            } else {
-                // Вертикальная стена
-                wallPreview.setSize(sf::Vector2f(10.0f, static_cast<float>(height)));
-            }
-            
-            wallPreview.setFillColor(sf::Color(62, 60, 50, 128));
-            wallPreview.setOutlineColor(sf::Color::Yellow);
-            wallPreview.setOutlineThickness(2);
-            wallPreview.setPosition(static_cast<float>(minX), static_cast<float>(minY));
-            
-            window.draw(wallPreview);
-            break;
-        }
+        // Вычисляем ширину и длину относительно центра
+        double width = std::abs(currentMousePos.getX() - objectStartPos.getX()) * 2;
+        double height = std::abs(currentMousePos.getY() - objectStartPos.getY()) * 2;
         
-        case AddObjectMode::SQUARE: { // Теперь это квадрат
-            // Квадрат от начальной до текущей позиции мыши
-            double minX = std::min(objectStartPos.getX(), currentMousePos.getX());
-            double minY = std::min(objectStartPos.getY(), currentMousePos.getY());
-            double width = std::abs(currentMousePos.getX() - objectStartPos.getX());
-            double height = std::abs(currentMousePos.getY() - objectStartPos.getY());
-            
-            // Для квадрата берем максимальную сторону
-            double side = std::max(width, height);
-            
-            sf::RectangleShape squarePreview(sf::Vector2f(static_cast<float>(side), static_cast<float>(side)));
-            squarePreview.setFillColor(sf::Color(62, 60, 50, 128));
-            squarePreview.setOutlineColor(sf::Color::Yellow);
-            squarePreview.setOutlineThickness(2);
-            squarePreview.setPosition(static_cast<float>(minX), static_cast<float>(minY));
-            
-            window.draw(squarePreview);
-            break;
+        // Создаем прямоугольник для предпросмотра
+        sf::RectangleShape wallPreview(sf::Vector2f(static_cast<float>(width), static_cast<float>(height)));
+        wallPreview.setFillColor(sf::Color(62, 60, 50, 128));
+        wallPreview.setOutlineColor(sf::Color::Yellow);
+        wallPreview.setOutlineThickness(2);
+        
+        // Центрируем и вращаем
+        wallPreview.setOrigin(static_cast<float>(width) / 2, static_cast<float>(height) / 2);
+        wallPreview.setPosition(static_cast<float>(objectStartPos.getX()), static_cast<float>(objectStartPos.getY()));
+        wallPreview.setRotation(static_cast<float>(currentRotation));
+        
+        window.draw(wallPreview);
+        
+        break;
+        }
+
+        case AddObjectMode::SQUARE: {
+        // Квадрат с вращением
+        double side = objectStartPos.distance(currentMousePos);
+        side = std::max(20.0, side);
+
+        sf::RectangleShape squarePreview(sf::Vector2f(static_cast<float>(side), static_cast<float>(side)));
+        squarePreview.setFillColor(sf::Color(62, 60, 50, 128));
+        squarePreview.setOutlineColor(sf::Color::Yellow);
+        squarePreview.setOutlineThickness(2);
+
+        // Центрируем квадрат
+        squarePreview.setOrigin(static_cast<float>(side) / 2, static_cast<float>(side) / 2);
+        squarePreview.setPosition(static_cast<float>(objectStartPos.getX()), static_cast<float>(objectStartPos.getY()));
+        squarePreview.setRotation(static_cast<float>(currentRotation));
+
+        window.draw(squarePreview);
+        break;
         }
         
         // ... остальные case остаются без изменений

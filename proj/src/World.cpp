@@ -30,10 +30,10 @@ void World::setMap(const Map& newMap){
 }
 
 void World::setMapOption1(){
-    Wall wallSouth(Point2D(960, 1065), 30, 1920, 0x3E3C32FF);
-    Wall wallWest(Point2D(15, 540), 1890, 30, 0x3E3C32FF);
-    Wall wallEast(Point2D(1850, 540), 1890, 30, 0x3E3C32FF);
-    Wall wallNorth(Point2D(960, 15), 30, 1920, 0x3E3C32FF);
+     Wall wallSouth(Point2D(960, 1065), 1920, 30, 0x3E3C32FF); 
+    Wall wallWest(Point2D(15, 540), 30, 1890, 0x3E3C32FF);     
+    Wall wallEast(Point2D(1850, 540), 30, 1890, 0x3E3C32FF);   
+    Wall wallNorth(Point2D(960, 15), 1920, 30, 0x3E3C32FF);  
 
     std::vector<std::shared_ptr<Object2D>> objects;
 

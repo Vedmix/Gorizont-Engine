@@ -13,5 +13,6 @@ public:
     Polygon2D(const Polygon2D& other);
     void draw(sf::RenderWindow& window) override;
     bool isCrossing(const Point2D& p)override;
+    void updatePointsOnPlane();
     ~Polygon2D();
 };

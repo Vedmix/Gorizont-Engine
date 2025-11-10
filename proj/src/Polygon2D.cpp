@@ -94,3 +94,9 @@ bool Polygon2D::isCrossing(const Point2D& p) {
 }
 
 
+void Polygon2D::updatePointsOnPlane() {
+    pointsOnPlane.resize(points.size());
+    for(size_t i = 0; i < points.size(); i++) {
+        pointsOnPlane[i] = points[i] + position;
+    }
+}

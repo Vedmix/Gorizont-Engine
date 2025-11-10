@@ -47,6 +47,13 @@ bool Polygon2D::pointOnSegment(const Point2D& a, const Point2D& b, const Point2D
     return true;
 }
 
+void Polygon2D::setPos(const Point2D& pos){
+    position = pos;
+    for(size_t i=0; i<points.size();i++){
+        pointsOnPlane[i] = points[i]+position;
+    }
+}
+
 bool Polygon2D::isCrossing(const Point2D& p) {
     size_t n = points.size();
     if (n < 3)

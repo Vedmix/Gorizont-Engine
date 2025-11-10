@@ -272,14 +272,15 @@ void World::handleEvents(){
 
 void World::update(double deltaTime){
     window.clear(color);
-    //camera.setMap(map); ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
+    //camera.setMap(map); //ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
     camera.moveWithKeyboard(deltaTime);
+    //setCircleMovable(deltaTime);
 }
 
 void World::setCircleMovable(double deltaTime){
     static int currentDirection = 0;
     
-    float moveSpeed = 500.0f;
+    float moveSpeed = 100.0f;
     float left = 100;
     float right = SCREEN_WIDTH - 200;
     float top = 100;

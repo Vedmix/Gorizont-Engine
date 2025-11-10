@@ -25,7 +25,6 @@ public:
     void setMapOption1();
 
 private:
-    void initializeUI(); // Добавить эту строку
     void setCircleMovable(double deltaTime);
     void handleEvents();
     void update(double deltaTime);

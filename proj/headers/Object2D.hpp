@@ -18,7 +18,7 @@ public:
     ObjectType getObjectType() const;
     Point2D getPos() const;
     void setColor(unsigned int _color);
-    void setPos(const Point2D& _position);
+    virtual void setPos(const Point2D& _position)=0;
     virtual bool isCrossing(const Point2D& point)=0;
     virtual void draw(sf::RenderWindow& window, const double mapScale) = 0;
 };

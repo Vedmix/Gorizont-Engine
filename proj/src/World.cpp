@@ -272,9 +272,9 @@ void World::handleEvents(){
 
 void World::update(double deltaTime){
     window.clear(color);
-    //camera.setMap(map); //ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
+    camera.setMap(map); //ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
     camera.moveWithKeyboard(deltaTime);
-    //setCircleMovable(deltaTime);
+    setCircleMovable(deltaTime);
 }
 
 void World::setCircleMovable(double deltaTime){
@@ -287,7 +287,7 @@ void World::setCircleMovable(double deltaTime){
     float bottom = SCREEN_HEIGHT - 200;
     
     for(auto& obj:map.objectSet) {
-        if (obj->getObjectType() != ObjectType::CIRCLE) {
+        if (obj->getObjectType() != ObjectType::POLYGON) {
             continue;
         }
         

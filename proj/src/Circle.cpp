@@ -15,6 +15,10 @@ void Circle::setRadius(double _radius){
     this->radius = _radius;
 }
 
+void Circle::setPos(const Point2D& pos){
+    position = pos;
+}
+
 double Circle::getRadius() const{
     return radius;
 }

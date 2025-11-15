@@ -11,12 +11,15 @@ private:
     double direction;
     double fov;
     void drawOneCameraSigment(sf::RenderWindow& window, double distance, int sigmentNum, double sectorWidth);
+    void drawOneCameraSigment(sf::RenderTarget& target, double distance, int sigmentNum, double sectorWidth);
 public:
     Camera();
     Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map);
     Camera(const Camera& other);
     void drawCameraOnMap(sf::RenderWindow& window);
     void drawCameraView(sf::RenderWindow& window);
+    void drawCameraOnMap(sf::RenderTarget& target);
+    void drawCameraView(sf::RenderTarget& target);
     void moveWithKeyboard(double deltaTime);
 
     void setMap(const Map& _map);

@@ -21,4 +21,5 @@ public:
     virtual void setPos(const Point2D& _position)=0;
     virtual bool isCrossing(const Point2D& point)=0;
     virtual void draw(sf::RenderWindow& window, const double mapScale) = 0;
+    virtual void render(sf::RenderTarget& target, double scale = 1.0) = 0;
 };

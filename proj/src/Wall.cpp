@@ -18,3 +18,19 @@ Wall::Wall(const Wall& other):Polygon2D(other){
 }
 
 Wall::~Wall(){}
+
+void Wall::render(sf::RenderTarget& target, double scale) {
+    // Создаем временную фигуру для рендеринга
+    sf::ConvexShape polygon;
+    polygon.setPointCount(points.size());
+
+    for (size_t i = 0; i < points.size(); i++) {
+        polygon.setPoint(i, sf::Vector2f(
+                                (position.getX() + points[i].getX()) * scale,
+                                (position.getY() + points[i].getY()) * scale
+                                ));
+    }
+
+    polygon.setFillColor(color);
+    target.draw(polygon);
+}

@@ -35,3 +35,12 @@ void Circle::draw(sf::RenderWindow& window, const double mapScale){
 bool Circle::isCrossing(const Point2D& point){
     return position.distance(point) <= radius;
 }
+
+void Circle::render(sf::RenderTarget& target, double scale) {
+    sf::CircleShape cirShape;
+    cirShape.setRadius(radius*scale);
+    cirShape.setPosition(position.getX()*scale, position.getY()*scale);
+    cirShape.setFillColor(color);
+    cirShape.setOrigin(radius*scale, radius*scale);
+    target.draw(cirShape);
+}

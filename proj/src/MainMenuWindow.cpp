@@ -1,18 +1,22 @@
-#include "../headers/MainWindow.h"
-
-MainWindow::MainWindow(QWidget *parent, int choice)
-    : QMainWindow(parent)
+#include "../headers/MainMenuWindow.h"
+#include <qDebug>
+MainMenuWindow::MainMenuWindow(QWidget *parent,int choice)
+    : QMainWindow(parent), gameWindow(nullptr)
 {
     if(choice == 0){
         initMenu();
     } else{
-        openSfmlWindow();
+        if(gameWindow == nullptr){
+            gameWindow = new GameWindow(this);
+            connect(gameWindow, &GameWindow::gameFinished, this, &MainMenuWindow::onGameFinished);
+        }
+        gameWindow->startGame();
     }
 }
 
-MainWindow::~MainWindow() {}
+MainMenuWindow::~MainMenuWindow() {}
 
-void MainWindow::initMenu(){
+void MainMenuWindow::initMenu(){
     QWidget *centralWidget = new QWidget(this);//контейнер для отцентрованных элементов
     setCentralWidget(centralWidget);
 
@@ -47,7 +51,7 @@ void MainWindow::initMenu(){
             );
     }
 
-    connect(buttonGroup, &QButtonGroup::idClicked, this, &MainWindow::handleButton);//привязка списка конопок к обработчику
+    connect(buttonGroup, &QButtonGroup::idClicked, this, &MainMenuWindow::handleButton);//привязка списка конопок к обработчику
 
     mainLayout->addStretch();//добавлено растяжение компановки сверху
 
@@ -61,28 +65,41 @@ void MainWindow::initMenu(){
     showFullScreen();
 }
 
-void MainWindow::handleButton(int id)
+void MainMenuWindow::handleButton(int id)
 {
     switch(id) {
-        case 0: //запуск игры
-            openSfmlWindow();
-            break;
-        case 1: //настройки
-            break;
-        case 2: //авторы
-            break;
-        case 3://выход с закрытием окна
-            this->close();
-            break;
-    };
+    case 0: // Играть
+        qDebug() << "Play button clicked";
+        if (!gameWindow) {
+            gameWindow = new GameWindow();
+            gameWindow->setWindowTitle("GAME WINDOW - TEST");
+            gameWindow->resize(800, 600); // Явно устанавливаем размер
+            connect(gameWindow, &GameWindow::gameFinished, this, &MainMenuWindow::onGameFinished);
+        }
+
+        this->hide();
+
+        // Показываем в центре экрана
+        gameWindow->move(100, 100); // Явно устанавливаем позицию
+        gameWindow->show();
+        gameWindow->activateWindow();
+        gameWindow->raise();
+
+        // Принудительные обновления
+        gameWindow->update();
+        gameWindow->repaint();
+
+        gameWindow->startGame();
+        break;
+    case 3: // Выход
+        this->close();
+        break;
+    }
 }
 
 
-void MainWindow::openSfmlWindow()
+void MainMenuWindow::onGameFinished()
 {
-    this->hide();
-
-    World world;
-
-    world.run();
+    gameWindow->hide();
+    this->show();
 }

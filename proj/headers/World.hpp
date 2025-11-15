@@ -7,12 +7,11 @@ class World
 private:
     Map map;
     Camera camera;
-    sf::RenderWindow window;
     sf::Color color;
     bool isRunning;
     sf::Clock clock;
 
-public:   
+public:
     World();
     ~World();
     void setMap(const Map& newMap);
@@ -23,10 +22,14 @@ public:
     void setMapOption1();
     void setMapOption2();
     void setMapOption3();
+    void update(double deltaTime);
+    void render();
+
+    // Новые методы для работы с RenderTexture
+    void renderToTexture(sf::RenderTexture& texture);
+
 private:
     void setCircleMovable(double deltaTime);
     void handleEvents();
-    void update(double deltaTime);
-    void render();
     void display2DMap(sf::RenderWindow& window);
 };

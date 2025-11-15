@@ -1,7 +1,8 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAINMENUWINDOW_H
+#define MAINMENUWINDOW_H
 
 #include "World.hpp"
+#include "GameWindow.h"
 #include <QApplication>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -11,7 +12,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 
-class MainWindow : public QMainWindow
+class MainMenuWindow : public QMainWindow
 {
     Q_OBJECT
 private:
@@ -21,15 +22,17 @@ private:
         "Авторы",
         "Выход"
     };
+    void initMenu();
+    GameWindow *gameWindow;
+
 
 public:
-    MainWindow(QWidget *parent = nullptr, int choice = 0);
-    ~MainWindow();
+    MainMenuWindow(QWidget *parent = nullptr, int choice = 0);
+    ~MainMenuWindow();
 
 private slots:
-    void initMenu();
-    void openSfmlWindow();
     void handleButton(int id);
+    void onGameFinished();
 
 };
-#endif // MAINWINDOW_H
+#endif // MAINMENUWINDOW_H

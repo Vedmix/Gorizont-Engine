@@ -32,6 +32,20 @@ void Camera::drawCameraOnMap(sf::RenderWindow& window){
     window.draw(ray);
 }
 
+void Camera::drawCameraOnMap(sf::RenderTarget& target) {
+    this->render(target, map.MAP_SCALE);
+    Point2D currRayEnd;
+    currRayEnd.setX(this->position.getX()+RENDER_DISTANCE*cos(direction));
+    currRayEnd.setY(this->position.getY()+RENDER_DISTANCE*sin(direction));
+
+    sf::VertexArray ray(sf::Lines, 2);
+    ray[0].position = sf::Vector2f(this->position.getX()*map.MAP_SCALE, this->position.getY()*map.MAP_SCALE);
+    ray[0].color = sf::Color::Green;
+    ray[1].position = sf::Vector2f(currRayEnd.getX()*map.MAP_SCALE, currRayEnd.getY()*map.MAP_SCALE);
+    ray[1].color = sf::Color::Green;
+    target.draw(ray);
+}
+
 void Camera::drawOneCameraSigment(sf::RenderWindow& window, double distance, int sigmentNum, double sectorWidth){
     double realHeight = Object2D::height;
     double viewH;
@@ -39,12 +53,23 @@ void Camera::drawOneCameraSigment(sf::RenderWindow& window, double distance, int
     sf::RectangleShape sigment(sf::Vector2f(sectorWidth, viewH*2));
     sigment.setPosition(sectorWidth*sigmentNum, 540 - viewH);
 
-    //sigment.setPosition(sigmentNum*sectorWidth, viewH);
     double brightess = 255 * (viewH/1080);
     sigment.setFillColor(sf::Color(255,255,255,brightess));
 
-
     window.draw(sigment);
+}
+
+void Camera::drawOneCameraSigment(sf::RenderTarget& target, double distance, int sigmentNum, double sectorWidth){
+    double realHeight = Object2D::height;
+    double viewH;
+    viewH = (realHeight - distance*tan(atan(realHeight/distance)- (PI/120)));
+    sf::RectangleShape sigment(sf::Vector2f(sectorWidth, viewH*2));
+    sigment.setPosition(sectorWidth*sigmentNum, 540 - viewH);
+
+    double brightess = 255 * (viewH/1080);
+    sigment.setFillColor(sf::Color(255,255,255,brightess));
+
+    target.draw(sigment);
 }
 
 void Camera::drawCameraView(sf::RenderWindow& window){
@@ -79,6 +104,42 @@ void Camera::drawCameraView(sf::RenderWindow& window){
         }
         if(isCrossed){
             drawOneCameraSigment(window, rayDistance, segmentNum, raySectorWidth);
+        }
+    }
+}
+
+void Camera::drawCameraView(sf::RenderTarget& target) {
+    Point2D currRayEnd;
+    bool isCrossed=false;
+    double currRayDir;
+    double rayDistance;
+    currRayEnd.setX(this->position.getX()+RENDER_DISTANCE*cos(direction));
+    currRayEnd.setY(this->position.getY()+RENDER_DISTANCE*sin(direction));
+
+    double rightExtRay = direction + fov/2;
+    double leftExtRay = direction - fov/2;
+    double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;
+    double rayInterval = fov/NUMBER_OF_RAYS_IN_FOV;
+    int segmentNum=0;
+
+    for(double i=leftExtRay;i<rightExtRay;i+=rayInterval,segmentNum++){
+        currRayDir = i;
+        isCrossed=false;
+        for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=2){
+            for(auto& obj:map.objectSet){
+                if(obj->getObjectType()==ObjectType::CAMERA){
+                    continue;
+                }
+                currRayEnd.setX(this->position.getX()+j*cos(currRayDir));
+                currRayEnd.setY(this->position.getY()+j*sin(currRayDir));
+                if(obj->isCrossing(currRayEnd)){
+                    isCrossed=true;
+                    rayDistance = j;
+                }
+            }
+        }
+        if(isCrossed){
+            drawOneCameraSigment(target, rayDistance, segmentNum, raySectorWidth);
         }
     }
 }

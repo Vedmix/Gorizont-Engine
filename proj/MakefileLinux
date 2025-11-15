@@ -1,35 +1,63 @@
-#Compiler/Compiler settings
+# Компилятор и флаги
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Iheaders
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2
+SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
-#Project folders
+# Директории
 SRC_DIR = src
+HEADER_DIR = headers
 BUILD_DIR = build
 BIN_DIR = bin
 
-#Files after compiling (without linking)
-TARGET = $(BIN_DIR)/sfml-app
+# Исходные файлы
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
-#Finding all the .cpp files in src dir
-SRC = $(wildcard $(SRC_DIR)/*.cpp)
-#Converting filenames .cpp to .o
-OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+# Имя исполняемого файла
+TARGET = $(BIN_DIR)/gorizont-engine
 
-#Assembly
+# Основная цель
 all: $(TARGET)
 
-$(TARGET): $(OBJ)
-	@mkdir -p $(BIN_DIR)
-	$(CXX) $(OBJ) -o $@ $(LIBS)
-	@echo "Project successfully assembled to $(TARGET)"
+# Создание исполняемого файла
+$(TARGET): $(OBJECTS) | $(BIN_DIR)
+	$(CXX) $(OBJECTS) -o $(TARGET) $(SFML_FLAGS)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Компиляция объектных файлов
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -I$(HEADER_DIR) -c $< -o $@
 
+# Создание директорий
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+# Очистка
 clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
-	@echo "Project cleaned"
 
-.PHONY: all clean
+# Пересборка
+rebuild: clean all
+
+# Установка (если нужно)
+install: $(TARGET)
+	# Добавьте команды установки при необходимости
+	@echo "Исполняемый файл создан в: $(TARGET)"
+
+# Отладочная сборка
+debug: CXXFLAGS += -g -DDEBUG
+debug: rebuild
+
+# Запуск
+run: $(TARGET)
+	./$(TARGET)
+
+# Показать переменные (для отладки)
+print:
+	@echo "Sources: $(SOURCES)"
+	@echo "Objects: $(OBJECTS)"
+	@echo "Target: $(TARGET)"
+
+.PHONY: all clean rebuild install debug run print

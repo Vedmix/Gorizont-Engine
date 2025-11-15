@@ -31,17 +31,36 @@ HEADERS += \
     headers/World.hpp \
     headers/settings.hpp
 
-# SFML - ВСЕ из папки проекта
+# SFML
 INCLUDEPATH += $$PWD/sfml/include \
                $$PWD/headers
 
-LIBS += -L$$PWD/sfml/lib \
-        -lsfml-graphics \
-        -lsfml-window \
-        -lsfml-system \
-        -lopengl32 \
-        -lgdi32 \
-        -lwinmm
+# Кроссплатформенные настройки линковки
+win32 {
+    # Windows библиотеки
+    LIBS += -L$$PWD/sfml/lib \
+            -lsfml-graphics \
+            -lsfml-window \
+            -lsfml-system \
+            -lopengl32 \
+            -lgdi32 \
+            -lwinmm
+    
+    # Автоматическое копирование DLL после сборки
+    QMAKE_POST_LINK = $$QMAKE_POST_LINK $$quote(cp -f $$shell_path($$PWD/sfml/bin/*.dll) $$shell_path($$DESTDIR))
+} else {
+    # Linux библиотеки
+    LIBS += -lsfml-graphics \
+            -lsfml-window \
+            -lsfml-system
+            
+    # Если SFML установлен в системных путях, убрать локальные пути
+    unix:!macx {
+        # Для системного SFML
+        CONFIG += link_pkgconfig
+        PKGCONFIG += sfml-all
+    }
+}
 
 # Флаги компилятора
 QMAKE_CXXFLAGS += -Wall -Wextra
@@ -60,9 +79,4 @@ CONFIG(debug, debug|release) {
 CONFIG(release, debug|release) {
     TARGET = Gorizont
     QMAKE_CXXFLAGS += -O2
-}
-
-# Автоматическое копирование DLL после сборки
-win32 {
-    QMAKE_POST_LINK = $$QMAKE_POST_LINK $$quote(cp -f $$shell_path($$PWD/sfml/bin/*.dll) $$shell_path($$DESTDIR))
 }

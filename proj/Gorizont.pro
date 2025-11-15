@@ -5,8 +5,8 @@ CONFIG += c++14
 
 # Исходные файлы
 SOURCES += \
+    src/MainWindow.cpp \
     src/main.cpp \
-    src/mainwindow.cpp \
     src/Camera.cpp \
     src/Circle.cpp \
     src/Map.cpp \
@@ -17,9 +17,9 @@ SOURCES += \
     src/World.cpp
 
 HEADERS += \
-    headers/mainwindow.h \
     headers/Camera.hpp \
     headers/Circle.hpp \
+    headers/MainWindow.h \
     headers/Map.hpp \
     headers/Object2D.hpp \
     headers/ObjectType.hpp \

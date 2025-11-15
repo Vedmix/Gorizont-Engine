@@ -1,14 +1,12 @@
-#include "../headers/settings.hpp"
-#include "../headers/Object2D.hpp"
-#include "../headers/Circle.hpp"
-#include "../headers/Polygon2D.hpp"
-#include "../headers/World.hpp"
-#include "../headers/Wall.hpp"
-int main()
-{
-    World world;
-    
-    world.run();
+#include <QApplication>
+#include "MainWindow.h"
 
-    return 0;
+int main(int argc, char *argv[])
+{
+    QApplication app(argc, argv);
+
+    MainWindow mainWindow(nullptr,0);//1-запуск без GUI, 0- запуск с GUI
+    mainWindow.show();
+
+    return app.exec();
 }

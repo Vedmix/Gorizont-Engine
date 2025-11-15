@@ -5,7 +5,12 @@
 #include <QTimer>
 #include <QPixmap>
 #include <SFML/Graphics.hpp>
-#include "../headers/World.hpp"
+#include "World.hpp"
+#include "settings.hpp"
+#include <QKeyEvent>
+#include <QDebug>
+#include <QPainter>
+#include <QPaintEvent>
 
 class GameWindow : public QWidget
 {
@@ -31,8 +36,8 @@ private slots:
     void onUpdate();
 
 private:
-    void initializeSFML();  // ДОБАВИТЬ ЭТО
-    void renderFrame();     // ДОБАВИТЬ ЭТО
+    void initializeSFML();
+    void renderFrame();
     void handleSFMLEvents();
 
     QTimer *m_timer;

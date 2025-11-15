@@ -69,7 +69,6 @@ void MainMenuWindow::handleButton(int id)
 {
     switch(id) {
     case 0: // Играть
-        qDebug() << "Play button clicked";
         if (!gameWindow) {
             gameWindow = new GameWindow();
             gameWindow->setWindowTitle("GAME WINDOW - TEST");

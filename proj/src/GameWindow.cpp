@@ -1,23 +1,17 @@
 #include "GameWindow.h"
-#include <QKeyEvent>
-#include <QDebug>
-#include <QPainter>
-#include <QPaintEvent>
+
 
 GameWindow::GameWindow(QWidget *parent)
     : QWidget(parent),
     m_initialized(false),
     m_world()
 {
-    setMinimumSize(800, 600);
+    setMinimumSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     setFocusPolicy(Qt::StrongFocus);
 
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &GameWindow::onUpdate);
 
-    qDebug() << "GameWindow created";
-
-    // Инициализируем SFML сразу
     QTimer::singleShot(100, this, &GameWindow::initializeSFML);
 }
 
@@ -60,14 +54,11 @@ void GameWindow::showEvent(QShowEvent* event)
 void GameWindow::keyPressEvent(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_Escape) {
-        qDebug() << "Escape pressed - closing game window";
         stopGame();
         hide();
         emit gameFinished();
         return;
     }
-
-    // Передаем управление в World/Camera
     switch(event->key()) {
     case Qt::Key_W:
     case Qt::Key_A:
@@ -75,55 +66,41 @@ void GameWindow::keyPressEvent(QKeyEvent* event)
     case Qt::Key_D:
     case Qt::Key_Left:
     case Qt::Key_Right:
-        // Эти клавиши обрабатываются в Camera::moveWithKeyboard
         break;
     default:
         QWidget::keyPressEvent(event);
     }
 }
 
-// РЕАЛИЗАЦИЯ initializeSFML
 void GameWindow::initializeSFML()
 {
     if (m_initialized) return;
 
-    try {
-        qDebug() << "Initializing SFML RenderTexture for Game...";
 
-        if (!m_renderTexture.create(width(), height())) {
-            throw std::runtime_error("Failed to create render texture");
-        }
-
-        m_initialized = true;
-        m_timer->start(16); // ~60 FPS
-
-        qDebug() << "SFML RenderTexture initialized successfully!";
-
-    } catch (const std::exception& e) {
-        qCritical() << "SFML init failed:" << e.what();
+    if (!m_renderTexture.create(width(), height())) {
+        throw std::runtime_error("Failed to create render texture");
     }
+
+    m_initialized = true;
+    m_timer->start(16); // ~60 FPS
+
+
 }
 
 // РЕАЛИЗАЦИЯ renderFrame
 void GameWindow::renderFrame()
 {
     if (!m_initialized) return;
+    m_world.renderToTexture(m_renderTexture);
+    m_renderTexture.display();
 
-    try {
-        // Используем World для рендеринга
-        m_world.renderToTexture(m_renderTexture);
-        m_renderTexture.display();
+    // Конвертируем в QPixmap
+    const sf::Texture& texture = m_renderTexture.getTexture();
+    sf::Image image = texture.copyToImage();
 
-        // Конвертируем в QPixmap
-        const sf::Texture& texture = m_renderTexture.getTexture();
-        sf::Image image = texture.copyToImage();
+    QImage qtImage(image.getPixelsPtr(), image.getSize().x, image.getSize().y, QImage::Format_RGBA8888);
+    m_pixmap = QPixmap::fromImage(qtImage.copy());
 
-        QImage qtImage(image.getPixelsPtr(), image.getSize().x, image.getSize().y, QImage::Format_RGBA8888);
-        m_pixmap = QPixmap::fromImage(qtImage.copy());
-
-    } catch (const std::exception& e) {
-        qWarning() << "Render error:" << e.what();
-    }
 }
 
 void GameWindow::handleSFMLEvents()

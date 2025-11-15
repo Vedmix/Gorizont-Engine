@@ -10,7 +10,8 @@ protected:
     sf::Color color;
     ObjectType objType;
 public:
-    static constexpr double height = 1080;
+    static const int height = SCREEN_HEIGHT;
+    static const int width = SCREEN_WIDTH;
     Object2D(const Point2D& _position, const unsigned int _color);
     Object2D(const Object2D& other);
     virtual ~Object2D() = default;

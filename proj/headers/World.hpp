@@ -1,6 +1,7 @@
 #pragma once
 #include "Map.hpp"
 #include "Camera.hpp"
+#include "settings.hpp"
 
 class World
 {
@@ -27,6 +28,9 @@ public:
 
     // Новые методы для работы с RenderTexture
     void renderToTexture(sf::RenderTexture& texture);
+    void renderMinimapBackground(sf::RenderTexture& texture);
+    void renderMinimapObjects(sf::RenderTexture& texture, float scale);
+    void renderPlayerOnMinimap(sf::RenderTexture& texture);
 
 private:
     void setCircleMovable(double deltaTime);

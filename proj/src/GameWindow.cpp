@@ -48,7 +48,7 @@ void GameWindow::resizeEvent(QResizeEvent* event)
 void GameWindow::showEvent(QShowEvent* event)
 {
     QWidget::showEvent(event);
-    qDebug() << "GameWindow shown";
+
 }
 
 void GameWindow::keyPressEvent(QKeyEvent* event)
@@ -76,36 +76,26 @@ void GameWindow::initializeSFML()
 {
     if (m_initialized) return;
 
-
     if (!m_renderTexture.create(width(), height())) {
         throw std::runtime_error("Failed to create render texture");
     }
 
     m_initialized = true;
-    m_timer->start(16); // ~60 FPS
-
-
+    m_timer->start(16);
 }
 
-// РЕАЛИЗАЦИЯ renderFrame
 void GameWindow::renderFrame()
 {
     if (!m_initialized) return;
     m_world.renderToTexture(m_renderTexture);
     m_renderTexture.display();
 
-    // Конвертируем в QPixmap
     const sf::Texture& texture = m_renderTexture.getTexture();
     sf::Image image = texture.copyToImage();
 
     QImage qtImage(image.getPixelsPtr(), image.getSize().x, image.getSize().y, QImage::Format_RGBA8888);
     m_pixmap = QPixmap::fromImage(qtImage.copy());
 
-}
-
-void GameWindow::handleSFMLEvents()
-{
-    // Обработка событий SFML, если необходимо
 }
 
 void GameWindow::startGame()
@@ -115,23 +105,19 @@ void GameWindow::startGame()
     }
 
     setFocus();
-    qDebug() << "Game started";
 }
 
 void GameWindow::stopGame()
 {
     m_timer->stop();
-    qDebug() << "Game stopped";
 }
 
 void GameWindow::onUpdate()
 {
     if (m_initialized) {
-        // Обновляем игровую логику
         double deltaTime = 16.0 / 1000.0;
         m_world.update(deltaTime);
 
-        // Рендерим кадр
         renderFrame();
 
         if (!m_pixmap.isNull()) {

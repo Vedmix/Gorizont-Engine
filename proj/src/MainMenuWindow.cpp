@@ -1,5 +1,5 @@
 #include "../headers/MainMenuWindow.h"
-#include <qDebug>
+
 MainMenuWindow::MainMenuWindow(QWidget *parent,int choice)
     : QMainWindow(parent), gameWindow(nullptr)
 {

@@ -37,7 +37,7 @@ void Camera::drawOneCameraSigment(sf::RenderWindow& window, double distance, int
     double viewH;
     viewH = (realHeight - distance*tan(atan(realHeight/distance)- (PI/120)));
     sf::RectangleShape sigment(sf::Vector2f(sectorWidth, viewH*2));
-    sigment.setPosition(sectorWidth*sigmentNum, 540 - viewH);
+    sigment.setPosition(sectorWidth*sigmentNum, SCREEN_HEIGHT/2 - viewH);
 
     //sigment.setPosition(sigmentNum*sectorWidth, viewH);
     double brightess = 255 * (viewH/1080);

@@ -2,6 +2,7 @@
 
 Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), numThreads(2),RENDER_DISTANCE(300), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/10){
     map=_map;
+    distances.resize(NUMBER_OF_RAYS_IN_FOV, -1);
     velocity = 150;
     direction = 0;
     fov = PI/2;
@@ -33,13 +34,15 @@ void Camera::drawCameraOnMap(sf::RenderWindow& window){
 }
 
 void Camera::drawOneCameraSigment(sf::RenderWindow& window, double distance, int sigmentNum, double sectorWidth){
+    if(distance==-1){
+        return;
+    }
     double realHeight = Object2D::height;
     double viewH;
     viewH = (realHeight - distance*tan(atan(realHeight/distance)- (PI/120)));
     sf::RectangleShape sigment(sf::Vector2f(sectorWidth, viewH*2));
     sigment.setPosition(sectorWidth*sigmentNum, SCREEN_HEIGHT/2 - viewH);
 
-    //sigment.setPosition(sigmentNum*sectorWidth, viewH);
     double brightess = 255 * (viewH/realHeight);
     sigment.setFillColor(sf::Color(255,255,255,brightess));
 
@@ -47,11 +50,12 @@ void Camera::drawOneCameraSigment(sf::RenderWindow& window, double distance, int
     window.draw(sigment);
 }
 
-void Camera::renderView(sf::RenderWindow& window, double leftExtRay, double rightExtRay, int& sigmentNum){
+void Camera::CalculateDistances(double leftExtRay, double rightExtRay, int sigmentNum){
     double rayInterval = fov/NUMBER_OF_RAYS_IN_FOV;
-    double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;
-    for(double i=rightExtRay;i<leftExtRay;i+=rayInterval,sigmentNum++){
-        bool isCrossed = false;
+    
+    bool isCrossed = false;
+    for(double i=rightExtRay;i<leftExtRay;i+=rayInterval && !isCrossed,sigmentNum++){
+        isCrossed = false;
         Point2D currRayEnd;
         double rayDistance;
         for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=2){
@@ -67,8 +71,11 @@ void Camera::renderView(sf::RenderWindow& window, double leftExtRay, double righ
                 }
             }
         }
-        if(isCrossed){
-            drawOneCameraSigment(window, rayDistance, sigmentNum, raySectorWidth);
+        if(!isCrossed && sigmentNum < distances.size()){
+            distances[sigmentNum]=-1;
+        }
+        else{
+            distances[sigmentNum]=rayDistance;
         }
     }
 }
@@ -77,20 +84,25 @@ void Camera::drawCameraView(sf::RenderWindow& window){
     std::thread threads[numThreads];
     double rightAngle = direction - fov/2;
     double angleStep = fov/numThreads;
-
+    double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;
     double currRightAngle=rightAngle;
     double currLeftAngle=rightAngle+angleStep;
+    int raysPerThread = NUMBER_OF_RAYS_IN_FOV / numThreads;
 
     //renderView(window, currLeftAngle, currRightAngle, i)
 
     for(int i=0;i<numThreads;i++){
         currRightAngle += angleStep;
         currLeftAngle += angleStep;
-        threads[i] = std::thread(&Camera::renderView, this, std::ref(window), currLeftAngle, currRightAngle, std::ref(i));
+        threads[i] = std::thread(&Camera::CalculateDistances, this, currLeftAngle, currRightAngle, std::ref(i));
     }
 
     for(int i=0; i<10;i++){
         threads[i].join();
+    }
+
+    for(int i=0;i<distances.size();i++){
+        drawOneCameraSigment(window, distances[i], i, raySectorWidth);
     }
 }
 

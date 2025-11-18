@@ -1,8 +1,8 @@
 #include "../headers/Camera.hpp"
 
-Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), numThreads(2),RENDER_DISTANCE(300), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/10){
+Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), numThreads(10),RENDER_DISTANCE(700), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/10){
     map=_map;
-    distances.resize(NUMBER_OF_RAYS_IN_FOV, -1);
+    heights.resize(NUMBER_OF_RAYS_IN_FOV, -1);
     velocity = 150;
     direction = 0;
     fov = PI/2;
@@ -33,28 +33,24 @@ void Camera::drawCameraOnMap(sf::RenderWindow& window){
     window.draw(ray);
 }
 
-void Camera::drawOneCameraSigment(sf::RenderWindow& window, double distance, int sigmentNum, double sectorWidth){
-    if(distance==-1){
+void Camera::drawOneCameraSigment(sf::RenderWindow& window, double viewH, int sigmentNum, double sectorWidth){
+    if(viewH==-1){
         return;
     }
-    double realHeight = Object2D::height;
-    double viewH;
-    viewH = (realHeight - distance*tan(atan(realHeight/distance)- (PI/120)));
     sf::RectangleShape sigment(sf::Vector2f(sectorWidth, viewH*2));
     sigment.setPosition(sectorWidth*sigmentNum, SCREEN_HEIGHT/2 - viewH);
 
-    double brightess = 255 * (viewH/realHeight);
+    double brightess = 255 * (viewH/Object2D::height);
     sigment.setFillColor(sf::Color(255,255,255,brightess));
-
 
     window.draw(sigment);
 }
 
-void Camera::CalculateDistances(double leftExtRay, double rightExtRay, int sigmentNum){
+void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigmentNum){
     double rayInterval = fov/NUMBER_OF_RAYS_IN_FOV;
-    
+    int raysPerThread = NUMBER_OF_RAYS_IN_FOV / numThreads;
     bool isCrossed = false;
-    for(double i=rightExtRay;i<leftExtRay;i+=rayInterval && !isCrossed,sigmentNum++){
+    for(double currAngle=rightExtRay, i=sigmentNum*raysPerThread;currAngle<leftExtRay && i<(sigmentNum+1)*raysPerThread;currAngle+=rayInterval,i++){
         isCrossed = false;
         Point2D currRayEnd;
         double rayDistance;
@@ -63,19 +59,19 @@ void Camera::CalculateDistances(double leftExtRay, double rightExtRay, int sigme
                 if(obj->getObjectType()==ObjectType::CAMERA){
                     continue;
                 }
-                currRayEnd.setX(this->position.getX()+j*cos(i));
-                currRayEnd.setY(this->position.getY()+j*sin(i));
+                currRayEnd.setX(this->position.getX()+j*cos(currAngle));
+                currRayEnd.setY(this->position.getY()+j*sin(currAngle));
                 if(obj->isCrossing(currRayEnd)){
                     isCrossed=true;
                     rayDistance = j;
                 }
             }
         }
-        if(!isCrossed && sigmentNum < distances.size()){
-            distances[sigmentNum]=-1;
+        if(!isCrossed){
+            heights[i]=-1;
         }
         else{
-            distances[sigmentNum]=rayDistance;
+            heights[i] = (Object2D::height - rayDistance*tan(atan(Object2D::height/rayDistance)- (PI/120)));
         }
     }
 }
@@ -87,22 +83,19 @@ void Camera::drawCameraView(sf::RenderWindow& window){
     double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;
     double currRightAngle=rightAngle;
     double currLeftAngle=rightAngle+angleStep;
-    int raysPerThread = NUMBER_OF_RAYS_IN_FOV / numThreads;
-
-    //renderView(window, currLeftAngle, currRightAngle, i)
 
     for(int i=0;i<numThreads;i++){
+        threads[i] = std::thread(&Camera::CalculateHeights, this, currLeftAngle, currRightAngle, i);
         currRightAngle += angleStep;
         currLeftAngle += angleStep;
-        threads[i] = std::thread(&Camera::CalculateDistances, this, currLeftAngle, currRightAngle, std::ref(i));
     }
 
-    for(int i=0; i<10;i++){
+    for(int i=0; i<numThreads;i++){
         threads[i].join();
     }
 
-    for(int i=0;i<distances.size();i++){
-        drawOneCameraSigment(window, distances[i], i, raySectorWidth);
+    for(int i=0;i<(int)heights.size();i++){
+        drawOneCameraSigment(window, heights[i], i, raySectorWidth);
     }
 }
 

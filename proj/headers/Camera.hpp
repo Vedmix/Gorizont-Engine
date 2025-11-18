@@ -6,15 +6,15 @@ class Camera:public Circle
 {
 private:
     const int numThreads;
-    std::vector<double> distances;
+    std::vector<double> heights;
     double RENDER_DISTANCE;
     int NUMBER_OF_RAYS_IN_FOV;
     Map map;
     double velocity;
     double direction;
     double fov;
-    void drawOneCameraSigment(sf::RenderWindow& window, double distance, int sigmentNum, double sectorWidth);
-    void CalculateDistances(double rightExtRay, double leftExtRay, int sigmentNum);
+    void drawOneCameraSigment(sf::RenderWindow& window, double viewH, int sigmentNum, double sectorWidth);
+    void CalculateHeights(double rightExtRay, double leftExtRay, int sigmentNum);
 public:
     Camera();
     Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map);

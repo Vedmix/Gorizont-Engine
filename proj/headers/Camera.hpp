@@ -1,9 +1,11 @@
 #pragma once
 #include "Map.hpp"
+#include <thread>
 
 class Camera:public Circle
 {
 private:
+    const int numThreads;
     double RENDER_DISTANCE;
     int NUMBER_OF_RAYS_IN_FOV;
     Map map;
@@ -11,6 +13,7 @@ private:
     double direction;
     double fov;
     void drawOneCameraSigment(sf::RenderWindow& window, double distance, int sigmentNum, double sectorWidth);
+    void renderView(sf::RenderWindow& window, double rightExtRay, double leftExtRay, int& sigmentNum);
 public:
     Camera();
     Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map);

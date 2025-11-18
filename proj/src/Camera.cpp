@@ -1,6 +1,6 @@
 #include "../headers/Camera.hpp"
 
-Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), RENDER_DISTANCE(300), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/10){
+Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), numThreads(2),RENDER_DISTANCE(300), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/10){
     map=_map;
     velocity = 150;
     direction = 0;
@@ -8,7 +8,7 @@ Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, co
     objType = ObjectType::CAMERA;
 }
 
-Camera::Camera(const Camera& other):Circle(other), RENDER_DISTANCE(other.RENDER_DISTANCE), NUMBER_OF_RAYS_IN_FOV(other.NUMBER_OF_RAYS_IN_FOV){
+Camera::Camera(const Camera& other):Circle(other), numThreads(other.numThreads),RENDER_DISTANCE(other.RENDER_DISTANCE), NUMBER_OF_RAYS_IN_FOV(other.NUMBER_OF_RAYS_IN_FOV){
     velocity = other.velocity;
     map = other.map;
     direction = other.direction;
@@ -40,37 +40,27 @@ void Camera::drawOneCameraSigment(sf::RenderWindow& window, double distance, int
     sigment.setPosition(sectorWidth*sigmentNum, SCREEN_HEIGHT/2 - viewH);
 
     //sigment.setPosition(sigmentNum*sectorWidth, viewH);
-    double brightess = 255 * (viewH/1080);
+    double brightess = 255 * (viewH/realHeight);
     sigment.setFillColor(sf::Color(255,255,255,brightess));
 
 
     window.draw(sigment);
 }
 
-void Camera::drawCameraView(sf::RenderWindow& window){
-    Point2D currRayEnd;
-    bool isCrossed=false;
-    double currRayDir;
-    double rayDistance;
-    currRayEnd.setX(this->position.getX()+RENDER_DISTANCE*cos(direction));
-    currRayEnd.setY(this->position.getY()+RENDER_DISTANCE*sin(direction));
-
-    double rightExtRay = direction + fov/2;
-    double leftExtRay = direction - fov/2;
-    double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;
+void Camera::renderView(sf::RenderWindow& window, double leftExtRay, double rightExtRay, int& sigmentNum){
     double rayInterval = fov/NUMBER_OF_RAYS_IN_FOV;
-    int segmentNum=0;
-
-    for(double i=leftExtRay;i<rightExtRay;i+=rayInterval,segmentNum++){
-        currRayDir = i;
-        isCrossed=false;
+    double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;
+    for(double i=rightExtRay;i<leftExtRay;i+=rayInterval,sigmentNum++){
+        bool isCrossed = false;
+        Point2D currRayEnd;
+        double rayDistance;
         for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=2){
             for(auto& obj:map.objectSet){
                 if(obj->getObjectType()==ObjectType::CAMERA){
                     continue;
                 }
-                currRayEnd.setX(this->position.getX()+j*cos(currRayDir));
-                currRayEnd.setY(this->position.getY()+j*sin(currRayDir));
+                currRayEnd.setX(this->position.getX()+j*cos(i));
+                currRayEnd.setY(this->position.getY()+j*sin(i));
                 if(obj->isCrossing(currRayEnd)){
                     isCrossed=true;
                     rayDistance = j;
@@ -78,8 +68,29 @@ void Camera::drawCameraView(sf::RenderWindow& window){
             }
         }
         if(isCrossed){
-            drawOneCameraSigment(window, rayDistance, segmentNum, raySectorWidth);
+            drawOneCameraSigment(window, rayDistance, sigmentNum, raySectorWidth);
         }
+    }
+}
+
+void Camera::drawCameraView(sf::RenderWindow& window){
+    std::thread threads[numThreads];
+    double rightAngle = direction - fov/2;
+    double angleStep = fov/numThreads;
+
+    double currRightAngle=rightAngle;
+    double currLeftAngle=rightAngle+angleStep;
+
+    //renderView(window, currLeftAngle, currRightAngle, i)
+
+    for(int i=0;i<numThreads;i++){
+        currRightAngle += angleStep;
+        currLeftAngle += angleStep;
+        threads[i] = std::thread(&Camera::renderView, this, std::ref(window), currLeftAngle, currRightAngle, std::ref(i));
+    }
+
+    for(int i=0; i<10;i++){
+        threads[i].join();
     }
 }
 
@@ -112,13 +123,11 @@ void Camera::moveWithKeyboard(double deltaTime){
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-        deltaTime=0.00025;
-        direction += velocity*deltaTime;
+        direction += velocity*deltaTime*0.007;
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-        deltaTime=0.00025;
-        direction -= velocity*deltaTime;
+        direction -= velocity*deltaTime*0.007;
     }
 }
 

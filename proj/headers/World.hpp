@@ -23,10 +23,24 @@ public:
     void setMapOption1();
     void setMapOption2();
     void setMapOption3();
-private:
-    void setCircleMovable(double deltaTime);
     void handleEvents();
     void update(double deltaTime);
     void render();
     void display2DMap(sf::RenderWindow& window);
+
+    ////
+    // Методы для доступа к компонентам
+    Camera& getCamera() { return camera; }
+    const Camera& getCamera() const { return camera; }
+
+    Map& getMap() { return map; }
+
+    // Методы для обновления
+    void updateLogic(double deltaTime) {
+        camera.moveWithKeyboard(deltaTime);
+        setCircleMovable(deltaTime);
+    }
+private:
+    void setCircleMovable(double deltaTime);
+
 };

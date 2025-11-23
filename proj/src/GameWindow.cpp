@@ -54,9 +54,8 @@ void GameWindow::renderFrame()
 
     QSize widgetSize = size();
 
-    if (m_renderTexture.getSize().x != (unsigned int)widgetSize.width() ||
-        m_renderTexture.getSize().y != (unsigned int)widgetSize.height()) {
-        m_renderTexture.create(widgetSize.width(), widgetSize.height());
+    if (m_renderTexture.getSize().x != SCREEN_WIDTH || m_renderTexture.getSize().y != SCREEN_HEIGHT) {
+        m_renderTexture.create(SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 
     m_renderTexture.clear(sf::Color::Black);
@@ -98,9 +97,8 @@ void GameWindow::paintEvent(QPaintEvent* event)
     QPainter painter(this);
 
     if (!m_pixmap.isNull()) {
-        painter.drawPixmap(0, 0, width(), height(), m_pixmap);
+        painter.drawPixmap(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, m_pixmap);
 
-        // FPS текст поверх
         painter.setFont(QFont("Arial", 14, QFont::Bold));
         painter.setPen(Qt::green);
         painter.drawText(SCREEN_WIDTH - 150, 40, QString("FPS: %1").arg(m_currentFPS));

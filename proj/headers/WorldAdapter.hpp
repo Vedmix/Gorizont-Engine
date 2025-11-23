@@ -1,16 +1,18 @@
 #ifndef WORLDADAPTER_HPP
 #define WORLDADAPTER_HPP
 
-#include "../headers/Map.hpp"
-#include "../headers/Camera.hpp"
-#include "../headers/World.hpp"
-#include "../headers/Circle.hpp"
-#include "../headers/Polygon2D.hpp"
-#include "../headers/settings.hpp"
+#include "Map.hpp"
+#include "Camera.hpp"
+#include "World.hpp"
+#include "Circle.hpp"
+#include "Polygon2D.hpp"
+#include "settings.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <vector>
 #include <thread>
+#include <QDebug>
+#include <cmath>
 
 class WorldAdapter {
 public:

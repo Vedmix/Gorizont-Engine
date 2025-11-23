@@ -1,8 +1,5 @@
 #include "../headers/WorldAdapter.hpp"
-#include <QDebug>
-#include <cmath>
-#include <vector>
-#include <thread>
+
 
 WorldAdapter::WorldAdapter(Map& _map, Camera& _camera, World& _world)
     : map(_map), camera(_camera), world(_world) {}
@@ -101,24 +98,21 @@ void WorldAdapter::drawOneCameraSegment(sf::RenderTarget& target, double viewH, 
     target.draw(segment);
 }
 
-// Большая мини-карта в левом верхнем углу
 void WorldAdapter::drawMinimap(sf::RenderTarget& target) {
-    int minimapSize = 250;
-    int margin = 10;
-
-    // ФИКСИРОВАННЫЕ ГРАНИЦЫ КАРТЫ (1920x1050)
-    double mapWidth = 1920.0;
-    double mapHeight = 1050.0;
-    double mapScale = minimapSize / std::max(mapWidth, mapHeight);
-
     // Сохраняем текущий вид
     sf::View originalView = target.getView();
 
-    // Устанавливаем вид для мини-карты (фиксированные координаты)
-    sf::View minimapView(sf::FloatRect(0, 0, mapWidth, mapHeight));
+    // Устанавливаем вид для мини-карты в координатах ЭКРАНА
+    sf::View minimapView(sf::FloatRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
     target.setView(minimapView);
 
-    // Рендерим объекты на мини-карте
+    // Фон мини-карты
+    sf::RectangleShape minimapBg(sf::Vector2f(SCREEN_WIDTH / 8.0, SCREEN_HEIGHT / 8.0));
+    minimapBg.setFillColor(sf::Color::Black);
+    minimapBg.setPosition(0, 0);
+    target.draw(minimapBg);
+
+    // Рендерим объекты на мини-карте с ПРОСТЫМ масштабом
     for (const auto& obj : map.getObjects()) {
         if (obj->getObjectType() == ObjectType::CAMERA) continue;
 
@@ -126,14 +120,10 @@ void WorldAdapter::drawMinimap(sf::RenderTarget& target) {
             Point2D pos = circle->getPos();
             double radius = circle->getRadius();
 
-            // Позиция на фиксированной карте
-            double mapX = pos.getX() * mapScale + margin;
-            double mapY = pos.getY() * mapScale + margin;
-
-            sf::CircleShape shape(radius * mapScale);
+            sf::CircleShape shape(radius / 4.0);
             shape.setFillColor(sf::Color(200, 200, 200));
-            shape.setPosition(mapX, mapY);
-            shape.setOrigin(radius * mapScale, radius * mapScale);
+            shape.setPosition(pos.getX() / 4.0, pos.getY() / 4.0);
+            shape.setOrigin(radius / 4.0, radius / 4.0);
             target.draw(shape);
         }
         else if (auto polygon = std::dynamic_pointer_cast<Polygon2D>(obj)) {
@@ -146,9 +136,7 @@ void WorldAdapter::drawMinimap(sf::RenderTarget& target) {
             shape.setPointCount(points.size());
 
             for (size_t i = 0; i < points.size(); ++i) {
-                double pointX = (pos.getX() + points[i].getX()) * mapScale + margin;
-                double pointY = (pos.getY() + points[i].getY()) * mapScale + margin;
-                shape.setPoint(i, sf::Vector2f(pointX, pointY));
+                shape.setPoint(i, sf::Vector2f((pos.getX() + points[i].getX()) / 4.0, (pos.getY() + points[i].getY()) / 4.0));
             }
 
             shape.setFillColor(sf::Color(150, 150, 150));
@@ -158,24 +146,18 @@ void WorldAdapter::drawMinimap(sf::RenderTarget& target) {
 
     // Камера на мини-карте
     Point2D cameraPos = camera.getPos();
-    double camMapX = cameraPos.getX() * mapScale + margin;
-    double camMapY = cameraPos.getY() * mapScale + margin;
-
-    // Камера - зеленый круг
     sf::CircleShape cameraShape(8);
     cameraShape.setFillColor(sf::Color::Green);
-    cameraShape.setPosition(camMapX, camMapY);
+    cameraShape.setPosition(cameraPos.getX() / 4.0, cameraPos.getY() / 4.0);
     cameraShape.setOrigin(8, 8);
     target.draw(cameraShape);
 
     // Направление камеры на мини-карте
     double camDirection = camera.getDirection();
-    double dirX = cos(camDirection) * 30;
-    double dirY = sin(camDirection) * 30;
 
     sf::Vertex directionLine[] = {
-        sf::Vertex(sf::Vector2f(camMapX, camMapY), sf::Color::Red),
-        sf::Vertex(sf::Vector2f(camMapX + dirX, camMapY + dirY), sf::Color::Red)
+        sf::Vertex(sf::Vector2f(cameraPos.getX() / 4.0, cameraPos.getY() / 4.0), sf::Color::Red),
+        sf::Vertex(sf::Vector2f(cameraPos.getX() / 4.0 + cos(camDirection) * 30, cameraPos.getY() / 4.0 + sin(camDirection) * 30), sf::Color::Red)
     };
     target.draw(directionLine, 2, sf::Lines);
 
@@ -183,13 +165,12 @@ void WorldAdapter::drawMinimap(sf::RenderTarget& target) {
     target.setView(originalView);
 }
 
-// Основной метод рендеринга
 void WorldAdapter::renderWorld(sf::RenderTarget& target) {
-    // Очищаем целевой буфер
+
     target.clear(sf::Color::Black);
 
-    // Отрисовка 3D вида с мини-картой
     drawCameraView(target);
+
     drawMinimap(target);
 }
 

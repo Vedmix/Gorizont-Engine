@@ -70,9 +70,6 @@ void MainMenuWindow::handleButton(int id)
 
         if (!gameWindow) {
             gameWindow = new GameWindow(nullptr);
-
-            // Устанавливаем позицию и размер
-
             gameWindow->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
             gameWindow->setWindowTitle("Gorizont");
 

@@ -1,10 +1,27 @@
 #include "../headers/World.hpp"
 
-World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "TUT KAK V ZHIZNI"), isRunning(true)
+World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map)
+#ifdef USE_QT
+    , isRunning(true) // Без окна для Qt
+#else
+    , window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "TUT KAK V ZHIZNI"), isRunning(true) // С окном для SFML
+#endif
 {
     this->setMapOption2();
     camera.setMap(this->map);
     color = sf::Color::Black;
+}
+
+void World::run(){
+#ifndef USE_QT
+    // Только для чистого SFML
+    while (isRunning && window.isOpen()){
+        double deltaTime = clock.restart().asSeconds();
+        handleEvents();
+        update(deltaTime);
+        render();
+    }
+#endif
 }
 
 World::~World(){}
@@ -249,15 +266,6 @@ void World::addObject(std::shared_ptr<Object2D> object){
 
 void World::setColor(unsigned int _color){
     color = sf::Color(_color);
-}
-
-void World::run(){
-    while (isRunning && window.isOpen()){
-        double deltaTime = clock.restart().asSeconds();
-        handleEvents();
-        update(deltaTime);
-        render();
-    }
 }
 
 void World::handleEvents(){

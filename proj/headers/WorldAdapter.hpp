@@ -6,9 +6,11 @@
 #include "../headers/World.hpp"
 #include "../headers/Circle.hpp"
 #include "../headers/Polygon2D.hpp"
+#include "../headers/settings.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <vector>
+#include <thread>
 
 class WorldAdapter {
 public:
@@ -21,13 +23,6 @@ public:
     void update(double deltaTime);
     void handleEvents();
 
-    // Пустые методы для компиляции
-    void renderObject(std::shared_ptr<Object2D> obj, sf::RenderTarget& target, double scale = 1.0);
-    void drawObjectOnMap(std::shared_ptr<Object2D> obj, sf::RenderTarget& target, double mapScale);
-    void renderMap(sf::RenderTarget& target);
-    void drawMapOnMap(sf::RenderTarget& target);
-    void drawCameraOnMap(sf::RenderTarget& target);
-
 private:
     Map& map;
     Camera& camera;
@@ -35,12 +30,10 @@ private:
 
     // Приватные вспомогательные методы
     void drawCameraView(sf::RenderTarget& target);
-    void drawWallSegmentBW(sf::RenderTarget& target, int segmentIndex, double sectorWidth, double distance);
-    double ultraFastCastRay(const Point2D& start, double angle, double maxDistance); // ИСПРАВЛЕНА СИГНАТУРА
+    void calculateHeights(double leftExtRay, double rightExtRay, int segmentNum,
+                          std::vector<double>& heights, int numRays, int numThreads);
+    void drawOneCameraSegment(sf::RenderTarget& target, double viewH, int segmentNum, double sectorWidth);
     void drawMinimap(sf::RenderTarget& target);
-
-    void renderCircle(std::shared_ptr<Circle> circle, sf::RenderTarget& target, double scale);
-    void renderPolygon(std::shared_ptr<Polygon2D> polygon, sf::RenderTarget& target, double scale);
 };
 
 #endif // WORLDADAPTER_HPP

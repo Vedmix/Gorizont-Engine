@@ -2,6 +2,8 @@
 #include "Map.hpp"
 #include "Camera.hpp"
 
+#define USE_QT
+
 class World
 {
 private:

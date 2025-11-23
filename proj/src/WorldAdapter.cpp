@@ -1,94 +1,109 @@
 #include "../headers/WorldAdapter.hpp"
 #include <QDebug>
 #include <cmath>
+#include <vector>
+#include <thread>
 
 WorldAdapter::WorldAdapter(Map& _map, Camera& _camera, World& _world)
     : map(_map), camera(_camera), world(_world) {}
 
-// Оптимизированный raycasting с черно-белой схемой
 void WorldAdapter::drawCameraView(sf::RenderTarget& target) {
-    // СИЛЬНОЕ УМЕНЬШЕНИЕ ЛУЧЕЙ ДЛЯ FPS
-    int numRays = SCREEN_WIDTH / 6; // Немного увеличил для качества
+    sf::Vector2u targetSize = target.getSize();
+
+    // Параметры как в оригинальной камере
+    int numThreads = 10;
+    int NUMBER_OF_RAYS_IN_FOV = targetSize.x / 10;
     double fov = PI / 2;
+
+    double raySectorWidth = (double)targetSize.x / NUMBER_OF_RAYS_IN_FOV;
+
+    // Вектор для хранения высот
+    std::vector<double> heights(NUMBER_OF_RAYS_IN_FOV, -1);
+
+    // МНОГОПОТОЧНЫЙ РАСЧЕТ ВЫСОТ
+    std::vector<std::thread> threads;
+    double rightAngle = camera.getDirection() - fov/2;
+    double angleStep = fov/numThreads;
+    double currRightAngle = rightAngle;
+    double currLeftAngle = rightAngle + angleStep;
+
+    // Запускаем потоки для расчета высот
+    for(int i = 0; i < numThreads; i++) {
+        threads.emplace_back(&WorldAdapter::calculateHeights, this, currLeftAngle, currRightAngle, i, std::ref(heights), NUMBER_OF_RAYS_IN_FOV, numThreads);
+        currRightAngle += angleStep;
+        currLeftAngle += angleStep;
+    }
+
+    // Ждем завершения всех потоков
+    for(auto& thread : threads) {
+        thread.join();
+    }
+
+    // Рисуем сегменты
+    for(int i = 0; i < (int)heights.size(); i++) {
+        drawOneCameraSegment(target, heights[i], i, raySectorWidth);
+    }
+}
+
+void WorldAdapter::calculateHeights(double leftExtRay, double rightExtRay, int segmentNum, std::vector<double>& heights, int numRays, int numThreads) {
+    double fov = PI / 2;
+    double rayInterval = fov / numRays;
+    int raysPerThread = numRays / numThreads;
     double renderDistance = 700.0;
 
-    double rayAngleStep = fov / numRays;
-    double sectorWidth = (double)SCREEN_WIDTH / numRays;
-
     Point2D cameraPos = camera.getPos();
-    double cameraDir = camera.getDirection();
 
-    // Начальный угол (левый край FOV)
-    double startAngle = cameraDir - fov / 2;
+    for(double currAngle = rightExtRay, i = segmentNum * raysPerThread;
+         currAngle < leftExtRay && i < (segmentNum + 1) * raysPerThread;
+         currAngle += rayInterval, i++) {
 
-    // Черный фон (пол и потолок) - ОДИН РАЗ
-    target.clear(sf::Color::Black);
+        bool isCrossed = false;
+        Point2D currRayEnd;
+        double rayDistance = renderDistance;
 
-    // БЫСТРЫЙ raycasting
-    for (int i = 0; i < numRays; i++) {
-        double rayAngle = startAngle + i * rayAngleStep;
-        double distance = ultraFastCastRay(cameraPos, rayAngle, renderDistance);
+        for(int j = 0; j < renderDistance && !isCrossed; j += 2) {
+            for(auto& obj : map.getObjects()) {
+                if(obj->getObjectType() == ObjectType::CAMERA) {
+                    continue;
+                }
 
-        if (distance < renderDistance) {
-            drawWallSegmentBW(target, i, sectorWidth, distance);
-        }
-    }
+                currRayEnd.setX(cameraPos.getX() + j * cos(currAngle));
+                currRayEnd.setY(cameraPos.getY() + j * sin(currAngle));
 
-    // Рисуем БОЛЬШУЮ мини-карту в левом верхнем углу
-    drawMinimap(target);
-}
-
-// СУПЕР-БЫСТРЫЙ raycasting (ИСПРАВЛЕННАЯ СИГНАТУРА)
-double WorldAdapter::ultraFastCastRay(const Point2D& start, double angle, double maxDistance) {
-    double cosAngle = cos(angle);
-    double sinAngle = sin(angle);
-
-    // БОЛЬШОЙ ШАГ для максимальной производительности
-    for (double t = 8.0; t < maxDistance; t += 8.0) {
-        Point2D testPoint;
-        testPoint.setX(start.getX() + t * cosAngle);
-        testPoint.setY(start.getY() + t * sinAngle);
-
-        // Быстрая проверка пересечений
-        for (const auto& obj : map.getObjects()) {
-            if (obj->getObjectType() == ObjectType::CAMERA) continue;
-
-            if (obj->isCrossing(testPoint)) {
-                return t;
+                if(obj->isCrossing(currRayEnd)) {
+                    isCrossed = true;
+                    rayDistance = j;
+                    break;
+                }
             }
         }
+
+        if(!isCrossed) {
+            heights[i] = -1;
+        } else {
+            heights[i] = (Object2D::height - rayDistance * tan(atan(Object2D::height / rayDistance) - (PI / 120)));
+        }
+    }
+}
+
+// Отрисовка одного сегмента
+void WorldAdapter::drawOneCameraSegment(sf::RenderTarget& target, double viewH, int segmentNum, double sectorWidth) {
+    if(viewH == -1) {
+        return;
     }
 
-    return maxDistance;
+    sf::RectangleShape segment(sf::Vector2f(sectorWidth, viewH * 2));
+    segment.setPosition(sectorWidth * segmentNum, SCREEN_HEIGHT / 2 - viewH);
+
+    double brightness = 255 * (viewH / Object2D::height);
+    segment.setFillColor(sf::Color(255, 255, 255, brightness));
+
+    target.draw(segment);
 }
 
-// Черно-белый сегмент стены
-void WorldAdapter::drawWallSegmentBW(sf::RenderTarget& target, int segmentIndex,
-                                     double sectorWidth, double distance) {
-    // Упрощенная формула высоты стены
-    double wallHeight = (SCREEN_HEIGHT * 1.5) / (distance * 0.02 + 0.001);
-    wallHeight = std::min(wallHeight, (double)SCREEN_HEIGHT * 1.5);
-
-    // Позиция сегмента
-    double xPos = segmentIndex * sectorWidth;
-    double yPos = (SCREEN_HEIGHT - wallHeight) / 2;
-
-    // Создаем сегмент стены
-    sf::RectangleShape wallSegment(sf::Vector2f(sectorWidth + 1, wallHeight));
-    wallSegment.setPosition(xPos, yPos);
-
-    // Черно-белая схема: яркость зависит от расстояния
-    int brightness = 255 - (distance / 700.0) * 200;
-    brightness = std::max(brightness, 55);
-
-    wallSegment.setFillColor(sf::Color(brightness, brightness, brightness));
-
-    target.draw(wallSegment);
-}
-
-// БОЛЬШАЯ мини-карта в левом верхнем углу
+// Большая мини-карта в левом верхнем углу
 void WorldAdapter::drawMinimap(sf::RenderTarget& target) {
-    int minimapSize = 300; // УВЕЛИЧИЛ ДО 300px (ОЧЕНЬ БОЛЬШАЯ)
+    int minimapSize = 250;
     int margin = 10;
 
     // ФИКСИРОВАННЫЕ ГРАНИЦЫ КАРТЫ (1920x1050)
@@ -103,7 +118,7 @@ void WorldAdapter::drawMinimap(sf::RenderTarget& target) {
     sf::View minimapView(sf::FloatRect(0, 0, mapWidth, mapHeight));
     target.setView(minimapView);
 
-    // ОПТИМИЗИРОВАННЫЙ РЕНДЕРИНГ - только видимые объекты
+    // Рендерим объекты на мини-карте
     for (const auto& obj : map.getObjects()) {
         if (obj->getObjectType() == ObjectType::CAMERA) continue;
 
@@ -146,14 +161,14 @@ void WorldAdapter::drawMinimap(sf::RenderTarget& target) {
     double camMapX = cameraPos.getX() * mapScale + margin;
     double camMapY = cameraPos.getY() * mapScale + margin;
 
-    // Камера - зеленый круг (увеличил размер)
+    // Камера - зеленый круг
     sf::CircleShape cameraShape(8);
     cameraShape.setFillColor(sf::Color::Green);
     cameraShape.setPosition(camMapX, camMapY);
     cameraShape.setOrigin(8, 8);
     target.draw(cameraShape);
 
-    // Направление камеры на мини-карте (увеличил длину)
+    // Направление камеры на мини-карте
     double camDirection = camera.getDirection();
     double dirX = cos(camDirection) * 30;
     double dirY = sin(camDirection) * 30;
@@ -175,31 +190,7 @@ void WorldAdapter::renderWorld(sf::RenderTarget& target) {
 
     // Отрисовка 3D вида с мини-картой
     drawCameraView(target);
-}
-
-// Пустые методы (для компиляции)
-void WorldAdapter::renderObject(std::shared_ptr<Object2D> obj, sf::RenderTarget& target, double scale) {
-    Q_UNUSED(obj); Q_UNUSED(target); Q_UNUSED(scale);
-}
-
-void WorldAdapter::drawObjectOnMap(std::shared_ptr<Object2D> obj, sf::RenderTarget& target, double mapScale) {
-    Q_UNUSED(obj); Q_UNUSED(target); Q_UNUSED(mapScale);
-}
-
-void WorldAdapter::renderMap(sf::RenderTarget& target) {
-    Q_UNUSED(target);
-}
-
-void WorldAdapter::drawMapOnMap(sf::RenderTarget& target) {
-    Q_UNUSED(target);
-}
-
-void WorldAdapter::renderCircle(std::shared_ptr<Circle> circle, sf::RenderTarget& target, double scale) {
-    Q_UNUSED(circle); Q_UNUSED(target); Q_UNUSED(scale);
-}
-
-void WorldAdapter::renderPolygon(std::shared_ptr<Polygon2D> polygon, sf::RenderTarget& target, double scale) {
-    Q_UNUSED(polygon); Q_UNUSED(target); Q_UNUSED(scale);
+    drawMinimap(target);
 }
 
 void WorldAdapter::update(double deltaTime) {
@@ -207,8 +198,4 @@ void WorldAdapter::update(double deltaTime) {
 }
 
 void WorldAdapter::handleEvents() {
-}
-
-void WorldAdapter::drawCameraOnMap(sf::RenderTarget& target) {
-    Q_UNUSED(target);
 }

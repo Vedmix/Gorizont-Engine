@@ -1,11 +1,15 @@
 #pragma once
-
+#include <QPainter>
+#include <QKeyEvent>
+#include <QShowEvent>
+#include <QElapsedTimer>
+#include <SFML/Window/Keyboard.hpp>
 #include <QWidget>
 #include <QTimer>
-#include <QKeyEvent>
-#include <QPainter>
-#include <QShowEvent>
 #include <cmath>
+#include <QDesktopWidget>
+#include <QScreen>
+#include <QApplication>
 #include "WorldAdapter.hpp"
 #include "settings.hpp"
 
@@ -25,7 +29,6 @@ signals:
 
 protected:
     virtual void paintEvent(QPaintEvent* event) override;
-    virtual void resizeEvent(QResizeEvent* event) override;
     virtual void keyPressEvent(QKeyEvent* event) override;
     virtual void showEvent(QShowEvent* event) override;
 
@@ -43,4 +46,5 @@ private:
     World m_world;
     QPixmap m_pixmap;
     WorldAdapter* worldAdapter; // Добавлено
+    int m_currentFPS = 0;
 };

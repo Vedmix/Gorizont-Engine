@@ -1,10 +1,8 @@
 #include "../headers/MainMenuWindow.hpp"
-#include <iostream>
 
 MainMenuWindow::MainMenuWindow(QWidget* parent, int choice)
     : QMainWindow(parent), gameWindow(nullptr)
 {
-    std::cout << "MainMenuWindow constructor started" << std::endl;
 
     if(choice == 0){
         initMenu();
@@ -15,14 +13,11 @@ MainMenuWindow::MainMenuWindow(QWidget* parent, int choice)
         }
         gameWindow->startGame();
     }
-
-    std::cout << "MainMenuWindow constructor finished" << std::endl;
 }
 
 MainMenuWindow::~MainMenuWindow() {}
 
 void MainMenuWindow::initMenu(){
-    std::cout << "Initializing menu..." << std::endl;
 
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
@@ -64,45 +59,37 @@ void MainMenuWindow::initMenu(){
     mainLayout->addLayout(hLayout);
     mainLayout->addStretch();
 
-    std::cout << "Menu initialized, showing fullscreen..." << std::endl;
     showFullScreen();
-    std::cout << "Main menu should be visible now" << std::endl;
+
 }
 void MainMenuWindow::handleButton(int id)
 {
-    std::cout << "Button clicked: " << id << std::endl;
 
     switch(id) {
     case 0: // Играть
-        std::cout << "Creating game window..." << std::endl;
 
         if (!gameWindow) {
             gameWindow = new GameWindow(nullptr);
 
             // Устанавливаем позицию и размер
-            gameWindow->setGeometry(100, 100, SCREEN_WIDTH, SCREEN_HEIGHT);
-            gameWindow->setWindowTitle("3D Raycasting Engine");
+
+            gameWindow->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            gameWindow->setWindowTitle("Gorizont");
 
             connect(gameWindow, &GameWindow::gameFinished, this, &MainMenuWindow::onGameFinished);
-            std::cout << "GameWindow created" << std::endl;
         }
 
-        std::cout << "Hiding main menu..." << std::endl;
         this->hide();
 
-        std::cout << "Showing game window..." << std::endl;
-        gameWindow->showNormal();
+        gameWindow->showFullScreen();
         gameWindow->activateWindow();
         gameWindow->raise();
 
-        std::cout << "Starting game..." << std::endl;
         gameWindow->startGame();
 
-        std::cout << "Game started successfully" << std::endl;
         break;
 
     case 3: // Выход
-        std::cout << "Exiting..." << std::endl;
         this->close();
         break;
     }
@@ -110,7 +97,6 @@ void MainMenuWindow::handleButton(int id)
 
 void MainMenuWindow::onGameFinished()
 {
-    std::cout << "Game finished, returning to main menu..." << std::endl;
 
     if (gameWindow) {
         gameWindow->hide();
@@ -120,5 +106,4 @@ void MainMenuWindow::onGameFinished()
     this->activateWindow();
     this->raise();
 
-    std::cout << "Main menu should be visible now" << std::endl;
 }

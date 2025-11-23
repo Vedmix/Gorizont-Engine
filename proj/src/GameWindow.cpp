@@ -1,15 +1,4 @@
 #include "../headers/GameWindow.hpp"
-#include "../headers/WorldAdapter.hpp"
-
-#include <QDebug>
-#include <QPainter>
-#include <QResizeEvent>
-#include <QKeyEvent>
-#include <QShowEvent>
-#include <QElapsedTimer>
-
-// Для SFML input
-#include <SFML/Window/Keyboard.hpp>
 
 
 GameWindow::GameWindow(QWidget *parent)
@@ -20,7 +9,7 @@ GameWindow::GameWindow(QWidget *parent)
     , worldAdapter(nullptr)
 {
     connect(m_timer, &QTimer::timeout, this, &GameWindow::onUpdate);
-    setFixedSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    resize(SCREEN_WIDTH, SCREEN_HEIGHT);
     setFocusPolicy(Qt::StrongFocus);
 }
 
@@ -37,7 +26,7 @@ void GameWindow::startGame()
     }
 
     if (m_timer && !m_timer->isActive()) {
-        m_timer->start(33); // ~60 FPS
+        m_timer->start(8);
     }
 }
 
@@ -51,22 +40,24 @@ void GameWindow::stopGame()
 void GameWindow::initializeSFML()
 {
     if (!m_renderTexture.create(SCREEN_WIDTH, SCREEN_HEIGHT)) {
-        qDebug() << "Failed to create render texture";
         return;
     }
 
     worldAdapter = new WorldAdapter(m_world.getMap(), m_world.getCamera(), m_world);
     m_initialized = true;
-
-    // Настройка мира
     m_world.setMapOption2();
-
-    qDebug() << "SFML initialized successfully";
 }
 
 void GameWindow::renderFrame()
 {
     if (!m_initialized || !worldAdapter) return;
+
+    QSize widgetSize = size();
+
+    if (m_renderTexture.getSize().x != (unsigned int)widgetSize.width() ||
+        m_renderTexture.getSize().y != (unsigned int)widgetSize.height()) {
+        m_renderTexture.create(widgetSize.width(), widgetSize.height());
+    }
 
     m_renderTexture.clear(sf::Color::Black);
     worldAdapter->renderWorld(m_renderTexture);
@@ -74,6 +65,7 @@ void GameWindow::renderFrame()
 
     const sf::Texture& texture = m_renderTexture.getTexture();
     sf::Image image = texture.copyToImage();
+
     m_pixmap = QPixmap::fromImage(QImage(
         image.getPixelsPtr(),
         image.getSize().x,
@@ -86,7 +78,6 @@ void GameWindow::renderFrame()
 
 void GameWindow::handleSFMLEvents()
 {
-    // Используем оригинальный метод управления камеры
     static QElapsedTimer deltaTimer;
     static bool firstCall = true;
 
@@ -97,8 +88,6 @@ void GameWindow::handleSFMLEvents()
     }
 
     double deltaTime = deltaTimer.restart() / 1000.0;
-
-    // Вызываем оригинальный метод управления
     m_world.getCamera().moveWithKeyboard(deltaTime);
 }
 
@@ -109,18 +98,15 @@ void GameWindow::paintEvent(QPaintEvent* event)
     QPainter painter(this);
 
     if (!m_pixmap.isNull()) {
-        painter.drawPixmap(rect(), m_pixmap, m_pixmap.rect());
+        painter.drawPixmap(0, 0, width(), height(), m_pixmap);
+
+        // FPS текст поверх
+        painter.setFont(QFont("Arial", 14, QFont::Bold));
+        painter.setPen(Qt::green);
+        painter.drawText(SCREEN_WIDTH - 150, 40, QString("FPS: %1").arg(m_currentFPS));
     } else {
         painter.fillRect(rect(), Qt::black);
-        painter.setPen(Qt::white);
-        painter.drawText(rect(), Qt::AlignCenter, "Loading...");
     }
-}
-
-void GameWindow::resizeEvent(QResizeEvent* event)
-{
-    Q_UNUSED(event);
-    // Фиксированный размер
 }
 
 void GameWindow::keyPressEvent(QKeyEvent* event)
@@ -149,32 +135,30 @@ void GameWindow::onUpdate()
 {
     if (!m_initialized) return;
 
-    // ОБРАБОТКА УПРАВЛЕНИЯ КАЖДЫЙ КАДР
     handleSFMLEvents();
 
-    // РЕНДЕРИНГ ТОЛЬКО КАЖДЫЙ ВТОРОЙ КАДР для увеличения FPS
     static int frameCounter = 0;
     frameCounter++;
 
-    if (frameCounter % 2 == 0) { // Рендерим каждый второй кадр
+    if (frameCounter % 2 == 0) {
         renderFrame();
-    } else {
-        // Пропускаем рендеринг, но обновляем окно
+
+        static QElapsedTimer frameTimer;
+        static int frameCount = 0;
+
+        if (frameCount == 0) {
+            frameTimer.start();
+        }
+
+        frameCount++;
+
+        if (frameTimer.elapsed() >= 1000) {
+            m_currentFPS = frameCount * 2;
+            frameCount = 0;
+            frameTimer.restart();
+        }
+
+        // Всегда обновляем после renderFrame
         update();
-    }
-
-    // FPS counter
-    static QElapsedTimer frameTimer;
-    static int frameCount = 0;
-
-    if (frameCount == 0) {
-        frameTimer.start();
-    }
-
-    frameCount++;
-
-    if (frameTimer.elapsed() >= 1000) {
-        setWindowTitle(QString("Game - FPS: %1").arg(frameCount));
-        frameCount = 0;
     }
 }

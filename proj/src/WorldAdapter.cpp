@@ -1,181 +1,214 @@
 #include "../headers/WorldAdapter.hpp"
-#include <iostream>
-#include <thread>
+#include <QDebug>
+#include <cmath>
 
-WorldAdapter::WorldAdapter()
-    : m_world()
-{
-    m_world.setMapOption1();
-    std::cout << "WorldAdapter initialized" << std::endl;
+WorldAdapter::WorldAdapter(Map& _map, Camera& _camera, World& _world)
+    : map(_map), camera(_camera), world(_world) {}
+
+// Оптимизированный raycasting с черно-белой схемой
+void WorldAdapter::drawCameraView(sf::RenderTarget& target) {
+    // СИЛЬНОЕ УМЕНЬШЕНИЕ ЛУЧЕЙ ДЛЯ FPS
+    int numRays = SCREEN_WIDTH / 6; // Немного увеличил для качества
+    double fov = PI / 2;
+    double renderDistance = 700.0;
+
+    double rayAngleStep = fov / numRays;
+    double sectorWidth = (double)SCREEN_WIDTH / numRays;
+
+    Point2D cameraPos = camera.getPos();
+    double cameraDir = camera.getDirection();
+
+    // Начальный угол (левый край FOV)
+    double startAngle = cameraDir - fov / 2;
+
+    // Черный фон (пол и потолок) - ОДИН РАЗ
+    target.clear(sf::Color::Black);
+
+    // БЫСТРЫЙ raycasting
+    for (int i = 0; i < numRays; i++) {
+        double rayAngle = startAngle + i * rayAngleStep;
+        double distance = ultraFastCastRay(cameraPos, rayAngle, renderDistance);
+
+        if (distance < renderDistance) {
+            drawWallSegmentBW(target, i, sectorWidth, distance);
+        }
+    }
+
+    // Рисуем БОЛЬШУЮ мини-карту в левом верхнем углу
+    drawMinimap(target);
+}
+
+// СУПЕР-БЫСТРЫЙ raycasting (ИСПРАВЛЕННАЯ СИГНАТУРА)
+double WorldAdapter::ultraFastCastRay(const Point2D& start, double angle, double maxDistance) {
+    double cosAngle = cos(angle);
+    double sinAngle = sin(angle);
+
+    // БОЛЬШОЙ ШАГ для максимальной производительности
+    for (double t = 8.0; t < maxDistance; t += 8.0) {
+        Point2D testPoint;
+        testPoint.setX(start.getX() + t * cosAngle);
+        testPoint.setY(start.getY() + t * sinAngle);
+
+        // Быстрая проверка пересечений
+        for (const auto& obj : map.getObjects()) {
+            if (obj->getObjectType() == ObjectType::CAMERA) continue;
+
+            if (obj->isCrossing(testPoint)) {
+                return t;
+            }
+        }
+    }
+
+    return maxDistance;
+}
+
+// Черно-белый сегмент стены
+void WorldAdapter::drawWallSegmentBW(sf::RenderTarget& target, int segmentIndex,
+                                     double sectorWidth, double distance) {
+    // Упрощенная формула высоты стены
+    double wallHeight = (SCREEN_HEIGHT * 1.5) / (distance * 0.02 + 0.001);
+    wallHeight = std::min(wallHeight, (double)SCREEN_HEIGHT * 1.5);
+
+    // Позиция сегмента
+    double xPos = segmentIndex * sectorWidth;
+    double yPos = (SCREEN_HEIGHT - wallHeight) / 2;
+
+    // Создаем сегмент стены
+    sf::RectangleShape wallSegment(sf::Vector2f(sectorWidth + 1, wallHeight));
+    wallSegment.setPosition(xPos, yPos);
+
+    // Черно-белая схема: яркость зависит от расстояния
+    int brightness = 255 - (distance / 700.0) * 200;
+    brightness = std::max(brightness, 55);
+
+    wallSegment.setFillColor(sf::Color(brightness, brightness, brightness));
+
+    target.draw(wallSegment);
+}
+
+// БОЛЬШАЯ мини-карта в левом верхнем углу
+void WorldAdapter::drawMinimap(sf::RenderTarget& target) {
+    int minimapSize = 300; // УВЕЛИЧИЛ ДО 300px (ОЧЕНЬ БОЛЬШАЯ)
+    int margin = 10;
+
+    // ФИКСИРОВАННЫЕ ГРАНИЦЫ КАРТЫ (1920x1050)
+    double mapWidth = 1920.0;
+    double mapHeight = 1050.0;
+    double mapScale = minimapSize / std::max(mapWidth, mapHeight);
+
+    // Сохраняем текущий вид
+    sf::View originalView = target.getView();
+
+    // Устанавливаем вид для мини-карты (фиксированные координаты)
+    sf::View minimapView(sf::FloatRect(0, 0, mapWidth, mapHeight));
+    target.setView(minimapView);
+
+    // ОПТИМИЗИРОВАННЫЙ РЕНДЕРИНГ - только видимые объекты
+    for (const auto& obj : map.getObjects()) {
+        if (obj->getObjectType() == ObjectType::CAMERA) continue;
+
+        if (auto circle = std::dynamic_pointer_cast<Circle>(obj)) {
+            Point2D pos = circle->getPos();
+            double radius = circle->getRadius();
+
+            // Позиция на фиксированной карте
+            double mapX = pos.getX() * mapScale + margin;
+            double mapY = pos.getY() * mapScale + margin;
+
+            sf::CircleShape shape(radius * mapScale);
+            shape.setFillColor(sf::Color(200, 200, 200));
+            shape.setPosition(mapX, mapY);
+            shape.setOrigin(radius * mapScale, radius * mapScale);
+            target.draw(shape);
+        }
+        else if (auto polygon = std::dynamic_pointer_cast<Polygon2D>(obj)) {
+            const std::vector<Point2D>& points = polygon->getPoints();
+            if (points.empty()) continue;
+
+            Point2D pos = polygon->getPos();
+
+            sf::ConvexShape shape;
+            shape.setPointCount(points.size());
+
+            for (size_t i = 0; i < points.size(); ++i) {
+                double pointX = (pos.getX() + points[i].getX()) * mapScale + margin;
+                double pointY = (pos.getY() + points[i].getY()) * mapScale + margin;
+                shape.setPoint(i, sf::Vector2f(pointX, pointY));
+            }
+
+            shape.setFillColor(sf::Color(150, 150, 150));
+            target.draw(shape);
+        }
+    }
+
+    // Камера на мини-карте
+    Point2D cameraPos = camera.getPos();
+    double camMapX = cameraPos.getX() * mapScale + margin;
+    double camMapY = cameraPos.getY() * mapScale + margin;
+
+    // Камера - зеленый круг (увеличил размер)
+    sf::CircleShape cameraShape(8);
+    cameraShape.setFillColor(sf::Color::Green);
+    cameraShape.setPosition(camMapX, camMapY);
+    cameraShape.setOrigin(8, 8);
+    target.draw(cameraShape);
+
+    // Направление камеры на мини-карте (увеличил длину)
+    double camDirection = camera.getDirection();
+    double dirX = cos(camDirection) * 30;
+    double dirY = sin(camDirection) * 30;
+
+    sf::Vertex directionLine[] = {
+        sf::Vertex(sf::Vector2f(camMapX, camMapY), sf::Color::Red),
+        sf::Vertex(sf::Vector2f(camMapX + dirX, camMapY + dirY), sf::Color::Red)
+    };
+    target.draw(directionLine, 2, sf::Lines);
+
+    // Восстанавливаем оригинальный вид
+    target.setView(originalView);
+}
+
+// Основной метод рендеринга
+void WorldAdapter::renderWorld(sf::RenderTarget& target) {
+    // Очищаем целевой буфер
+    target.clear(sf::Color::Black);
+
+    // Отрисовка 3D вида с мини-картой
+    drawCameraView(target);
+}
+
+// Пустые методы (для компиляции)
+void WorldAdapter::renderObject(std::shared_ptr<Object2D> obj, sf::RenderTarget& target, double scale) {
+    Q_UNUSED(obj); Q_UNUSED(target); Q_UNUSED(scale);
+}
+
+void WorldAdapter::drawObjectOnMap(std::shared_ptr<Object2D> obj, sf::RenderTarget& target, double mapScale) {
+    Q_UNUSED(obj); Q_UNUSED(target); Q_UNUSED(mapScale);
+}
+
+void WorldAdapter::renderMap(sf::RenderTarget& target) {
+    Q_UNUSED(target);
+}
+
+void WorldAdapter::drawMapOnMap(sf::RenderTarget& target) {
+    Q_UNUSED(target);
+}
+
+void WorldAdapter::renderCircle(std::shared_ptr<Circle> circle, sf::RenderTarget& target, double scale) {
+    Q_UNUSED(circle); Q_UNUSED(target); Q_UNUSED(scale);
+}
+
+void WorldAdapter::renderPolygon(std::shared_ptr<Polygon2D> polygon, sf::RenderTarget& target, double scale) {
+    Q_UNUSED(polygon); Q_UNUSED(target); Q_UNUSED(scale);
 }
 
 void WorldAdapter::update(double deltaTime) {
-    m_world.updateLogic(deltaTime);
-}
-
-void WorldAdapter::renderToTexture(sf::RenderTexture& texture) {
-    texture.clear(sf::Color::Black);
-
-    // Рендерим 3D вид через адаптер
-    try {
-        drawCameraView(m_world.getCamera(), texture);
-    } catch (const std::exception& e) {
-        std::cout << "Raycasting failed: " << e.what() << std::endl;
-        drawFallback3D(texture);
-    }
-
-    // Мини-карта
-    drawMiniMap(texture);
-}
-
-// АДАПТЕР ДЛЯ КАМЕРЫ - ваш raycasting
-void WorldAdapter::drawCameraView(Camera& camera, sf::RenderTexture& texture) {
-    double direction = camera.getDirection();
-    double fov = camera.getFov();
-    int NUMBER_OF_RAYS_IN_FOV = camera.getNumberOfRays();
-    double RENDER_DISTANCE = camera.getRenderDistance();
-
-    // Упрощенный raycasting (без многопоточности для простоты)
-    double rayInterval = fov / NUMBER_OF_RAYS_IN_FOV;
-    double raySectorWidth = SCREEN_WIDTH / NUMBER_OF_RAYS_IN_FOV;
-
-    for(int i = 0; i < NUMBER_OF_RAYS_IN_FOV; i++) {
-        double currAngle = direction - fov/2 + i * rayInterval;
-
-        // Имитация расчета расстояния до стены
-        double distance = 100 + 80 * sin(currAngle * 3 + direction * 2);
-        if (distance > RENDER_DISTANCE) distance = RENDER_DISTANCE;
-
-        // Расчет высоты стены
-        double wallHeight = (SCREEN_HEIGHT * 500) / (distance + 0.001);
-        wallHeight = std::min(wallHeight, (double)SCREEN_HEIGHT - 50);
-
-        // Рендерим сегмент стены
-        sf::RectangleShape sigment(sf::Vector2f(raySectorWidth, wallHeight));
-        sigment.setPosition(raySectorWidth * i, (SCREEN_HEIGHT - wallHeight) / 2);
-
-        // Освещение в зависимости от расстояния
-        int brightness = 255 - (distance / RENDER_DISTANCE) * 200;
-        if (brightness < 50) brightness = 50;
-
-        // Чередование цветов стен
-        if (i % 3 == 0)
-            sigment.setFillColor(sf::Color(brightness, brightness/2, 0));
-        else if (i % 3 == 1)
-            sigment.setFillColor(sf::Color(brightness/2, brightness/4, 0));
-        else
-            sigment.setFillColor(sf::Color(brightness/3, brightness/6, 0));
-
-        texture.draw(sigment);
-    }
-}
-
-// АДАПТЕР ДЛЯ КАМЕРЫ НА КАРТЕ
-void WorldAdapter::drawCameraOnMap(Camera& camera, sf::RenderTexture& texture) {
-    Point2D pos = camera.getPos();
-    double mapScale = 0.25;
-    double direction = camera.getDirection();
-
-    // Круг камеры
-    sf::CircleShape camCircle(camera.getRadius() * mapScale);
-    camCircle.setPosition(pos.getX() * mapScale, pos.getY() * mapScale);
-    camCircle.setFillColor(sf::Color::Green);
-    camCircle.setOrigin(camera.getRadius() * mapScale, camera.getRadius() * mapScale);
-    texture.draw(camCircle);
-
-    // Направление взгляда
-    Point2D rayEnd;
-    rayEnd.setX(pos.getX() + 30 * cos(direction));
-    rayEnd.setY(pos.getY() + 30 * sin(direction));
-
-    sf::VertexArray ray(sf::Lines, 2);
-    ray[0].position = sf::Vector2f(pos.getX() * mapScale, pos.getY() * mapScale);
-    ray[0].color = sf::Color::Green;
-    ray[1].position = sf::Vector2f(rayEnd.getX() * mapScale, rayEnd.getY() * mapScale);
-    ray[1].color = sf::Color::Green;
-    texture.draw(ray);
-}
-
-// АДАПТЕР ДЛЯ КАРТЫ
-void WorldAdapter::renderMap(Map& map, sf::RenderTexture& texture) {
-    const auto& objects = map.getObjects();
-    double mapScale = 0.25;
-
-    for(auto& obj : objects){
-        drawObject(*obj, texture, mapScale);
-    }
-}
-
-// АДАПТЕР ДЛЯ ОБЪЕКТОВ
-void WorldAdapter::drawObject(Object2D& obj, sf::RenderTexture& texture, double mapScale) {
-    Point2D pos = obj.getPos();
-
-    if(obj.getObjectType() == ObjectType::CIRCLE){
-        Circle& circle = static_cast<Circle&>(obj);
-        sf::CircleShape shape(circle.getRadius() * mapScale);
-        shape.setPosition(pos.getX() * mapScale, pos.getY() * mapScale);
-        shape.setFillColor(sf::Color::Red);
-        shape.setOrigin(circle.getRadius() * mapScale, circle.getRadius() * mapScale);
-        texture.draw(shape);
-    }
-    else if(obj.getObjectType() == ObjectType::POLYGON){
-        // Для полигонов рисуем квадрат
-        sf::RectangleShape rect(sf::Vector2f(15, 15));
-        rect.setPosition(pos.getX() * mapScale - 7.5, pos.getY() * mapScale - 7.5);
-        rect.setFillColor(sf::Color::Blue);
-        texture.draw(rect);
-    }
-}
-
-// МЕТОД ДЛЯ МИНИ-КАРТЫ
-void WorldAdapter::drawMiniMap(sf::RenderTexture& texture) {
-    float mapSize = 180;
-    float mapX = SCREEN_WIDTH - mapSize - 10;
-    float mapY = 10;
-
-    // Фон мини-карты
-    sf::RectangleShape mapBg(sf::Vector2f(mapSize, mapSize));
-    mapBg.setPosition(mapX, mapY);
-    mapBg.setFillColor(sf::Color(0, 0, 0, 200));
-    mapBg.setOutlineThickness(2);
-    mapBg.setOutlineColor(sf::Color::White);
-    texture.draw(mapBg);
-
-    // Устанавливаем view для мини-карты
-    sf::View originalView = texture.getView();
-    sf::View minimapView(sf::FloatRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
-    minimapView.setViewport(sf::FloatRect(
-        mapX / SCREEN_WIDTH, mapY / SCREEN_HEIGHT,
-        mapSize / SCREEN_WIDTH, mapSize / SCREEN_HEIGHT
-        ));
-    texture.setView(minimapView);
-
-    // Рендерим карту и камеру
-    renderMap(m_world.getMap(), texture);
-    drawCameraOnMap(m_world.getCamera(), texture);
-
-    texture.setView(originalView);
-}
-
-void WorldAdapter::drawFallback3D(sf::RenderTexture& texture) {
-    texture.clear(sf::Color::Blue);
-
-    sf::Text text;
-    text.setString("FALLBACK MODE - Raycasting not available");
-    text.setCharacterSize(20);
-    text.setFillColor(sf::Color::White);
-    text.setPosition(50, 50);
-    // texture.draw(text); // если есть шрифт
+    Q_UNUSED(deltaTime);
 }
 
 void WorldAdapter::handleEvents() {
-    // Обработка событий через World
 }
 
-World& WorldAdapter::getWorld() {
-    return m_world;
-}
-
-const World& WorldAdapter::getWorld() const {
-    return m_world;
+void WorldAdapter::drawCameraOnMap(sf::RenderTarget& target) {
+    Q_UNUSED(target);
 }

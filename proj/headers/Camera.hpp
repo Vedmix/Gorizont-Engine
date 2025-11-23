@@ -30,12 +30,15 @@ public:
     void setFOV(const double _fov);
     ~Camera();
 
-    // ДОБАВЛЯЕМ ГЕТТЕРЫ ДЛЯ WorldAdapter
+
+    ///////
+    double getRenderDistance() const { return RENDER_DISTANCE; }
+    int getNumberOfRays() const { return NUMBER_OF_RAYS_IN_FOV; }
     double getDirection() const { return direction; }
     double getFov() const { return fov; }
-    int getNumThreads() const { return numThreads; }
-    int getNumberOfRays() const { return NUMBER_OF_RAYS_IN_FOV; }
-    const std::vector<double>& getHeights() const { return heights; }
-    double getRenderDistance() const { return RENDER_DISTANCE; }
-    const Map& getMap() const { return map; }
+    double getVelocity() const { return velocity; }
+
+    // И сеттер для направления
+    void setDirection(double newDirection) { direction = newDirection; }
+    //////
 };

@@ -15,4 +15,8 @@ public:
     bool isCrossing(const Point2D& p)override;
     void setPos(const Point2D& _position) override;
     ~Polygon2D();
+
+    ////
+     const std::vector<Point2D>& getPoints() const { return points; }
+    ///
 };

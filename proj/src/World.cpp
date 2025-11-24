@@ -1,6 +1,6 @@
 #include "../headers/World.hpp"
 
-World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "TUT KAK V ZHIZNI"), isRunning(true), XMLFilePath("../maps/map1.xml")
+World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "TUT KAK V ZHIZNI"), isRunning(true), XMLFilePath("maps/map1.xml")
 {
     this->loadMapFromXML();
     camera.setMap(this->map);
@@ -101,15 +101,19 @@ void World::render(){
 }
 
 void World::readWallsXML(){
-    std::ifstream file("../maps/map1.xml");
+    std::ifstream file(XMLFilePath);
     std::string line;
     std::regex wallPattern("<wall\\s+x=\"([0-9.]+)\"\\s+y=\"([0-9.]+)\"\\s+width=\"([0-9.]+)\"\\s+height=\"([0-9.]+)\"\\s+color=\"(0x[0-9A-Fa-f]+)\"\\s*\\/?>");
     bool inWallsSection = false;
 
     Point2D wallPos;
 
+    if(!file.is_open()){
+        std::cout << "!!!!!FILE - V S E!!!!!";
+        return;
+    }
+
     while(std::getline(file, line)){
-        std::cout << line << '\n';
         if(line.find("<walls>") != std::string::npos){
             inWallsSection = true;
             continue;
@@ -118,7 +122,7 @@ void World::readWallsXML(){
             continue; 
         }
 
-        if(inWallsSection == true){
+        if(inWallsSection){
             std::smatch matches;
             if(std::regex_search(line, matches, wallPattern)){
                 wallPos.setPoint(std::stod(matches[1]), std::stod(matches[2]));
@@ -137,6 +141,11 @@ void World::readCirclesXML(){
     std::regex circlePattern("<circle\\s+x=\"([0-9.]+)\"\\s+y=\"([0-9.]+)\"\\s+radius=\"([0-9.]+)\"\\s+color=\"(0x[0-9A-Fa-f]+)\"\\s*\\/?>");
     bool inCirclesSection = false; 
     
+    if(!file.is_open()){
+        std::cout << "!!!!!FILE - V S E!!!!!";
+        return;
+    }
+
     Point2D circlePos;
     while(std::getline(file, line)){
         if(line.find("<circles>") != std::string::npos){
@@ -147,7 +156,7 @@ void World::readCirclesXML(){
             continue; 
         }
 
-        if(inCirclesSection == true){
+        if(inCirclesSection){
             std::smatch matches;
             if(std::regex_search(line, matches, circlePattern)){
                 circlePos.setPoint(std::stod(matches[1]), std::stod(matches[2]));

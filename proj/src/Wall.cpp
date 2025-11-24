@@ -20,12 +20,10 @@ Wall::Wall(const Wall& other):Polygon2D(other){
 Wall::~Wall(){}
 
 void Wall::setSize(const double _width, const double _length){
-    points.resize(4);
     points[1]=(Point2D(_width, 0));
     points[2]=(Point2D(_width, _length));
     points[3]=(Point2D(0, _length));
     points[0]=(Point2D(0, 0));
-    pointsOnPlane.resize(points.size());
     for(size_t i=0; i<points.size();i++){
         pointsOnPlane[i] = points[i]+position;
     }

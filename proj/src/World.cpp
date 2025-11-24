@@ -101,7 +101,7 @@ void World::render(){
 }
 
 void World::readWallsXML(){
-    std::ifstream file(XMLFilePath);
+    std::ifstream file("../maps/map1.xml");
     std::string line;
     std::regex wallPattern("<wall\\s+x=\"([0-9.]+)\"\\s+y=\"([0-9.]+)\"\\s+width=\"([0-9.]+)\"\\s+height=\"([0-9.]+)\"\\s+color=\"(0x[0-9A-Fa-f]+)\"\\s*\\/?>");
     bool inWallsSection = false;
@@ -109,6 +109,7 @@ void World::readWallsXML(){
     Point2D wallPos;
 
     while(std::getline(file, line)){
+        std::cout << line << '\n';
         if(line.find("<walls>") != std::string::npos){
             inWallsSection = true;
             continue;
@@ -138,7 +139,6 @@ void World::readCirclesXML(){
     
     Point2D circlePos;
     while(std::getline(file, line)){
-        std::cout << line << '\n';
         if(line.find("<circles>") != std::string::npos){
             inCirclesSection = true;
             continue;

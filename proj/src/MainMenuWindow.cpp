@@ -68,7 +68,7 @@ void MainMenuWindow::handleButton(int id)
     switch(id) {
     case 0: // Играть
 
-        if (!gameWindow) {
+        if (gameWindow == nullptr) {
             gameWindow = new GameWindow(nullptr);
             gameWindow->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
             gameWindow->setWindowTitle("Gorizont");

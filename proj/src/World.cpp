@@ -14,7 +14,6 @@ World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map)
 
 void World::run(){
 #ifndef USE_QT
-    // Только для чистого SFML
     while (isRunning && window.isOpen()){
         double deltaTime = clock.restart().asSeconds();
         handleEvents();
@@ -323,9 +322,75 @@ void World::setCircleMovable(double deltaTime){
     }
 }
 
-void World::display2DMap(sf::RenderWindow& window){
+void World::display2DMap(sf::RenderTarget& window){
     map.render(window);
     camera.drawCameraOnMap(window);
+}
+
+void World::drawMinimap(sf::RenderTarget& target) {
+    // Сохраняем текущий вид
+    sf::View originalView = target.getView();
+
+    // Устанавливаем вид для мини-карты в координатах ЭКРАНА
+    sf::View minimapView(sf::FloatRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
+    target.setView(minimapView);
+
+    // Фон мини-карты
+    sf::RectangleShape minimapBg(sf::Vector2f(SCREEN_WIDTH / 8.0, SCREEN_HEIGHT / 8.0));
+    minimapBg.setFillColor(sf::Color::Black);
+    minimapBg.setPosition(0, 0);
+    target.draw(minimapBg);
+
+    for (const auto& obj : map.getObjects()) {
+        if (obj->getObjectType() == ObjectType::CAMERA) continue;
+
+        if (auto circle = std::dynamic_pointer_cast<Circle>(obj)) {
+            Point2D pos = circle->getPos();
+            double radius = circle->getRadius();
+
+            sf::CircleShape shape(radius / 4.0);
+            shape.setFillColor(sf::Color(200, 200, 200));
+            shape.setPosition(pos.getX() / 4.0, pos.getY() / 4.0);
+            shape.setOrigin(radius / 4.0, radius / 4.0);
+            target.draw(shape);
+        }
+        else if (auto polygon = std::dynamic_pointer_cast<Polygon2D>(obj)) {
+            const std::vector<Point2D>& points = polygon->getPoints();
+            if (points.empty()) continue;
+
+            Point2D pos = polygon->getPos();
+
+            sf::ConvexShape shape;
+            shape.setPointCount(points.size());
+
+            for (size_t i = 0; i < points.size(); ++i) {
+                shape.setPoint(i, sf::Vector2f((pos.getX() + points[i].getX()) / 4.0, (pos.getY() + points[i].getY()) / 4.0));
+            }
+
+            shape.setFillColor(sf::Color(150, 150, 150));
+            target.draw(shape);
+        }
+    }
+
+    // Камера на мини-карте
+    Point2D cameraPos = camera.getPos();
+    sf::CircleShape cameraShape(8);
+    cameraShape.setFillColor(sf::Color::Green);
+    cameraShape.setPosition(cameraPos.getX() / 4.0, cameraPos.getY() / 4.0);
+    cameraShape.setOrigin(8, 8);
+    target.draw(cameraShape);
+
+    // Направление камеры на мини-карте
+    double camDirection = camera.getDirection();
+
+    sf::Vertex directionLine[] = {
+        sf::Vertex(sf::Vector2f(cameraPos.getX() / 4.0, cameraPos.getY() / 4.0), sf::Color::Red),
+        sf::Vertex(sf::Vector2f(cameraPos.getX() / 4.0 + cos(camDirection) * 30, cameraPos.getY() / 4.0 + sin(camDirection) * 30), sf::Color::Red)
+    };
+    target.draw(directionLine, 2, sf::Lines);
+
+    // Восстанавливаем оригинальный вид
+    target.setView(originalView);
 }
 
 void World::render(){

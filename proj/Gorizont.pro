@@ -9,7 +9,6 @@ CONFIG += c++17
 SOURCES += \
     src/GameWindow.cpp \
     src/MainMenuWindow.cpp \
-    src/WorldAdapter.cpp \
     src/main.cpp \
     src/Camera.cpp \
     src/Circle.cpp \
@@ -30,7 +29,6 @@ HEADERS += \
     headers/Object2D.hpp \
     headers/Point2D.hpp \
     headers/Polygon2D.hpp \
-    headers/WorldAdapter.hpp \
     headers/settings.hpp \
     headers/Wall.hpp \
     headers/World.hpp

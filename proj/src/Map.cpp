@@ -24,7 +24,7 @@ void Map::addObject(std::shared_ptr<Object2D> object){
     objectSet.insert(object);
 }
 
-void Map::render(sf::RenderWindow& window){
+void Map::render(sf::RenderTarget& window){
     sf::ConvexShape background;
     background.setPointCount(4);
     background.setPoint(0, sf::Vector2f(0, 0));

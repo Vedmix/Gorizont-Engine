@@ -1,21 +1,33 @@
 #pragma once
+#include "World.hpp"
+#include <SFML/Window/Keyboard.hpp>
+
 #include <QPainter>
 #include <QKeyEvent>
 #include <QShowEvent>
 #include <QElapsedTimer>
-#include <SFML/Window/Keyboard.hpp>
 #include <QWidget>
 #include <QTimer>
-#include <cmath>
 #include <QDesktopWidget>
 #include <QScreen>
 #include <QApplication>
-#include "WorldAdapter.hpp"
-#include "settings.hpp"
 
 class GameWindow : public QWidget
 {
     Q_OBJECT
+
+private:
+    QTimer *m_timer;
+    bool m_initialized;
+    int m_currentFPS = 0;
+
+    sf::RenderTexture m_renderTexture;
+    World m_world;
+    QPixmap m_pixmap;
+
+    void initializeSFML();
+    void renderFrame();
+    void handleSFMLEvents();
 
 public:
     explicit GameWindow(QWidget *parent = nullptr);
@@ -35,16 +47,4 @@ protected:
 private slots:
     void onUpdate();
 
-private:
-    void initializeSFML();
-    void renderFrame();
-    void handleSFMLEvents();
-
-    QTimer *m_timer;
-    sf::RenderTexture m_renderTexture;
-    bool m_initialized;
-    World m_world;
-    QPixmap m_pixmap;
-    WorldAdapter* worldAdapter; // Добавлено
-    int m_currentFPS = 0;
 };

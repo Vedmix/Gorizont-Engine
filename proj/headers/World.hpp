@@ -28,7 +28,7 @@ public:
     void handleEvents();
     void update(double deltaTime);
     void render();
-    void display2DMap(sf::RenderWindow& window);
+    void display2DMap(sf::RenderTarget& window);
 
     ////
     // Методы для доступа к компонентам
@@ -42,6 +42,7 @@ public:
         camera.moveWithKeyboard(deltaTime);
         setCircleMovable(deltaTime);
     }
+    void drawMinimap(sf::RenderTarget& target);
 private:
     void setCircleMovable(double deltaTime);
 

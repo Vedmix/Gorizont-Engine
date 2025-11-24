@@ -13,14 +13,14 @@ private:
     double velocity;
     double direction;
     double fov;
-    void drawOneCameraSigment(sf::RenderWindow& window, double viewH, int sigmentNum, double sectorWidth);
+    void drawOneCameraSigment(sf::RenderTarget& window, double viewH, int sigmentNum, double sectorWidth);
     void CalculateHeights(double rightExtRay, double leftExtRay, int sigmentNum);
 public:
     Camera();
     Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map);
     Camera(const Camera& other);
-    void drawCameraOnMap(sf::RenderWindow& window);
-    void drawCameraView(sf::RenderWindow& window);
+    void drawCameraOnMap(sf::RenderTarget& window);
+    void drawCameraView(sf::RenderTarget& window);
     void moveWithKeyboard(double deltaTime);
 
     void setMap(const Map& _map);
@@ -38,7 +38,6 @@ public:
     double getFov() const { return fov; }
     double getVelocity() const { return velocity; }
 
-    // И сеттер для направления
     void setDirection(double newDirection) { direction = newDirection; }
     //////
 };

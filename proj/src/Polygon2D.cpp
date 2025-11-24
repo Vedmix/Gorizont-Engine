@@ -14,7 +14,7 @@ Polygon2D::Polygon2D(const Polygon2D& other):Object2D(other), points(other.point
 
 Polygon2D::~Polygon2D(){}
 
-void Polygon2D::draw(sf::RenderWindow& window, const double mapScale){
+void Polygon2D::draw(sf::RenderTarget& window, const double mapScale){
     sf::ConvexShape polygon;
     polygon.setPointCount(points.size());
     int i=0;

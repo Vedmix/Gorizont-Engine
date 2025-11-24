@@ -19,7 +19,7 @@ void Camera::setMap(const Map& _map){
     map=_map;
 }
 
-void Camera::drawCameraOnMap(sf::RenderWindow& window){
+void Camera::drawCameraOnMap(sf::RenderTarget& window){
     this->draw(window, map.MAP_SCALE);
     Point2D currRayEnd;
     currRayEnd.setX(this->position.getX()+RENDER_DISTANCE*cos(direction));
@@ -33,7 +33,7 @@ void Camera::drawCameraOnMap(sf::RenderWindow& window){
     window.draw(ray);
 }
 
-void Camera::drawOneCameraSigment(sf::RenderWindow& window, double viewH, int sigmentNum, double sectorWidth){
+void Camera::drawOneCameraSigment(sf::RenderTarget& window, double viewH, int sigmentNum, double sectorWidth){
     if(viewH==-1){
         return;
     }
@@ -76,7 +76,7 @@ void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigment
     }
 }
 
-void Camera::drawCameraView(sf::RenderWindow& window){
+void Camera::drawCameraView(sf::RenderTarget& window){
     std::thread threads[numThreads];
     double rightAngle = direction - fov/2;
     double angleStep = fov/numThreads;

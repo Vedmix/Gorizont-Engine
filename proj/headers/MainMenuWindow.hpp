@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GameWindow.hpp"
+
 #include <QMainWindow>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -7,8 +9,6 @@
 #include <QButtonGroup>
 #include <vector>
 #include <QString>
-#include "../headers/GameWindow.hpp" // Полный include вместо forward declaration
-#include "../headers/settings.hpp" // Добавляем для SCREEN_WIDTH и SCREEN_HEIGHT
 
 class MainMenuWindow : public QMainWindow
 {

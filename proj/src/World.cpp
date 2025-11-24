@@ -1,6 +1,6 @@
 #include "../headers/World.hpp"
 
-World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "TUT KAK V ZHIZNI"), isRunning(true),  XMLFilePath("../maps/map1.xml")
+World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "TUT KAK V ZHIZNI"), isRunning(true), XMLFilePath("../maps/map1.xml")
 {
     this->loadMapFromXML();
     camera.setMap(this->map);
@@ -100,12 +100,13 @@ void World::render(){
     window.display();
 }
 
-std::vector<World::WallData> World::readWallsXML(){
-    std::vector<WallData> walls;
+void World::readWallsXML(){
     std::ifstream file(XMLFilePath);
     std::string line;
     std::regex wallPattern("<wall\\s+x=\"([0-9.]+)\"\\s+y=\"([0-9.]+)\"\\s+width=\"([0-9.]+)\"\\s+height=\"([0-9.]+)\"\\s+color=\"(0x[0-9A-Fa-f]+)\"\\s*\\/?>");
     bool inWallsSection = false;
+
+    Point2D wallPos;
 
     while(std::getline(file, line)){
         if(line.find("<walls>") != std::string::npos){
@@ -119,27 +120,25 @@ std::vector<World::WallData> World::readWallsXML(){
         if(inWallsSection == true){
             std::smatch matches;
             if(std::regex_search(line, matches, wallPattern)){
-                WallData wall;
-                wall.x = std::stod(matches[1]);
-                wall.y = std::stod(matches[2]);
-                wall.width = std::stod(matches[3]);
-                wall.height = std::stod(matches[4]);
-                wall.color = std::stoul(matches[5], nullptr, 16);
-                walls.push_back(wall);
+                wallPos.setPoint(std::stod(matches[1]), std::stod(matches[2]));
+
+                //adding wall object with constructor: 
+                //Wall(const Point2D& _position, const double _width, const double _lenght, unsigned int _color);
+                map.addObject(std::make_shared<Wall>(wallPos, std::stod(matches[3]), std::stod(matches[4]), std::stoul(matches[5], nullptr, 16)));
             }
         }
     }
-    return walls;
 }
 
-std::vector<World::CircleData> World::readCirclesXML(){
-    std::vector<CircleData> circles;
+void World::readCirclesXML(){
     std::ifstream file(XMLFilePath);
     std::string line;
     std::regex circlePattern("<circle\\s+x=\"([0-9.]+)\"\\s+y=\"([0-9.]+)\"\\s+radius=\"([0-9.]+)\"\\s+color=\"(0x[0-9A-Fa-f]+)\"\\s*\\/?>");
     bool inCirclesSection = false; 
     
+    Point2D circlePos;
     while(std::getline(file, line)){
+        std::cout << line << '\n';
         if(line.find("<circles>") != std::string::npos){
             inCirclesSection = true;
             continue;
@@ -151,31 +150,17 @@ std::vector<World::CircleData> World::readCirclesXML(){
         if(inCirclesSection == true){
             std::smatch matches;
             if(std::regex_search(line, matches, circlePattern)){
-                CircleData circle;
-                circle.x = std::stod(matches[1]);
-                circle.y = std::stod(matches[2]);
-                circle.radius = std::stod(matches[3]);
-                circle.color = std::stoul(matches[4], nullptr, 16);
-                circles.push_back(circle);
+                circlePos.setPoint(std::stod(matches[1]), std::stod(matches[2]));
+
+                //adding circle object with constructor: 
+                //Circle(const Point2D& _position, double _radius, unsigned int _color);
+                map.addObject(std::make_shared<Circle>(circlePos, std::stod(matches[3]), std::stoul(matches[5], nullptr, 16)));
             }
         }
     }
-    return circles;
 }
 
 void World::loadMapFromXML(){
-    auto walls = readWallsXML();
-    auto circles = readCirclesXML();
-    
-    std::vector<std::shared_ptr<Object2D>> objects;
-    
-    for(const auto& wallData : walls){
-        objects.push_back(std::make_shared<Wall>(Point2D(wallData.x, wallData.y), wallData.width, wallData.height, wallData.color));
-    }
-    
-    for(const auto& circleData : circles){
-        objects.push_back(std::make_shared<Circle>(Point2D(circleData.x, circleData.y),circleData.radius,circleData.color));
-    }
-
-    map.setMap(objects);
+    readWallsXML();
+    readCirclesXML();
 }

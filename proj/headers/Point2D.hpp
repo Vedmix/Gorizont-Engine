@@ -28,4 +28,26 @@ public:
     void setPoint(const double _x, const double _y);
 
     friend class Polygon2D;
+
+    /////
+    Point2D operator*(double scalar) const {
+        return Point2D(x * scalar, y * scalar);
+    }
+
+    Point2D operator/(double scalar) const {
+        return Point2D(x / scalar, y / scalar);
+    }
+
+    Point2D& operator*=(double scalar) {
+        x *= scalar;
+        y *= scalar;
+        return *this;
+    }
+
+    Point2D& operator/=(double scalar) {
+        x /= scalar;
+        y /= scalar;
+        return *this;
+    }
+    ///
 };

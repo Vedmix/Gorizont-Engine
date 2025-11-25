@@ -19,7 +19,7 @@ public:
     Map& operator=(const Map& other);
     void addObject(std::shared_ptr<Object2D> object);
     void setMap(std::vector<std::shared_ptr<Object2D>> objects);
-    void render(sf::RenderWindow& window);
+    void render(sf::RenderTarget& window);
     const std::set<std::shared_ptr<Object2D>>& getObjects() const;
     
     friend class World;

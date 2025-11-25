@@ -23,7 +23,7 @@ double Circle::getRadius() const{
     return radius;
 }
 
-void Circle::draw(sf::RenderWindow& window, const double mapScale){
+void Circle::draw(sf::RenderTarget& window, const double mapScale){
     sf::CircleShape cirShape;
     cirShape.setRadius(radius*mapScale);
     cirShape.setPosition(position.getX()*mapScale, position.getY()*mapScale);

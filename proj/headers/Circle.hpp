@@ -14,5 +14,5 @@ public:
     double getRadius() const;
     bool isCrossing(const Point2D& point) override;
     void setPos(const Point2D& _position) override;
-    void draw(sf::RenderWindow& window, const double mapScale) override;
+    void draw(sf::RenderTarget& window, const double mapScale) override;
 };

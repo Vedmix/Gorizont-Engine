@@ -1,6 +1,6 @@
 #include "../headers/Wall.hpp"
 
-Wall::Wall(const Point2D& _position, const int _width, const int _lenght, unsigned int _color):Polygon2D(_position, {}, _color){
+Wall::Wall(const Point2D& _position, const double _width, const double _lenght, unsigned int _color):Polygon2D(_position, {}, _color){
     objType = ObjectType::POLYGON;
     points.resize(4);
     points[1]=(Point2D(_width, 0));
@@ -18,3 +18,13 @@ Wall::Wall(const Wall& other):Polygon2D(other){
 }
 
 Wall::~Wall(){}
+
+void Wall::setSize(const double _width, const double _length){
+    points[1]=(Point2D(_width, 0));
+    points[2]=(Point2D(_width, _length));
+    points[3]=(Point2D(0, _length));
+    points[0]=(Point2D(0, 0));
+    for(size_t i=0; i<points.size();i++){
+        pointsOnPlane[i] = points[i]+position;
+    }
+}

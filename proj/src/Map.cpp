@@ -33,10 +33,17 @@ void Map::render(sf::RenderTarget& window){
     window.setView(minimapView);
 
     // Фон мини-карты
-    sf::RectangleShape minimapBg(sf::Vector2f(SCREEN_WIDTH * MAP_SCALE * 0.5, SCREEN_HEIGHT * MAP_SCALE * 0.5));
-    minimapBg.setFillColor(sf::Color::Black);
-    minimapBg.setPosition(0, 0);
-    window.draw(minimapBg);
+    if(SCREEN_WIDTH == 1920){
+        sf::RectangleShape minimapBg(sf::Vector2f(SCREEN_WIDTH * MAP_SCALE, SCREEN_HEIGHT * MAP_SCALE));
+        minimapBg.setFillColor(sf::Color::Black);
+        minimapBg.setPosition(0, 0);
+        window.draw(minimapBg);
+    }else if(SCREEN_WIDTH == 3840){
+        sf::RectangleShape minimapBg(sf::Vector2f(SCREEN_WIDTH * MAP_SCALE * 0.5, SCREEN_HEIGHT * MAP_SCALE * 0.5));
+        minimapBg.setFillColor(sf::Color::Black);
+        minimapBg.setPosition(0, 0);
+        window.draw(minimapBg);
+    }
 
     for (const auto& obj : objectSet) {
         if(obj->getObjectType() == ObjectType::CAMERA){

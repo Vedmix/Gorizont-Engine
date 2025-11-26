@@ -4,7 +4,7 @@
 World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(), isRunning(true), XMLFilePath("C:/Users/vedmix/Gorizont-Engine/proj/maps/map2.xml")
 {
     if(!USE_QT){
-        window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "3D Engine - SFML Mode");
+        window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Gorizont(SFML Mode)");
         window.setFramerateLimit(60);
     }
     this->loadMapFromXML();

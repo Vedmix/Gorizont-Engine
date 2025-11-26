@@ -52,3 +52,8 @@ LIBS += -lgdi32
 
 # Для статической линковки стандартных библиотек
 QMAKE_LFLAGS += -static-libgcc -static-libstdc++
+
+DISTFILES += \
+    fonts/font.ttf \
+    maps/map1.xml \
+    maps/map2.xml

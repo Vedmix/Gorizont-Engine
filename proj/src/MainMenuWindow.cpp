@@ -71,7 +71,7 @@ void MainMenuWindow::handleButton(int id)
         if (gameWindow == nullptr) {
             gameWindow = new GameWindow(nullptr);
             gameWindow->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-            gameWindow->setWindowTitle("Gorizont");
+            gameWindow->setWindowTitle("Gorizont(QT MODE)");
 
             connect(gameWindow, &GameWindow::gameFinished, this, &MainMenuWindow::onGameFinished);
         }

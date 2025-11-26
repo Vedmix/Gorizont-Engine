@@ -20,17 +20,18 @@ void Camera::setMap(const Map& _map){
 }
 
 void Camera::drawCameraOnMap(sf::RenderTarget& window){
-    this->draw(window, map.MAP_SCALE);
-    Point2D currRayEnd;
-    currRayEnd.setX(this->position.getX()+RENDER_DISTANCE*cos(direction));
-    currRayEnd.setY(this->position.getY()+RENDER_DISTANCE*sin(direction));
+    sf::CircleShape cameraShape(8);
+    cameraShape.setFillColor(sf::Color::Green);
+    cameraShape.setPosition(position.getX() * Map::MAP_SCALE, position.getY() * Map::MAP_SCALE);
+    cameraShape.setOrigin(8, 8);
+    window.draw(cameraShape);
 
-    sf::VertexArray ray(sf::Lines, 2);
-    ray[0].position = sf::Vector2f(this->position.getX()*map.MAP_SCALE, this->position.getY()*map.MAP_SCALE);
-    ray[0].color = sf::Color::Green;
-    ray[1].position = sf::Vector2f(currRayEnd.getX()*map.MAP_SCALE, currRayEnd.getY()*map.MAP_SCALE);
-    ray[1].color = sf::Color::Green;
-    window.draw(ray);
+    sf::Vertex directionLine[] = {
+        sf::Vertex(sf::Vector2f(position.getX() * Map::MAP_SCALE, position.getY() * Map::MAP_SCALE), sf::Color::Red),
+        sf::Vertex(sf::Vector2f(position.getX() * Map::MAP_SCALE + cos(direction) * 30, position.getY() * Map::MAP_SCALE + sin(direction) * 30), sf::Color::Red)
+    };
+
+    window.draw(directionLine, 2, sf::Lines);
 }
 
 void Camera::drawOneCameraSigment(sf::RenderTarget& window, double viewH, int sigmentNum, double sectorWidth){
@@ -77,7 +78,7 @@ void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigment
 }
 
 void Camera::drawCameraView(sf::RenderTarget& window){
-    std::thread threads[numThreads];
+    std::thread threads[10];
     double rightAngle = direction - fov/2;
     double angleStep = fov/numThreads;
     double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;

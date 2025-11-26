@@ -1,13 +1,69 @@
 #include "../headers/World.hpp"
+#include "../headers/settings.hpp"
 
-World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "TUT KAK V ZHIZNI"), isRunning(true), XMLFilePath("maps/map1.xml")
+World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(), isRunning(true), XMLFilePath("C:/Users/vedmix/Gorizont-Engine/proj/maps/map2.xml")
 {
+    if(!USE_QT){
+        window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "3D Engine - SFML Mode");
+        window.setFramerateLimit(60);
+    }
     this->loadMapFromXML();
+    font.loadFromFile("C:/Users/vedmix/Gorizont-Engine/proj/fonts/font.ttf");
     camera.setMap(this->map);
     color = sf::Color::Black;
 }
 
 World::~World(){}
+
+void World::run(){
+    if(!USE_QT){
+        while (isRunning && window.isOpen()){
+            double deltaTime = clock.restart().asSeconds();
+            handleEvents();
+            update(deltaTime);
+            render();
+        }
+    }
+}
+
+void World::update(double deltaTime){
+    if(!USE_QT){
+        window.clear(color);
+        updateFPS();
+    }
+
+    camera.moveWithKeyboard(deltaTime);
+   // camera.setMap(map); //ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
+   // setCircleMovable(deltaTime);
+}
+
+void World::updateFPS() {
+    if(!USE_QT){
+        static int frameCount = 0;
+        static sf::Clock fpsClock;
+
+        frameCount++;
+
+        if (fpsClock.getElapsedTime().asMilliseconds() >= 100) {
+            currentFPS = frameCount / (fpsClock.restart().asMilliseconds() / 1000.0f);
+            frameCount = 0;
+        }
+    }
+}
+
+void World::drawFPS() {
+    if(!USE_QT){
+        sf::Text fpsText;
+        fpsText.setFont(font);
+        fpsText.setCharacterSize(30);
+        fpsText.setFillColor(sf::Color::Green);
+
+        fpsText.setPosition(SCREEN_WIDTH - 200, 20);
+        fpsText.setString("FPS: " + std::to_string(static_cast<int>(currentFPS)));
+
+        window.draw(fpsText);
+    }
+}
 
 void World::setMap(const Map& newMap){
     map = newMap;
@@ -25,31 +81,21 @@ void World::setColor(unsigned int _color){
     color = sf::Color(_color);
 }
 
-void World::run(){
-    while (isRunning && window.isOpen()){
-        double deltaTime = clock.restart().asSeconds();
-        handleEvents();
-        update(deltaTime);
-        render();
-    }
-}
 
 void World::handleEvents(){
-    sf::Event event;
-    while (window.pollEvent(event))
-    {
-        if (event.type == sf::Event::Closed)
-            isRunning = false;
-
+    if(!USE_QT){
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                isRunning = false;
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+                isRunning = false;
+        }
     }
 }
 
-void World::update(double deltaTime){
-    window.clear(color);
-    camera.setMap(map); //ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
-    camera.moveWithKeyboard(deltaTime);
-    setCircleMovable(deltaTime);
-}
+
 
 void World::setCircleMovable(double deltaTime){
     static int currentDirection = 0;
@@ -89,15 +135,27 @@ void World::setCircleMovable(double deltaTime){
     }
 }
 
-void World::display2DMap(sf::RenderWindow& window){
-    map.render(window);
-    camera.drawCameraOnMap(window);
+void World::display2DMap(sf::RenderTarget& target){
+    map.render(target);
+    camera.drawCameraOnMap(target);
 }
 
 void World::render(){
-    camera.drawCameraView(window);
-    display2DMap(window);
-    window.display();
+    if(!USE_QT){
+        camera.drawCameraView(window);
+        display2DMap(window);
+        drawFPS();
+        window.display();
+    }
+}
+
+void World::renderToTexture(sf::RenderTexture& texture) {
+    if(USE_QT){
+        texture.clear(color);
+        camera.drawCameraView(texture);
+        display2DMap(texture);
+        texture.display();
+    }
 }
 
 void World::readWallsXML(){

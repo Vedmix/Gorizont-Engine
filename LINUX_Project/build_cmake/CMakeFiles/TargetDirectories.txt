@@ -1,5 +1,0 @@
-/home/vadim/Gorizont-Engine/LINUX_Project/build_cmake/CMakeFiles/Gorizont-Engine.dir
-/home/vadim/Gorizont-Engine/LINUX_Project/build_cmake/CMakeFiles/edit_cache.dir
-/home/vadim/Gorizont-Engine/LINUX_Project/build_cmake/CMakeFiles/rebuild_cache.dir
-/home/vadim/Gorizont-Engine/LINUX_Project/build_cmake/CMakeFiles/Gorizont-Engine_autogen_timestamp_deps.dir
-/home/vadim/Gorizont-Engine/LINUX_Project/build_cmake/CMakeFiles/Gorizont-Engine_autogen.dir

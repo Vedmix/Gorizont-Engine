@@ -4,7 +4,7 @@
 
 constexpr double PI = 3.14159265358979323846;
 
-const bool USE_QT = true;
+const bool USE_QT = false;
 
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080

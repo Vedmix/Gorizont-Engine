@@ -25,12 +25,11 @@ private:
     float fps;
     float currentFPS = 0;
 
-
 public:
     World();
     ~World();
 
-    //SFML
+    // SFML
     void run();
     void update(double deltaTime);
     void handleEvents();
@@ -39,7 +38,7 @@ public:
     void updateFPS();
     void drawFPS();
 
-    //Qt
+    // Qt
     void renderToTexture(sf::RenderTexture& texture);
 
     void setMap(const Map& newMap);

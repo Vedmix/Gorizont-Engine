@@ -1,9 +1,7 @@
 CMakeFiles/Gorizont-Engine.dir/src/main.cpp.o: \
  /home/vadim/Gorizont-Engine/LINUX_Project/src/main.cpp \
- /usr/include/stdc-predef.h \
- /home/vadim/Gorizont-Engine/LINUX_Project/src/../headers/MainMenuWindow.hpp \
- /home/vadim/Gorizont-Engine/LINUX_Project/src/../headers/GameWindow.hpp \
- /usr/include/qt5/QtWidgets/QWidget /usr/include/qt5/QtWidgets/qwidget.h \
+ /usr/include/stdc-predef.h /usr/include/qt5/QtWidgets/QApplication \
+ /usr/include/qt5/QtWidgets/qapplication.h \
  /usr/include/qt5/QtWidgets/qtwidgetsglobal.h \
  /usr/include/qt5/QtGui/qtguiglobal.h /usr/include/qt5/QtCore/qglobal.h \
  /usr/include/c++/13/type_traits \
@@ -81,15 +79,12 @@ CMakeFiles/Gorizont-Engine.dir/src/main.cpp.o: \
  /usr/include/qt5/QtCore/qversiontagging.h \
  /usr/include/qt5/QtGui/qtgui-config.h \
  /usr/include/qt5/QtWidgets/qtwidgets-config.h \
- /usr/include/qt5/QtGui/qwindowdefs.h \
- /usr/include/qt5/QtCore/qobjectdefs.h \
+ /usr/include/qt5/QtCore/qcoreapplication.h \
+ /usr/include/qt5/QtCore/qstring.h /usr/include/qt5/QtCore/qchar.h \
+ /usr/include/qt5/QtCore/qbytearray.h /usr/include/qt5/QtCore/qrefcount.h \
  /usr/include/qt5/QtCore/qnamespace.h \
- /usr/include/qt5/QtCore/qobjectdefs_impl.h \
- /usr/include/qt5/QtCore/qobject.h /usr/include/qt5/QtCore/qstring.h \
- /usr/include/qt5/QtCore/qchar.h /usr/include/qt5/QtCore/qbytearray.h \
- /usr/include/qt5/QtCore/qrefcount.h /usr/include/qt5/QtCore/qarraydata.h \
- /usr/include/string.h /usr/include/strings.h \
- /usr/include/c++/13/stdlib.h \
+ /usr/include/qt5/QtCore/qarraydata.h /usr/include/string.h \
+ /usr/include/strings.h /usr/include/c++/13/stdlib.h \
  /usr/lib64/gcc/x86_64-alt-linux/13/include/stdarg.h \
  /usr/include/c++/13/string /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/c++/13/bits/stringfwd.h \
@@ -159,8 +154,10 @@ CMakeFiles/Gorizont-Engine.dir/src/main.cpp.o: \
  /usr/include/c++/13/bits/streambuf.tcc \
  /usr/include/qt5/QtCore/qstringliteral.h \
  /usr/include/qt5/QtCore/qstringalgorithms.h \
- /usr/include/qt5/QtCore/qstringview.h /usr/include/qt5/QtCore/qlist.h \
- /usr/include/qt5/QtCore/qalgorithms.h \
+ /usr/include/qt5/QtCore/qstringview.h /usr/include/qt5/QtCore/qobject.h \
+ /usr/include/qt5/QtCore/qobjectdefs.h \
+ /usr/include/qt5/QtCore/qobjectdefs_impl.h \
+ /usr/include/qt5/QtCore/qlist.h /usr/include/qt5/QtCore/qalgorithms.h \
  /usr/include/qt5/QtCore/qiterator.h \
  /usr/include/qt5/QtCore/qhashfunctions.h /usr/include/qt5/QtCore/qpair.h \
  /usr/include/c++/13/numeric /usr/include/c++/13/bits/stl_numeric.h \
@@ -209,32 +206,40 @@ CMakeFiles/Gorizont-Engine.dir/src/main.cpp.o: \
  /usr/include/c++/13/bits/chrono.h /usr/include/c++/13/ratio \
  /usr/include/c++/13/cstdint /usr/include/c++/13/limits \
  /usr/include/c++/13/ctime /usr/include/c++/13/bits/parse_numbers.h \
- /usr/include/qt5/QtCore/qmargins.h /usr/include/qt5/QtGui/qpaintdevice.h \
- /usr/include/qt5/QtCore/qrect.h /usr/include/qt5/QtCore/qsize.h \
- /usr/include/qt5/QtCore/qpoint.h /usr/include/qt5/QtGui/qpalette.h \
- /usr/include/qt5/QtGui/qcolor.h /usr/include/qt5/QtGui/qrgb.h \
- /usr/include/qt5/QtGui/qrgba64.h /usr/include/qt5/QtGui/qbrush.h \
- /usr/include/qt5/QtGui/qmatrix.h /usr/include/qt5/QtGui/qpolygon.h \
- /usr/include/qt5/QtGui/qregion.h /usr/include/qt5/QtCore/qdatastream.h \
+ /usr/include/qt5/QtCore/qcoreevent.h \
+ /usr/include/qt5/QtCore/qeventloop.h \
+ /usr/include/qt5/QtGui/qwindowdefs.h /usr/include/qt5/QtCore/qpoint.h \
+ /usr/include/qt5/QtCore/qsize.h /usr/include/qt5/QtCore/qmargins.h \
+ /usr/include/qt5/QtGui/qcursor.h \
+ /usr/include/qt5/QtGui/qguiapplication.h \
+ /usr/include/qt5/QtGui/qinputmethod.h /usr/include/qt5/QtCore/qlocale.h \
+ /usr/include/qt5/QtCore/qvariant.h /usr/include/qt5/QtCore/qmap.h \
+ /usr/include/qt5/QtCore/qhash.h /usr/include/c++/13/variant \
+ /usr/include/qt5/QtCore/qshareddata.h \
+ /home/vadim/Gorizont-Engine/LINUX_Project/src/../headers/MainMenuWindow.hpp \
+ /home/vadim/Gorizont-Engine/LINUX_Project/src/../headers/GameWindow.hpp \
+ /usr/include/qt5/QtWidgets/QWidget /usr/include/qt5/QtWidgets/qwidget.h \
+ /usr/include/qt5/QtGui/qpaintdevice.h /usr/include/qt5/QtCore/qrect.h \
+ /usr/include/qt5/QtGui/qpalette.h /usr/include/qt5/QtGui/qcolor.h \
+ /usr/include/qt5/QtGui/qrgb.h /usr/include/qt5/QtGui/qrgba64.h \
+ /usr/include/qt5/QtGui/qbrush.h /usr/include/qt5/QtGui/qmatrix.h \
+ /usr/include/qt5/QtGui/qpolygon.h /usr/include/qt5/QtGui/qregion.h \
+ /usr/include/qt5/QtCore/qdatastream.h \
  /usr/include/qt5/QtCore/qiodevice.h /usr/include/qt5/QtCore/qline.h \
  /usr/include/qt5/QtGui/qtransform.h /usr/include/qt5/QtGui/qimage.h \
  /usr/include/qt5/QtGui/qpixelformat.h /usr/include/qt5/QtGui/qpixmap.h \
  /usr/include/qt5/QtCore/qsharedpointer.h \
- /usr/include/qt5/QtCore/qshareddata.h /usr/include/qt5/QtCore/qhash.h \
  /usr/include/qt5/QtCore/qsharedpointer_impl.h \
  /usr/include/qt5/QtGui/qfont.h /usr/include/qt5/QtGui/qfontmetrics.h \
  /usr/include/qt5/QtGui/qfontinfo.h \
  /usr/include/qt5/QtWidgets/qsizepolicy.h \
- /usr/include/qt5/QtGui/qcursor.h /usr/include/qt5/QtGui/qkeysequence.h \
- /usr/include/qt5/QtCore/QTimer /usr/include/qt5/QtCore/qtimer.h \
- /usr/include/qt5/QtCore/qbasictimer.h \
+ /usr/include/qt5/QtGui/qkeysequence.h /usr/include/qt5/QtCore/QTimer \
+ /usr/include/qt5/QtCore/qtimer.h /usr/include/qt5/QtCore/qbasictimer.h \
  /usr/include/qt5/QtCore/QElapsedTimer \
  /usr/include/qt5/QtCore/qelapsedtimer.h /usr/include/qt5/QtGui/QPainter \
  /usr/include/qt5/QtGui/qpainter.h /usr/include/qt5/QtGui/qtextoption.h \
  /usr/include/qt5/QtGui/qpen.h /usr/include/qt5/QtGui/QKeyEvent \
- /usr/include/qt5/QtGui/qevent.h /usr/include/qt5/QtCore/qcoreevent.h \
- /usr/include/qt5/QtCore/qvariant.h /usr/include/qt5/QtCore/qmap.h \
- /usr/include/c++/13/variant /usr/include/qt5/QtCore/qset.h \
+ /usr/include/qt5/QtGui/qevent.h /usr/include/qt5/QtCore/qset.h \
  /usr/include/qt5/QtCore/qurl.h /usr/include/qt5/QtCore/qfile.h \
  /usr/include/qt5/QtCore/qfiledevice.h /usr/include/qt5/QtGui/qvector2d.h \
  /usr/include/qt5/QtGui/qtouchdevice.h /usr/include/SFML/Graphics.hpp \

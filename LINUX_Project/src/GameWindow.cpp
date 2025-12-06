@@ -91,7 +91,7 @@ void GameWindow::paintEvent(QPaintEvent* event)
     if(!m_pixmap.isNull()){
         painter.drawPixmap(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, m_pixmap);
 
-        // Отладочная информация
+        // Только FPS, без отладочной информации
         painter.setFont(QFont("Arial", 14, QFont::Bold));
         painter.setPen(Qt::green);
         painter.drawText(SCREEN_WIDTH - 200, 40, QString("FPS: %1").arg(m_currentFPS));

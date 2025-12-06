@@ -1,14 +1,45 @@
 #include "../headers/World.hpp"
 #include "../headers/settings.hpp"
+#include <iostream>
 
-World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(), isRunning(true), XMLFilePath("maps/map2.xml")
+World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(), isRunning(true)
 {
     if(!USE_QT){
         window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Gorizont(SFML Mode)");
         window.setFramerateLimit(60);
     }
+
+    // Пробуем разные пути
+    std::vector<std::string> possibleMapPaths = {
+        "maps/map2.xml",      // Для QT Creator (работает из build директории)
+        "../maps/map2.xml",   // Для терминала из build_cmake
+        "../../maps/map2.xml" // Для других случаев
+    };
+
+    std::vector<std::string> possibleFontPaths = {
+        "fonts/font.ttf",
+        "../fonts/font.ttf",
+        "../../fonts/font.ttf"
+    };
+
+    // Ищем карту
+    for (const auto& path : possibleMapPaths) {
+        std::ifstream test(path);
+        if (test.is_open()) {
+            XMLFilePath = path;
+            test.close();
+            break;
+        }
+    }
+
+    // Ищем шрифт
+    for (const auto& path : possibleFontPaths) {
+        if (font.loadFromFile(path)) {
+            break;
+        }
+    }
+
     this->loadMapFromXML();
-    font.loadFromFile("fonts/font.ttf");
     camera.setMap(this->map);
     color = sf::Color::Black;
 }
@@ -33,8 +64,6 @@ void World::update(double deltaTime){
     }
 
     camera.moveWithKeyboard(deltaTime);
-   // camera.setMap(map); //ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
-   // setCircleMovable(deltaTime);
 }
 
 void World::updateFPS() {
@@ -81,7 +110,6 @@ void World::setColor(unsigned int _color){
     color = sf::Color(_color);
 }
 
-
 void World::handleEvents(){
     if(!USE_QT){
         sf::Event event;
@@ -95,41 +123,39 @@ void World::handleEvents(){
     }
 }
 
-
-
 void World::setCircleMovable(double deltaTime){
     static int currentDirection = 0;
-    
+
     float moveSpeed = 100.0f;
     float left = 100;
     float right = SCREEN_WIDTH - 200;
     float top = 100;
     float bottom = SCREEN_HEIGHT - 200;
-    
+
     for(auto& obj:map.objectSet) {
         if (obj->getObjectType() != ObjectType::POLYGON) {
             continue;
         }
-        
+
         Point2D currentPos = obj->getPos();
         float x = currentPos.getX();
         float y = currentPos.getY();
-        
+
         switch(currentDirection) {
-            case 0: x += moveSpeed * deltaTime;
-                    if (x >= right) { x = right; currentDirection = 1; }
-                    break;
-            case 1: y += moveSpeed * deltaTime;
-                    if (y >= bottom) { y = bottom; currentDirection = 2; }
-                    break;
-            case 2: x -= moveSpeed * deltaTime;
-                    if (x <= left) { x = left; currentDirection = 3; }
-                    break;
-            case 3: y -= moveSpeed * deltaTime;
-                    if (y <= top) { y = top; currentDirection = 0; }
-                    break;
+        case 0: x += moveSpeed * deltaTime;
+            if (x >= right) { x = right; currentDirection = 1; }
+            break;
+        case 1: y += moveSpeed * deltaTime;
+            if (y >= bottom) { y = bottom; currentDirection = 2; }
+            break;
+        case 2: x -= moveSpeed * deltaTime;
+            if (x <= left) { x = left; currentDirection = 3; }
+            break;
+        case 3: y -= moveSpeed * deltaTime;
+            if (y <= top) { y = top; currentDirection = 0; }
+            break;
         }
-        
+
         obj->setPos(Point2D(x, y));
         break;
     }
@@ -150,12 +176,10 @@ void World::render(){
 }
 
 void World::renderToTexture(sf::RenderTexture& texture) {
-    if(USE_QT){
-        texture.clear(color);
-        camera.drawCameraView(texture);
-        display2DMap(texture);
-        texture.display();
-    }
+    texture.clear(color);
+    camera.drawCameraView(texture);
+    display2DMap(texture);
+    texture.display();
 }
 
 void World::readWallsXML(){
@@ -167,7 +191,6 @@ void World::readWallsXML(){
     Point2D wallPos;
 
     if(!file.is_open()){
-        std::cout << "!!!!!FILE - V S E!!!!!";
         return;
     }
 
@@ -177,16 +200,13 @@ void World::readWallsXML(){
             continue;
         } else if(line.find("</walls>") != std::string::npos){
             inWallsSection = false;
-            continue; 
+            continue;
         }
 
         if(inWallsSection){
             std::smatch matches;
             if(std::regex_search(line, matches, wallPattern)){
                 wallPos.setPoint(std::stod(matches[1]), std::stod(matches[2]));
-
-                //adding wall object with constructor: 
-                //Wall(const Point2D& _position, const double _width, const double _lenght, unsigned int _color);
                 map.addObject(std::make_shared<Wall>(wallPos, std::stod(matches[3]), std::stod(matches[4]), std::stoul(matches[5], nullptr, 16)));
             }
         }
@@ -197,10 +217,9 @@ void World::readCirclesXML(){
     std::ifstream file(XMLFilePath);
     std::string line;
     std::regex circlePattern("<circle\\s+x=\"([0-9.]+)\"\\s+y=\"([0-9.]+)\"\\s+radius=\"([0-9.]+)\"\\s+color=\"(0x[0-9A-Fa-f]+)\"\\s*\\/?>");
-    bool inCirclesSection = false; 
-    
+    bool inCirclesSection = false;
+
     if(!file.is_open()){
-        std::cout << "!!!!!FILE - V S E!!!!!";
         return;
     }
 
@@ -211,16 +230,13 @@ void World::readCirclesXML(){
             continue;
         } else if(line.find("</circles>") != std::string::npos){
             inCirclesSection = false;
-            continue; 
+            continue;
         }
 
         if(inCirclesSection){
             std::smatch matches;
             if(std::regex_search(line, matches, circlePattern)){
                 circlePos.setPoint(std::stod(matches[1]), std::stod(matches[2]));
-
-                //adding circle object with constructor: 
-                //Circle(const Point2D& _position, double _radius, unsigned int _color);
                 map.addObject(std::make_shared<Circle>(circlePos, std::stod(matches[3]), std::stoul(matches[5], nullptr, 16)));
             }
         }

@@ -11,6 +11,7 @@ protected:
 
 public:
     Entity(const Point2D& position, double radius, unsigned int color, double velocity = 150.0, double direction = 0.0);
+    virtual ~Entity();
 
     virtual void moveWithKeyboard(double deltaTime, const Map& map) = 0;
 
@@ -19,6 +20,4 @@ public:
 
     void setVelocity(double vel) { velocity = vel; }
     void setDirection(double dir) { direction = dir; }
-
-    virtual ~Entity();
 };

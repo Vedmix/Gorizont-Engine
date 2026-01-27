@@ -141,12 +141,12 @@ void World::setCircleMovable(double deltaTime){
 
 void World::display2DMap(sf::RenderTarget& target){
     map.render(target);
-    player.getCamera().drawCameraOnMap(target);
+    player.getCamera().drawCameraOnMap(target, player.getDirection());
 }
 
 void World::render(){
     if(!USE_QT){
-        player.getCamera().drawCameraView(window);
+         player.getCamera().drawCameraView(window, player.getDirection());
         display2DMap(window);
         drawFPS();
         window.display();
@@ -156,7 +156,7 @@ void World::render(){
 void World::renderToTexture(sf::RenderTexture& texture) {
     if(USE_QT){
         texture.clear(color);
-        player.getCamera().drawCameraView(texture);
+        player.getCamera().drawCameraView(texture, player.getDirection());
         display2DMap(texture);
         texture.display();
     }

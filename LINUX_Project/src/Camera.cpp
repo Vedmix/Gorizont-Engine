@@ -2,17 +2,14 @@
 
 Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, Map& _map):Circle(_position, _radius, _color), map(_map), numThreads(10),RENDER_DISTANCE(700), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/10){
     heights.resize(NUMBER_OF_RAYS_IN_FOV, -1);
-    velocity = 150;
-    direction = 0;
     fov = PI/2;
     objType = ObjectType::CAMERA;
 }
 
-void Camera::setMap(const Map& _map){
-    map=_map;
-}
 
-void Camera::drawCameraOnMap(sf::RenderTarget& window){
+Camera::~Camera(){}
+
+void Camera::drawCameraOnMap(sf::RenderTarget& window, double playerDirection){
     sf::CircleShape cameraShape(8);
     cameraShape.setFillColor(sf::Color::Green);
     cameraShape.setPosition(position.getX() * Map::MAP_SCALE, position.getY() * Map::MAP_SCALE);
@@ -21,7 +18,7 @@ void Camera::drawCameraOnMap(sf::RenderTarget& window){
 
     sf::Vertex directionLine[] = {
         sf::Vertex(sf::Vector2f(position.getX() * Map::MAP_SCALE, position.getY() * Map::MAP_SCALE), sf::Color::Red),
-        sf::Vertex(sf::Vector2f(position.getX() * Map::MAP_SCALE + cos(direction) * 30, position.getY() * Map::MAP_SCALE + sin(direction) * 30), sf::Color::Red)
+        sf::Vertex(sf::Vector2f(position.getX() * Map::MAP_SCALE + cos(playerDirection) * 30, position.getY() * Map::MAP_SCALE + sin(playerDirection) * 30), sf::Color::Red)
     };
 
     window.draw(directionLine, 2, sf::Lines);
@@ -70,9 +67,9 @@ void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigment
     }
 }
 
-void Camera::drawCameraView(sf::RenderTarget& window){
+void Camera::drawCameraView(sf::RenderTarget& window, double playerDirection){
     std::thread threads[10];
-    double rightAngle = direction - fov/2;
+    double rightAngle = playerDirection - fov/2;
     double angleStep = fov/numThreads;
     double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;
     double currRightAngle=rightAngle;
@@ -92,10 +89,3 @@ void Camera::drawCameraView(sf::RenderTarget& window){
         drawOneCameraSigment(window, heights[i], i, raySectorWidth);
     }
 }
-
-Camera::~Camera(){}
-
-void Camera::setFOV(const double _fov){fov=_fov;}
-void Camera::setVelocity(const double vel){velocity=vel;}
-void Camera::setRenderDistance(const double dist){RENDER_DISTANCE=dist;}
-void Camera::setNumberRaysInFov(const int numRays){NUMBER_OF_RAYS_IN_FOV = numRays;}

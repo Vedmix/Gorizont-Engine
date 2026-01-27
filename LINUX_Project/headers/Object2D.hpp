@@ -22,7 +22,6 @@ public:
     virtual bool isCrossing(const Point2D& point)=0;
     virtual void draw(sf::RenderTarget& window, const double mapScale) = 0;
 
-    /////
     sf::Color getColor() const { return color; }
-    ///
+
 };

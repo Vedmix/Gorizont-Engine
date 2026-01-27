@@ -10,35 +10,21 @@ private:
     std::vector<double> heights;
     double RENDER_DISTANCE;
     int NUMBER_OF_RAYS_IN_FOV;
-    double velocity;
-    double direction;
     double fov;
     void drawOneCameraSigment(sf::RenderTarget& window, double viewH, int sigmentNum, double sectorWidth);
-    void CalculateHeights(double rightExtRay, double leftExtRay, int sigmentNum);
-
-    bool isPositionFree(const Point2D& checkPos);
-    bool canMoveTo(const Point2D& targetPos);
+        void CalculateHeights(double leftExtRay, double rightExtRay, int sigmentNum);
 public:
     Camera(const Point2D& _position, double _radius, unsigned int _color, Map& _map);
-    void drawCameraOnMap(sf::RenderTarget& window);
-    void drawCameraView(sf::RenderTarget& window);
-    void moveWithKeyboard(double deltaTime);
-
-    void setMap(const Map& _map);
-    void setRenderDistance(const double dist);
-    void setNumberRaysInFov(const int numRays);
-    void setVelocity(const double vel);
-    void setFOV(const double _fov);
     ~Camera();
 
+    void drawCameraView(sf::RenderTarget& window, double playerDirection);
+    void drawCameraOnMap(sf::RenderTarget& window, double playerDirection);
 
-    ///////
+    void setRenderDistance(const double dist);
+    void setNumberRaysInFov(const int numRays);
+    void setFOV(const double _fov);
+
     double getRenderDistance() const { return RENDER_DISTANCE; }
     int getNumberOfRays() const { return NUMBER_OF_RAYS_IN_FOV; }
-    double getDirection() const { return direction; }
     double getFov() const { return fov; }
-    double getVelocity() const { return velocity; }
-
-    void setDirection(double newDirection) { direction = newDirection; }
-    //////
 };

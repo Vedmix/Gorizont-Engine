@@ -7,8 +7,8 @@ CONFIG += c++17
 # Исходные файлы (явное перечисление)
 SOURCES += \
     src/main.cpp \
-    src/GameWindow.cpp \
-    src/MainMenuWindow.cpp \
+    src/ui/GameWindow.cpp \
+    src/ui/MainMenuWindow.cpp \
     src/Camera.cpp \
     src/Circle.cpp \
     src/Map.cpp \

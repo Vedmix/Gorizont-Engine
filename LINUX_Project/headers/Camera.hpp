@@ -15,6 +15,9 @@ private:
     double fov;
     void drawOneCameraSigment(sf::RenderTarget& window, double viewH, int sigmentNum, double sectorWidth);
     void CalculateHeights(double rightExtRay, double leftExtRay, int sigmentNum);
+
+    bool isPositionFree(const Point2D& checkPos);
+    bool canMoveTo(const Point2D& targetPos);
 public:
     Camera();
     Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map);

@@ -100,42 +100,88 @@ void Camera::drawCameraView(sf::RenderTarget& window){
     }
 }
 
+/////////////////////////////////////////////////////////////////
+///Colision
+
+bool Camera::isPositionFree(const Point2D& checkPos){
+
+    for(auto obj : map.objectSet){
+        if(obj->getObjectType() == ObjectType::CAMERA){
+            continue;
+        }
+
+        if(obj->isCrossing(checkPos)){
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Camera::canMoveTo(const Point2D& targetPos){
+    return isPositionFree(targetPos);
+}
+
 void Camera::moveWithKeyboard(double deltaTime){
     Point2D currPos = this->getPos();
     Point2D deltaPos;
     double speed = velocity * deltaTime;
+
+    Point2D newPos = currPos;
+
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
+        newPos = currPos;
         deltaPos.setX(speed*cos(direction));
         deltaPos.setY(speed*sin(direction));
-        position = position + deltaPos;
+        newPos = newPos + deltaPos;
+
+        if(canMoveTo(newPos)){
+            position = newPos;
+        }
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
+        newPos = position;
         deltaPos.setX(speed*cos(direction-(PI/2)));
         deltaPos.setY(speed*sin(direction-(PI/2)));
-        position = position + deltaPos;
+        newPos = newPos + deltaPos;
+
+        if(canMoveTo(newPos)){
+            position = newPos;
+        }
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
-        deltaPos.setX(speed*cos(direction));
-        deltaPos.setY(speed*sin(direction));
-        position = position - deltaPos;
+        newPos = position;
+        deltaPos.setX(speed * cos(direction));
+        deltaPos.setY(speed * sin(direction));
+        newPos = newPos - deltaPos;
+
+        if(canMoveTo(newPos)){
+            position = newPos;
+        }
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
-        deltaPos.setX(speed*cos(direction-(PI/2)));
-        deltaPos.setY(speed*sin(direction-(PI/2)));
-        position = position - deltaPos;
+        newPos = position;
+        deltaPos.setX(speed * cos(direction - (PI / 2)));
+        deltaPos.setY(speed * sin(direction - (PI / 2)));
+        newPos = newPos - deltaPos;
+
+        if(canMoveTo(newPos)){
+            position = newPos;
+        }
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-        direction += velocity*deltaTime*0.007;
+        direction += velocity * deltaTime * 0.007;
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-        direction -= velocity*deltaTime*0.007;
+        direction -= velocity * deltaTime * 0.007;
     }
 }
+////////////////////////////////////////////////////////////////
 
 Camera::~Camera(){}
 

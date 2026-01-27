@@ -1,15 +1,19 @@
 #include "../headers/World.hpp"
 #include "../headers/settings.hpp"
 
-World::World():camera(Point2D(300, 300), 30, 0xFF0000FF, this->map),window(), isRunning(true), XMLFilePath("maps/map2.xml")
+World::World():
+    player(Point2D(300, 300), 30, 0xFF0000FF, this->map),  // Создаем только Player
+    window(),
+    isRunning(true),
+    XMLFilePath("maps/map2.xml")
 {
     if(!USE_QT){
         window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Gorizont(SFML Mode)");
         window.setFramerateLimit(60);
     }
+
     this->loadMapFromXML();
     font.loadFromFile("fonts/font.ttf");
-    camera.setMap(this->map);
     color = sf::Color::Black;
 }
 
@@ -32,7 +36,7 @@ void World::update(double deltaTime){
         updateFPS();
     }
 
-    camera.moveWithKeyboard(deltaTime);
+    player.moveWithKeyboard(deltaTime, map);
     // camera.setMap(map); //ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
     // setCircleMovable(deltaTime);
 }
@@ -137,12 +141,12 @@ void World::setCircleMovable(double deltaTime){
 
 void World::display2DMap(sf::RenderTarget& target){
     map.render(target);
-    camera.drawCameraOnMap(target);
+    player.getCamera().drawCameraOnMap(target);
 }
 
 void World::render(){
     if(!USE_QT){
-        camera.drawCameraView(window);
+        player.getCamera().drawCameraView(window);
         display2DMap(window);
         drawFPS();
         window.display();
@@ -152,7 +156,7 @@ void World::render(){
 void World::renderToTexture(sf::RenderTexture& texture) {
     if(USE_QT){
         texture.clear(color);
-        camera.drawCameraView(texture);
+        player.getCamera().drawCameraView(texture);
         display2DMap(texture);
         texture.display();
     }

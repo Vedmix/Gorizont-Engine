@@ -21,8 +21,6 @@ public:
     virtual void setPos(const Point2D& _position)=0;
     virtual bool isCrossing(const Point2D& point)=0;
     virtual void draw(sf::RenderTarget& window, const double mapScale) = 0;
-    virtual bool isPositionFree(const Point2D& checkPos, const Map& map) const;
-    virtual bool canMoveTo(const Point2D& targetPos, const Map& map) const;
 
     /////
     sf::Color getColor() const { return color; }

@@ -5,11 +5,11 @@
 class Camera:public Circle
 {
 private:
+    Map& map;
     const int numThreads;
     std::vector<double> heights;
     double RENDER_DISTANCE;
     int NUMBER_OF_RAYS_IN_FOV;
-    Map map;
     double velocity;
     double direction;
     double fov;
@@ -19,9 +19,7 @@ private:
     bool isPositionFree(const Point2D& checkPos);
     bool canMoveTo(const Point2D& targetPos);
 public:
-    Camera();
-    Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map);
-    Camera(const Camera& other);
+    Camera(const Point2D& _position, double _radius, unsigned int _color, Map& _map);
     void drawCameraOnMap(sf::RenderTarget& window);
     void drawCameraView(sf::RenderTarget& window);
     void moveWithKeyboard(double deltaTime);

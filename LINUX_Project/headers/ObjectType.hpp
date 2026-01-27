@@ -3,5 +3,7 @@
 enum class ObjectType {
     CIRCLE,
     POLYGON,
-    CAMERA
+    CAMERA,
+    ENTITY,
+    PLAYER
 };

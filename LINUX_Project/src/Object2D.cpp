@@ -28,11 +28,3 @@ void Object2D::setPos(const Point2D& _position)
 ObjectType Object2D::getObjectType() const{
     return objType;
 }
-
-bool Object2D::isPositionFree(const Point2D& checkPos, const Map& map) const {
-    return true;
-}
-
-bool Object2D::canMoveTo(const Point2D& targetPos, const Map& map) const {
-    return isPositionFree(targetPos, map);
-}

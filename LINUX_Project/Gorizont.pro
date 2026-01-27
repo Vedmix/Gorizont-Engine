@@ -28,6 +28,7 @@ HEADERS += \
     headers/Circle.hpp \
     headers/Map.hpp \
     headers/Object2D.hpp \
+    headers/ObjectType.hpp \
     headers/Player.hpp \
     headers/Point2D.hpp \
     headers/Polygon2D.hpp \

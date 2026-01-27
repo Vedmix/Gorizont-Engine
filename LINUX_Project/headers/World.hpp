@@ -7,13 +7,14 @@
 #include <memory>
 #include <set>
 #include "../headers/Map.hpp"
+#include "../headers/Player.hpp"
 #include "../headers/Camera.hpp"
 #include "../headers/settings.hpp"
 
 class World {
 private:
     Map map;
-    Camera camera;
+    Player player;
     sf::RenderWindow window;
     sf::Clock clock;
     sf::Font font;
@@ -43,7 +44,6 @@ public:
 
     void setMap(const Map& newMap);
     const Map& getMap() const;
-    Camera& getCamera() { return camera; }
     void addObject(std::shared_ptr<Object2D> object);
     void setColor(unsigned int _color);
 

@@ -1,18 +1,11 @@
 #include "../headers/Camera.hpp"
 
-Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, const Map& _map):Circle(_position, _radius, _color), numThreads(10),RENDER_DISTANCE(700), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/10){
-    map=_map;
+Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, Map& _map):Circle(_position, _radius, _color), map(_map), numThreads(10),RENDER_DISTANCE(700), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH/10){
     heights.resize(NUMBER_OF_RAYS_IN_FOV, -1);
     velocity = 150;
     direction = 0;
     fov = PI/2;
     objType = ObjectType::CAMERA;
-}
-
-Camera::Camera(const Camera& other):Circle(other), numThreads(other.numThreads),RENDER_DISTANCE(other.RENDER_DISTANCE), NUMBER_OF_RAYS_IN_FOV(other.NUMBER_OF_RAYS_IN_FOV){
-    velocity = other.velocity;
-    map = other.map;
-    direction = other.direction;
 }
 
 void Camera::setMap(const Map& _map){
@@ -99,89 +92,6 @@ void Camera::drawCameraView(sf::RenderTarget& window){
         drawOneCameraSigment(window, heights[i], i, raySectorWidth);
     }
 }
-
-/////////////////////////////////////////////////////////////////
-///Colision
-
-bool Camera::isPositionFree(const Point2D& checkPos){
-
-    for(auto obj : map.objectSet){
-        if(obj->getObjectType() == ObjectType::CAMERA){
-            continue;
-        }
-
-        if(obj->isCrossing(checkPos)){
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool Camera::canMoveTo(const Point2D& targetPos){
-    return isPositionFree(targetPos);
-}
-
-void Camera::moveWithKeyboard(double deltaTime){
-    Point2D currPos = this->getPos();
-    Point2D deltaPos;
-    double speed = velocity * deltaTime;
-
-    Point2D newPos = currPos;
-
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
-        newPos = currPos;
-        deltaPos.setX(speed*cos(direction));
-        deltaPos.setY(speed*sin(direction));
-        newPos = newPos + deltaPos;
-
-        if(canMoveTo(newPos)){
-            position = newPos;
-        }
-    }
-
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
-        newPos = position;
-        deltaPos.setX(speed*cos(direction-(PI/2)));
-        deltaPos.setY(speed*sin(direction-(PI/2)));
-        newPos = newPos + deltaPos;
-
-        if(canMoveTo(newPos)){
-            position = newPos;
-        }
-    }
-
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
-        newPos = position;
-        deltaPos.setX(speed * cos(direction));
-        deltaPos.setY(speed * sin(direction));
-        newPos = newPos - deltaPos;
-
-        if(canMoveTo(newPos)){
-            position = newPos;
-        }
-    }
-
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
-        newPos = position;
-        deltaPos.setX(speed * cos(direction - (PI / 2)));
-        deltaPos.setY(speed * sin(direction - (PI / 2)));
-        newPos = newPos - deltaPos;
-
-        if(canMoveTo(newPos)){
-            position = newPos;
-        }
-    }
-
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-        direction += velocity * deltaTime * 0.007;
-    }
-
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-        direction -= velocity * deltaTime * 0.007;
-    }
-}
-////////////////////////////////////////////////////////////////
 
 Camera::~Camera(){}
 

@@ -6,6 +6,8 @@ CONFIG += c++17
 
 # Исходные файлы (явное перечисление)
 SOURCES += \
+    src/Entity.cpp \
+    src/Player.cpp \
     src/main.cpp \
     src/ui/GameWindow.cpp \
     src/ui/MainMenuWindow.cpp \
@@ -19,12 +21,14 @@ SOURCES += \
     src/World.cpp
 
 HEADERS += \
+    headers/Entity.hpp \
     headers/GameWindow.hpp \
     headers/MainMenuWindow.hpp \
     headers/Camera.hpp \
     headers/Circle.hpp \
     headers/Map.hpp \
     headers/Object2D.hpp \
+    headers/Player.hpp \
     headers/Point2D.hpp \
     headers/Polygon2D.hpp \
     headers/settings.hpp \

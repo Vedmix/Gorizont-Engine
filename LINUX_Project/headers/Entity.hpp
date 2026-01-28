@@ -14,6 +14,7 @@ public:
     virtual ~Entity();
 
     virtual void moveWithKeyboard(double deltaTime, const Map& map) = 0;
+    Point2D calculateMovementVector(double speed, double angleOffset = 0.0) const;
 
     double getVelocity() const { return velocity; }
     double getDirection() const { return direction; }

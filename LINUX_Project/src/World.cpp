@@ -225,7 +225,7 @@ void World::readCirclesXML(){
 
                 //adding circle object with constructor:
                 //Circle(const Point2D& _position, double _radius, unsigned int _color);
-                map.addObject(std::make_shared<Circle>(circlePos, std::stod(matches[3]), std::stoul(matches[5], nullptr, 16)));
+                map.addObject(std::make_shared<Circle>(circlePos, std::stod(matches[3]), std::stoul(matches[4], nullptr, 16)));
             }
         }
     }

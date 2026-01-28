@@ -23,7 +23,7 @@ bool Player::isPositionFree(const Point2D& checkPos, const Map& map) const {
 bool Player::canMoveTo(const Point2D& targetPos, const Map& map) const {
     return isPositionFree(targetPos, map);
 }
-
+/*
 // Поиск нормали к ближайшей стене
 Point2D Player::findWallNormal(const Point2D& fromPoint, const Map& map) const {
     // Пока простой вариант: определяем с какой стороны стена
@@ -54,7 +54,7 @@ Point2D Player::findWallNormal(const Point2D& fromPoint, const Map& map) const {
 
     // Если не нашли стену, возвращаем нулевую нормаль
     return Point2D(0, 0);
-}
+}*/
 
 void Player::applyWallSliding(const Point2D& startPos, const Point2D& moveVec, const Map& map) {
     // Всегда пробуем простые оси, даже без поиска нормали
@@ -106,100 +106,71 @@ void Player::applyWallSliding(const Point2D& startPos, const Point2D& moveVec, c
     }
 }
 
-// Вспомогательный метод (уже есть, но обновим)
-void Player::trySeparateAxisMovement(const Point2D& startPos, const Point2D& move, const Map& map) {
-    // Пробуем только X
-    if (move.getX() != 0) {
-        Point2D moveX(move.getX(), 0);
-        Point2D posX = startPos + moveX;
-        if (canMoveTo(posX, map)) {
-            setPos(posX);
-            camera.setPos(posX);
-            return;
-        }
-    }
-
-    // Пробуем только Y
-    if (move.getY() != 0) {
-        Point2D moveY(0, move.getY());
-        Point2D posY = startPos + moveY;
-        if (canMoveTo(posY, map)) {
-            setPos(posY);
-            camera.setPos(posY);
-            return;
-        }
-    }
-}
-
-void Player::moveWithKeyboard(double deltaTime, const Map& map) {
-    Point2D currPos = this->getPos();
-    double speed = velocity * deltaTime;
+void Player::moveWithKeyboard(double deltaTime, const Map& map){
     Point2D newPos;
     Point2D moveVec;
+    double speed = velocity * deltaTime;
 
-    // Движение вперед (W)
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
         moveVec = calculateMovementVector(speed);
-        newPos = position + moveVec;  // Используем position (текущую)
-
-        if(canMoveTo(newPos, map)) {
-            setPos(newPos);
-            camera.setPos(newPos);
-        } else {
-            // Коллизия! Пробуем скольжение
-            applyWallSliding(position, moveVec, map);
-        }
-    }
-
-    // Движение назад (S)
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        moveVec = calculateMovementVector(-speed);  // Отрицательная скорость = назад
         newPos = position + moveVec;
 
-        if(canMoveTo(newPos, map)) {
+        if(canMoveTo(newPos, map)){
             setPos(newPos);
             camera.setPos(newPos);
-        } else {
+        }else{
             applyWallSliding(position, moveVec, map);
         }
     }
 
-    // Страф влево (A)
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+        moveVec = calculateMovementVector(-speed);
+        newPos = position + moveVec;
+
+        if(canMoveTo(newPos, map)){
+            setPos(newPos);
+            camera.setPos(newPos);
+        }else{
+            applyWallSliding(position, moveVec, map);
+        }
+    }
+
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
         moveVec = calculateMovementVector(speed, -M_PI/2);
         newPos = position + moveVec;
 
-        if(canMoveTo(newPos, map)) {
+        if(canMoveTo(newPos, map)){
             setPos(newPos);
             camera.setPos(newPos);
-        } else {
+        }else{
             applyWallSliding(position, moveVec, map);
         }
     }
 
-    // Страф вправо (D)
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
         moveVec = calculateMovementVector(speed, M_PI/2);
         newPos = position + moveVec;
 
-        if(canMoveTo(newPos, map)) {
+        if(canMoveTo(newPos, map)){
             setPos(newPos);
             camera.setPos(newPos);
-        } else {
+        }else{
             applyWallSliding(position, moveVec, map);
         }
     }
 
-    // Поворот (стрелки)
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
         direction += velocity * deltaTime * 0.007;
     }
 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
         direction -= velocity * deltaTime * 0.007;
     }
 
-    // Нормализация угла
-    while (direction >= 2 * M_PI) direction -= 2 * M_PI;
-    while (direction < 0) direction += 2 * M_PI;
+    while(direction >= 2 * M_PI){
+        direction -= 2 * M_PI;
+    }
+    while(direction < 0){
+        direction += 2 * M_PI;
+    }
 }

@@ -11,8 +11,10 @@ private:
     double RENDER_DISTANCE;
     int NUMBER_OF_RAYS_IN_FOV;
     double fov;
+
     void drawOneCameraSigment(sf::RenderTarget& window, double viewH, int sigmentNum, double sectorWidth);
-        void CalculateHeights(double leftExtRay, double rightExtRay, int sigmentNum);
+    void CalculateHeights(double leftExtRay, double rightExtRay, int sigmentNum);
+
 public:
     Camera(const Point2D& _position, double _radius, unsigned int _color, Map& _map);
     ~Camera();

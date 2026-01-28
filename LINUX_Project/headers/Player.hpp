@@ -16,6 +16,10 @@ public:
     bool isPositionFree(const Point2D& checkPos, const Map& map) const;
     bool canMoveTo(const Point2D& targetPos, const Map& map) const;
 
+    void applyWallSliding(const Point2D& startPos, const Point2D& desiredMove, const Map& map);
+    Point2D findWallNormal(const Point2D& fromPoint, const Map& map) const;
+    void trySeparateAxisMovement(const Point2D& startPos, const Point2D& move, const Map& map);
+
     void moveWithKeyboard(double deltaTime, const Map& map) override;
 
     Camera& getCamera() { return camera; }

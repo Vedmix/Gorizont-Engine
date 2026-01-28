@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Circle.hpp"
-
-class Map;
+#include "Map.hpp"
 
 class Entity : public Circle {
 protected:
@@ -11,10 +10,13 @@ protected:
 
 public:
     Entity(const Point2D& position, double radius, unsigned int color, double velocity = 150.0, double direction = 0.0);
-    virtual ~Entity();
+    ~Entity();
 
-    virtual void moveWithKeyboard(double deltaTime, const Map& map) = 0;
     Point2D calculateMovementVector(double speed, double angleOffset = 0.0) const;
+
+    bool isPositionFree(const Point2D& checkPos, const Map& map) const;
+    bool canMoveTo(const Point2D& targetPos, const Map& map) const;
+    void applyWallSliding(const Point2D& startPos, const Point2D& desiredMove, const Map& map);
 
     double getVelocity() const { return velocity; }
     double getDirection() const { return direction; }

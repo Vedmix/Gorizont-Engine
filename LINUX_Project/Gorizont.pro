@@ -60,3 +60,12 @@ DISTFILES += \
     fonts/font.ttf \
     maps/map1.xml \
     maps/map2.xml
+
+# Добавьте в конец файла Gorizont.pro:
+
+# Папка для сборки (объектные файлы и исполняемый файл)
+DESTDIR = $$PWD
+OBJECTS_DIR = $$PWD/build/obj
+MOC_DIR = $$PWD/build/moc
+RCC_DIR = $$PWD/build/rcc
+UI_DIR = $$PWD/build/ui

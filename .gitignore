@@ -5,6 +5,7 @@ build/
 bin/
 *.log
 
+Makefile
 *.o
 *.obj
 *.exe

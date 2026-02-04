@@ -40,12 +40,10 @@ void Camera::drawOneCameraSigment(sf::RenderTarget& window, double viewH, int si
 void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigmentNum){
     double rayInterval = fov/NUMBER_OF_RAYS_IN_FOV;
     int raysPerThread = NUMBER_OF_RAYS_IN_FOV / numThreads;
-    bool isCrossed = false;
     for(double currAngle=rightExtRay, i=sigmentNum*raysPerThread;currAngle<leftExtRay && i<(sigmentNum+1)*raysPerThread;currAngle+=rayInterval,i++){
-        isCrossed = false;
         Point2D currRayEnd;
-        double rayDistance;
-        for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=2){
+        double rayDistance = RENDER_DISTANCE+1;
+        /*for(int j=0;j<RENDER_DISTANCE && !isCrossed;j+=2){
             for(auto& obj:map.objectSet){
                 if(obj->getObjectType()==ObjectType::CAMERA){
                     continue;
@@ -57,11 +55,47 @@ void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigment
                     rayDistance = j;
                 }
             }
+        }*/
+        double l = RENDER_DISTANCE, x0 = position.getX(), y0 = position.getY();
+        double k = (y0 - l*sin(currAngle))/(x0 - l*cos(currAngle));
+        double b = y0 - k*x0;
+        std::vector<Point2D> crossPoints;
+        for(auto& obj:map.objectSet){
+            if(obj->getObjectType()==ObjectType::CAMERA){
+                continue;
+            }
+            if(obj->getObjectType()==ObjectType::CIRCLE){
+                double xc = obj->getPos().getX();
+                double yc = obj->getPos().getY();
+                Circle* circle = dynamic_cast<Circle*>(obj.get());
+                double r = circle->getRadius();
+                double d=pow(k*b-xc-yc*k, 2) - (1+k)*(b*b-r*r+xc*xc+yc*yc-2*yc*b);
+                double xCross1, yCross1;
+                if(d>0){
+                    double xCross2 = (xc+yc*k-k*b - sqrt(d))/(1+k), yCross2 = k*xCross2 + b;
+                    xCross1 = (xc+yc*k-k*b + sqrt(d))/(1+k);
+                    yCross1 = k*xCross1 + b;
+                    crossPoints.push_back(Point2D(xCross1, yCross1));
+                    crossPoints.push_back(Point2D(xCross2, yCross2));
+                }
+                else if(d==0){
+                    xCross1 = (xc+yc*k-k*b)/(1+k);
+                    yCross1 = k*xCross1 + b;
+                    crossPoints.push_back(Point2D(xCross1, yCross1));
+                }
+                
+            }
         }
-        if(!isCrossed){
+        if(crossPoints.size()==0){
             heights[i]=-1;
         }
         else{
+            for(const auto& point:crossPoints){
+                double dist = this->position.distance(point);
+                if(rayDistance>dist){
+                    rayDistance=dist;
+                }
+            }
             heights[i] = (Object2D::height - rayDistance*tan(atan(Object2D::height/rayDistance)- (PI/120)));
         }
     }

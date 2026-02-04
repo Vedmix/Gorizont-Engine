@@ -5,7 +5,7 @@ build/
 bin/
 *.log
 
-.qmake.*
+.qmake.stash
 Makefile
 *.o
 *.obj

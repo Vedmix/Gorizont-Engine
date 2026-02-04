@@ -1,6 +1,6 @@
 QT += core gui widgets
 
-TARGET = Gorizont-Engine
+TARGET = bin/Gorizont-Engine
 TEMPLATE = app
 CONFIG += c++17
 

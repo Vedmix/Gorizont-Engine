@@ -56,8 +56,8 @@ void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigment
                 }
             }
         }*/
-        double l = RENDER_DISTANCE, x0 = position.getX(), y0 = position.getY();
-        double k = (y0 - l*sin(currAngle))/(x0 - l*cos(currAngle));
+        double l = RENDER_DISTANCE, x0 = position.getX(), y0 = position.getY(), x1 = x0 + l*cos(currAngle), y1 = y0 + l*sin(currAngle);
+        double k = tan(currAngle);
         double b = y0 - k*x0;
         std::vector<Point2D> crossPoints;
         for(auto& obj:map.objectSet){
@@ -75,13 +75,19 @@ void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigment
                     double xCross2 = (xc+yc*k-k*b - sqrt(d))/(1+k), yCross2 = k*xCross2 + b;
                     xCross1 = (xc+yc*k-k*b + sqrt(d))/(1+k);
                     yCross1 = k*xCross1 + b;
-                    crossPoints.push_back(Point2D(xCross1, yCross1));
-                    crossPoints.push_back(Point2D(xCross2, yCross2));
+                    if((std::min(x0, x1) <= xCross1 && xCross1 <= std::max(x0, x1) && std::min(y0, y1) <= yCross1 && yCross1 <= std::max(y0, y1))){
+                        crossPoints.push_back(Point2D(xCross1, yCross1));
+                    }
+                    if(std::min(x0, x1) <= xCross2 && xCross2 <= std::max(x0, x1) && std::min(y0, y1) <= yCross2 && yCross2 <= std::max(y0, y1)){
+                        crossPoints.push_back(Point2D(xCross2, yCross2));
+                    }
                 }
                 else if(d==0){
                     xCross1 = (xc+yc*k-k*b)/(1+k);
                     yCross1 = k*xCross1 + b;
-                    crossPoints.push_back(Point2D(xCross1, yCross1));
+                    if(std::min(x0, x1) <= xCross1 && xCross1 <= std::max(x0, x1) && std::min(y0, y1) <= yCross1 && yCross1 <= std::max(y0, y1)){
+                        crossPoints.push_back(Point2D(xCross1, yCross1));
+                    }
                 }
                 
             }

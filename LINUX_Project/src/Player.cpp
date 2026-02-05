@@ -64,11 +64,11 @@ void Player::moveWithKeyboard(double deltaTime, const Map& map) {
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-        direction += velocity * deltaTime * 0.007;
+        direction += velocity * deltaTime * 0.01;
     }
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-        direction -= velocity * deltaTime * 0.007;
+        direction -= velocity * deltaTime * 0.01;
     }
 
     while(direction >= 2 * M_PI){

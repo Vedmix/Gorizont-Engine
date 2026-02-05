@@ -11,7 +11,7 @@ private:
     double RENDER_DISTANCE;
     int NUMBER_OF_RAYS_IN_FOV;
     double fov;
-
+    bool isPointOnRay(double x, double y, double x0, double y0, double currAngle);
     void drawOneCameraSigment(sf::RenderTarget& window, double viewH, int sigmentNum, double sectorWidth);
     void CalculateHeights(double leftExtRay, double rightExtRay, int sigmentNum);
 

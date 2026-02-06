@@ -16,7 +16,6 @@ public:
     void setPos(const Point2D& _position) override;
     ~Polygon2D();
 
-    ////
-     const std::vector<Point2D>& getPoints() const { return points; }
-    ///
+    const std::vector<Point2D>& getPoints() const { return points; }
+    const std::vector<Point2D>& getPointsPlane() const {return pointsOnPlane;}
 };

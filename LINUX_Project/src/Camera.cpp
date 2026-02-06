@@ -104,6 +104,32 @@ void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigment
                     }
                 }
             }
+            else if(obj->getObjectType()==ObjectType::POLYGON){
+                Polygon2D* pol = dynamic_cast<Polygon2D*>(obj.get());
+                std::vector<Point2D> polygonPoints = pol->getPointsPlane();
+                Point2D segmentCameraRay[2] = {Point2D(x0, y0), Point2D(x0+RENDER_DISTANCE*cos(currAngle), y0+RENDER_DISTANCE*sin(currAngle))};
+                Point2D segmentPolygonSide[2];
+                double k1, b1;
+                for(int i=0;i<polygonPoints.size();i++){
+                    if(i==polygonPoints.size()-1){
+                        segmentPolygonSide[0] = polygonPoints[i-1];
+                        segmentPolygonSide[1] = polygonPoints[0];
+                    }
+                    else{
+                        segmentPolygonSide[0] = polygonPoints[i];
+                        segmentPolygonSide[1] = polygonPoints[i+1];
+                    }
+                    k1=(segmentPolygonSide[0].getY()-segmentPolygonSide[1].getY())/(segmentPolygonSide[0].getX()-segmentPolygonSide[1].getX());
+                    if(k1==k){
+                        continue;
+                    }
+                    b1=segmentPolygonSide[0].getY() - k1*segmentPolygonSide[0].getX();
+                    double xCross1=(b1-b)/(k-k1), yCross1 = k*xCross1 - b;
+                    if(isPointOnRay(xCross1, yCross1, x0, y0,currAngle)){
+                        crossPoints.push_back(Point2D(xCross1, yCross1));
+                    }
+                }
+            }
         }
         
         if(crossPoints.size() == 0){

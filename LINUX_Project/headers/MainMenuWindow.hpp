@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameWindow.hpp"
+#include "SettingsWindow.hpp"
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -9,6 +10,7 @@
 #include <QButtonGroup>
 #include <vector>
 #include <QString>
+
 
 class MainMenuWindow : public QMainWindow
 {
@@ -21,12 +23,14 @@ public:
 private slots:
     void handleButton(int id);
     void onGameFinished();
+    void onSettingsClosed();
 
 private:
     QPushButton *playButton = nullptr;
     void initMenu();
 
     GameWindow* gameWindow;
+    SettingsWindow* settingsWindow;
     const std::vector<QString> buttonNames = {
         "Играть",
         "Настройки",

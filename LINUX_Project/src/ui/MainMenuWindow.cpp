@@ -1,4 +1,5 @@
 #include "../headers/MainMenuWindow.hpp"
+#include <QDebug>
 
 MainMenuWindow::MainMenuWindow(QWidget* parent, int choice)
     : QMainWindow(parent), gameWindow(nullptr)
@@ -90,7 +91,19 @@ void MainMenuWindow::handleButton(int id)
 
         playButton->setText("Продолжить");
         break;
+    case 1: // Настройки
 
+        settingsWindow = new SettingsWindow(nullptr);
+        settingsWindow->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        settingsWindow->setWindowTitle("Настройки");
+
+        connect(settingsWindow, &SettingsWindow::backToMenu,this, &MainMenuWindow::onSettingsClosed);
+
+        this->hide();
+        settingsWindow->showFullScreen();
+        settingsWindow->activateWindow();
+        settingsWindow->raise();
+        break;
     case 3: // Выход
         this->close();
         break;
@@ -108,4 +121,15 @@ void MainMenuWindow::onGameFinished()
     this->activateWindow();
     this->raise();
 
+}
+
+void MainMenuWindow::onSettingsClosed()
+{
+    if (settingsWindow) {
+        settingsWindow->hide();
+    }
+
+    this->showFullScreen();
+    this->activateWindow();
+    this->raise();
 }

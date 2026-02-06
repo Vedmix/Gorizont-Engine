@@ -30,7 +30,13 @@ void MainMenuWindow::initMenu(){
     QHBoxLayout *hLayout = new QHBoxLayout();
 
     for(size_t i = 0; i < buttonNames.size(); i++){
-        QPushButton *button = new QPushButton(buttonNames[i], this);
+        QPushButton *button;
+        if(i == 0){
+            button = new QPushButton(buttonNames[i], this);
+            playButton = button;
+        }else{
+            button = new QPushButton(buttonNames[i], this);
+        }
         button->setFixedSize(200, 50);
 
         buttonGroup->addButton(button, static_cast<int>(i));
@@ -82,6 +88,8 @@ void MainMenuWindow::handleButton(int id)
         gameWindow->raise();
 
         gameWindow->startGame();
+
+        playButton->setText("Продолжить");
 
         break;
 

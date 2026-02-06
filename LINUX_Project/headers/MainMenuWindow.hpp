@@ -23,13 +23,14 @@ private slots:
     void onGameFinished();
 
 private:
+    QPushButton *playButton = nullptr;
     void initMenu();
 
     GameWindow* gameWindow;
     const std::vector<QString> buttonNames = {
         "Играть",
         "Настройки",
-        "Об игре",
+        "Авторы",
         "Выход"
     };
 };

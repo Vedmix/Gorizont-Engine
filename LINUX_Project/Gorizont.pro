@@ -18,7 +18,8 @@ SOURCES += \
     src/Point2D.cpp \
     src/Polygon2D.cpp \
     src/Wall.cpp \
-    src/World.cpp
+    src/World.cpp \
+    src/ui/SettingsWindow.cpp
 
 HEADERS += \
     headers/Entity.hpp \
@@ -32,6 +33,7 @@ HEADERS += \
     headers/Player.hpp \
     headers/Point2D.hpp \
     headers/Polygon2D.hpp \
+    headers/SettingsWindow.hpp \
     headers/settings.hpp \
     headers/Wall.hpp \
     headers/World.hpp

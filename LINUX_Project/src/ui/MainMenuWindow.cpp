@@ -86,11 +86,9 @@ void MainMenuWindow::handleButton(int id)
         gameWindow->showFullScreen();
         gameWindow->activateWindow();
         gameWindow->raise();
-
         gameWindow->startGame();
 
         playButton->setText("Продолжить");
-
         break;
 
     case 3: // Выход

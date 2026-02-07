@@ -11,10 +11,12 @@ private:
     double RENDER_DISTANCE;
     int NUMBER_OF_RAYS_IN_FOV;
     double fov;
-    bool isPointOnRay(double x, double y, double x0, double y0, double currAngle);
+    bool isPointOnRay(double x, double y, double currAngle);
     void drawOneCameraSigment(sf::RenderTarget& window, double viewH, int sigmentNum, double sectorWidth);
     void CalculateHeights(double leftExtRay, double rightExtRay, int sigmentNum);
-
+    std::vector<Point2D> findCrossPoints(double currAngle);
+    std::vector<Point2D> findCrossPointsCircle(double currAngle, Circle* circle, double _k, double _b);
+    std::vector<Point2D> findCrossPointsPolygon(double currAngle, Polygon2D* polygon);
 public:
     Camera(const Point2D& _position, double _radius, unsigned int _color, Map& _map);
     ~Camera();

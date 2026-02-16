@@ -1,9 +1,12 @@
 #include "../headers/MainMenuWindow.hpp"
+#include "../headers/GameWindow.hpp"
+#include "../headers/SettingsWindow.hpp"
+#include <QDebug>
+#include <cmath>
 
 MainMenuWindow::MainMenuWindow(QWidget* parent, int choice)
-    : QMainWindow(parent), gameWindow(nullptr)
+    : QMainWindow(parent), gameWindow(nullptr), settingsWindow(nullptr)
 {
-
     if(choice == 0){
         initMenu();
     } else{
@@ -15,10 +18,12 @@ MainMenuWindow::MainMenuWindow(QWidget* parent, int choice)
     }
 }
 
-MainMenuWindow::~MainMenuWindow() {}
+MainMenuWindow::~MainMenuWindow()
+{
+    // Qt автоматически удалит дочерние виджеты
+}
 
 void MainMenuWindow::initMenu(){
-
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
@@ -30,7 +35,13 @@ void MainMenuWindow::initMenu(){
     QHBoxLayout *hLayout = new QHBoxLayout();
 
     for(size_t i = 0; i < buttonNames.size(); i++){
-        QPushButton *button = new QPushButton(buttonNames[i], this);
+        QPushButton *button;
+        if(i == 0){
+            button = new QPushButton(buttonNames[i], this);
+            playButton = button;
+        }else{
+            button = new QPushButton(buttonNames[i], this);
+        }
         button->setFixedSize(200, 50);
 
         buttonGroup->addButton(button, static_cast<int>(i));
@@ -60,46 +71,91 @@ void MainMenuWindow::initMenu(){
     mainLayout->addStretch();
 
     showFullScreen();
-
 }
+
 void MainMenuWindow::handleButton(int id)
 {
+    qDebug() << "Button clicked:" << id; // Для отладки
 
     switch(id) {
     case 0: // Играть
+    {
+        qDebug() << "Opening Game Window";
         if (gameWindow == nullptr) {
-            gameWindow = new GameWindow(nullptr);
-            gameWindow->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            gameWindow = new GameWindow(); // Без parent, чтобы было отдельное окно
             gameWindow->setWindowTitle("Gorizont(QT MODE)");
-
+            gameWindow->setAttribute(Qt::WA_DeleteOnClose, false);
             connect(gameWindow, &GameWindow::gameFinished, this, &MainMenuWindow::onGameFinished);
         }
 
         this->hide();
-
         gameWindow->showFullScreen();
         gameWindow->activateWindow();
         gameWindow->raise();
-
         gameWindow->startGame();
 
-        break;
+        playButton->setText("Продолжить");
+    }
+    break;
+
+    case 1: // Настройки
+    {
+        qDebug() << "Opening Settings Window";
+        // Создаем новое окно настроек каждый раз
+        if (settingsWindow) {
+            settingsWindow->deleteLater();
+            settingsWindow = nullptr;
+        }
+
+        settingsWindow = new SettingsWindow(); // Без parent
+        settingsWindow->setWindowTitle("Настройки");
+        settingsWindow->setAttribute(Qt::WA_DeleteOnClose, false);
+
+        connect(settingsWindow, &SettingsWindow::backToMenu, this, &MainMenuWindow::onSettingsClosed);
+
+        this->hide();
+        settingsWindow->showFullScreen();
+        settingsWindow->activateWindow();
+        settingsWindow->raise();
+    }
+    break;
+
+    case 2: // Авторы
+    {
+        QMessageBox::information(this, "Авторы", "Разработчик: Ваше имя\nГод: 2024");
+    }
+    break;
 
     case 3: // Выход
-        this->close();
+        qDebug() << "Exiting application";
+        QApplication::quit();
         break;
     }
 }
 
 void MainMenuWindow::onGameFinished()
 {
-
+    qDebug() << "Game finished, returning to menu";
     if (gameWindow) {
         gameWindow->hide();
+        // Не удаляем, чтобы сохранить состояние игры
     }
 
-    this->show();
+    this->showFullScreen();
     this->activateWindow();
     this->raise();
+}
 
+void MainMenuWindow::onSettingsClosed()
+{
+    qDebug() << "Settings closed, returning to menu";
+    if (settingsWindow) {
+        settingsWindow->hide();
+        settingsWindow->deleteLater(); // Удалим при возврате
+        settingsWindow = nullptr;
+    }
+
+    this->showFullScreen();
+    this->activateWindow();
+    this->raise();
 }

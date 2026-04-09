@@ -15,8 +15,8 @@ private:
     void drawOneCameraSigment(sf::RenderTarget& window, double viewH, int sigmentNum, double sectorWidth);
     void CalculateHeights(double leftExtRay, double rightExtRay, int sigmentNum);
     std::vector<Point2D> findCrossPoints(double currAngle);
-    std::vector<Point2D> findCrossPointsCircle(double currAngle, Circle* circle, double _k, double _b);
-    std::vector<Point2D> findCrossPointsPolygon(double currAngle, Polygon2D* polygon);
+    void findCrossPointsCircle(double currAngle, Circle* circle, double _k, double _b, std::vector<Point2D>& crossPoints);
+    void findCrossPointsPolygon(double currAngle, Polygon2D* polygon, std::vector<Point2D>& crossPoints);
 public:
     Camera(const Point2D& _position, double _radius, unsigned int _color, Map& _map);
     ~Camera();

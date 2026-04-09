@@ -59,8 +59,7 @@ bool Camera::isPointOnRay(double x, double y, double currAngle){
     return true;
 }
 
-std::vector<Point2D> Camera::findCrossPointsCircle(double currAngle, Circle* circle, double _k, double _b){
-    std::vector<Point2D> crossPoints;
+void Camera::findCrossPointsCircle(double currAngle, Circle* circle, double _k, double _b, std::vector<Point2D>& crossPoints){
     double k=_k, b=_b;
     double xc = circle->getPos().getX();
     double yc = circle->getPos().getY();
@@ -88,11 +87,9 @@ std::vector<Point2D> Camera::findCrossPointsCircle(double currAngle, Circle* cir
             crossPoints.push_back(Point2D(xCross1, yCross1));
         }
     }
-    return crossPoints;
 }
 
-std::vector<Point2D> Camera::findCrossPointsPolygon(double currAngle, Polygon2D* polygon){
-    std::vector<Point2D> crossPoints;
+void Camera::findCrossPointsPolygon(double currAngle, Polygon2D* polygon, std::vector<Point2D>& crossPoints){
     std::vector<Point2D> polygonPoints = polygon->getPointsPlane();
     double x0=position.getX(), y0=position.getY();
     for(size_t i = 0; i < polygonPoints.size(); i++){
@@ -132,7 +129,6 @@ std::vector<Point2D> Camera::findCrossPointsPolygon(double currAngle, Polygon2D*
             }
         }
     }
-    return crossPoints;
 }
 
 std::vector<Point2D> Camera::findCrossPoints(double currAngle){
@@ -145,12 +141,10 @@ std::vector<Point2D> Camera::findCrossPoints(double currAngle){
             continue;
         }
         if(obj->getObjectType()==ObjectType::CIRCLE){
-            std::vector<Point2D> crossPointsCirc = findCrossPointsCircle(currAngle, dynamic_cast<Circle*>(obj.get()), k, b);
-            crossPoints.insert(crossPoints.end(), crossPointsCirc.begin(), crossPointsCirc.end());
+            findCrossPointsCircle(currAngle, dynamic_cast<Circle*>(obj.get()), k, b, crossPoints);
         }
         else if(obj->getObjectType() == ObjectType::POLYGON){
-            std::vector<Point2D> crossPointsPolygon = findCrossPointsPolygon(currAngle, dynamic_cast<Polygon2D*>(obj.get()));
-            crossPoints.insert(crossPoints.end(), crossPointsPolygon.begin(), crossPointsPolygon.end());
+            findCrossPointsPolygon(currAngle, dynamic_cast<Polygon2D*>(obj.get()), crossPoints);
         }
     }
     return crossPoints;
@@ -180,12 +174,15 @@ void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigment
 }
 
 void Camera::drawCameraView(sf::RenderTarget& window, double playerDirection){
-    std::thread threads[10];
+    std::thread threads[numThreads];
     double rightAngle = playerDirection - fov/2;
     double angleStep = fov/numThreads;
     double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;
     double currRightAngle=rightAngle;
     double currLeftAngle=rightAngle+angleStep;
+
+    int vectorStep=heights.size()/numThreads;
+
 
     for(int i=0;i<numThreads;i++){
         threads[i] = std::thread(&Camera::CalculateHeights, this, currLeftAngle, currRightAngle, i);

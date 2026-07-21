@@ -1,9 +1,9 @@
 #include "../headers/MainMenuWindow.hpp"
+#include "../headers/AppSettings.hpp"
 
 MainMenuWindow::MainMenuWindow(QWidget* parent, int choice)
     : QMainWindow(parent), gameWindow(nullptr)
 {
-
     if(choice == 0){
         initMenu();
     } else{
@@ -18,6 +18,8 @@ MainMenuWindow::MainMenuWindow(QWidget* parent, int choice)
 MainMenuWindow::~MainMenuWindow() {}
 
 void MainMenuWindow::initMenu(){
+    auto& settings = AppSettings::instance();
+    resize(settings.screenWidth(), settings.screenHeight());
 
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
@@ -58,29 +60,27 @@ void MainMenuWindow::initMenu(){
     hLayout->addStretch();
     mainLayout->addLayout(hLayout);
     mainLayout->addStretch();
-
-    showFullScreen();
-
 }
+
 void MainMenuWindow::handleButton(int id)
 {
-
     switch(id) {
     case 0: // Играть
         if (gameWindow == nullptr) {
             gameWindow = new GameWindow(nullptr);
-            gameWindow->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+            auto& settings = AppSettings::instance();
+
+            gameWindow->resize(settings.screenWidth(), settings.screenHeight());
             gameWindow->setWindowTitle("Gorizont(QT MODE)");
 
             connect(gameWindow, &GameWindow::gameFinished, this, &MainMenuWindow::onGameFinished);
         }
 
         this->hide();
-
-        gameWindow->showFullScreen();
+        gameWindow->show();
         gameWindow->activateWindow();
         gameWindow->raise();
-
         gameWindow->startGame();
 
         break;
@@ -93,7 +93,6 @@ void MainMenuWindow::handleButton(int id)
 
 void MainMenuWindow::onGameFinished()
 {
-
     if (gameWindow) {
         gameWindow->hide();
     }
@@ -101,5 +100,9 @@ void MainMenuWindow::onGameFinished()
     this->show();
     this->activateWindow();
     this->raise();
+}
 
+void MainMenuWindow::closeEvent(QCloseEvent* event) {
+    AppSettings::instance().sync();
+    QMainWindow::closeEvent(event);
 }

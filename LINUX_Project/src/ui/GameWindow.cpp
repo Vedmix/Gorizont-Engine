@@ -1,12 +1,16 @@
 #include "../headers/GameWindow.hpp"
+#include "../headers/AppSettings.hpp"
 
-GameWindow::GameWindow(QWidget *parent): QWidget(parent), m_timer(new QTimer(this)), m_initialized(false), m_world(), m_currentFPS(0)
+GameWindow::GameWindow(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this)), m_initialized(false), m_world(), m_currentFPS(0)
 {
     connect(m_timer, &QTimer::timeout, this, &GameWindow::onUpdate);
-    resize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    auto& settings = AppSettings::instance();
+    resize(settings.screenWidth(), settings.screenHeight());
     setFocusPolicy(Qt::StrongFocus);
 }
 
+// ===== ДЕСТРУКТОР =====
 GameWindow::~GameWindow()
 {
     stopGame();
@@ -32,7 +36,9 @@ void GameWindow::stopGame()
 
 void GameWindow::initializeSFML()
 {
-    if (!m_renderTexture.create(SCREEN_WIDTH, SCREEN_HEIGHT)) {
+    auto& settings = AppSettings::instance();
+
+    if (!m_renderTexture.create(settings.screenWidth(), settings.screenHeight())) {
         return;
     }
 
@@ -46,10 +52,8 @@ void GameWindow::renderFrame()
         return;
     }
 
-    // Рендерим в текстуру через World
     m_world.renderToTexture(m_renderTexture);
 
-    // Копируем текстуру в QPixmap
     const sf::Texture& texture = m_renderTexture.getTexture();
     sf::Image image = texture.copyToImage();
 
@@ -89,12 +93,11 @@ void GameWindow::paintEvent(QPaintEvent* event)
     QPainter painter(this);
 
     if(!m_pixmap.isNull()){
-        painter.drawPixmap(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, m_pixmap);
+        painter.drawPixmap(0, 0, width(), height(), m_pixmap);
 
-        // Только FPS, без отладочной информации
         painter.setFont(QFont("Arial", 14, QFont::Bold));
         painter.setPen(Qt::green);
-        painter.drawText(SCREEN_WIDTH - 200, 40, QString("FPS: %1").arg(m_currentFPS));
+        painter.drawText(width() - 200, 40, QString("FPS: %1").arg(m_currentFPS));
     } else{
         painter.fillRect(rect(), Qt::black);
         painter.setPen(Qt::white);
@@ -102,6 +105,7 @@ void GameWindow::paintEvent(QPaintEvent* event)
     }
 }
 
+// ===== KEY PRESS EVENT =====
 void GameWindow::keyPressEvent(QKeyEvent* event)
 {
     if(!m_initialized){
@@ -117,6 +121,7 @@ void GameWindow::keyPressEvent(QKeyEvent* event)
     QWidget::keyPressEvent(event);
 }
 
+// ===== SHOW EVENT =====
 void GameWindow::showEvent(QShowEvent* event)
 {
     Q_UNUSED(event);
@@ -128,6 +133,7 @@ void GameWindow::showEvent(QShowEvent* event)
     startGame();
 }
 
+// ===== ON UPDATE =====
 void GameWindow::onUpdate()
 {
     if(!m_initialized){
@@ -151,4 +157,16 @@ void GameWindow::onUpdate()
         frameCount = 0;
         fpsTimer.restart();
     }
+}
+
+// ===== CLOSE EVENT =====
+void GameWindow::closeEvent(QCloseEvent* event) {
+    auto& settings = AppSettings::instance();
+
+    // Сохраняем сначала ширину, потом высоту
+    settings.setScreenWidth(width());
+    settings.setScreenHeight(height());
+    settings.sync();
+
+    QWidget::closeEvent(event);
 }

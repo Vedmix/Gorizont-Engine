@@ -21,7 +21,8 @@ public:
 private slots:
     void handleButton(int id);
     void onGameFinished();
-
+protected:
+    void closeEvent(QCloseEvent* event) override;
 private:
     void initMenu();
 

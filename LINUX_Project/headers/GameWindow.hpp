@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include <SFML/Graphics.hpp>
 #include "../headers/World.hpp"
+#include "../headers/AppSettings.hpp"
 
 class GameWindow : public QWidget
 {
@@ -25,6 +26,7 @@ protected:
     void paintEvent(QPaintEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
     void showEvent(QShowEvent* event) override;
+    void closeEvent(QCloseEvent* event) override;
 
 private slots:
     void onUpdate();

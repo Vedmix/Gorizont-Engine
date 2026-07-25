@@ -10,9 +10,18 @@
 #include "../headers/Player.hpp"
 #include "../headers/Camera.hpp"
 #include "../headers/settings.hpp"
+#include "../headers/AppSettings.hpp"
 
 class World {
 private:
+    void initializeFromSettings(); // Новый метод для загрузки настроек
+
+    // Игровые параметры
+    double m_fov;
+    double m_renderDistance;
+    int m_numberOfRays;
+    double m_playerSpeed;
+
     Map map;
     Player player;
     sf::RenderWindow window;
@@ -49,6 +58,9 @@ public:
 
     void loadMapFromXML();
     void display2DMap(sf::RenderTarget& target);
+
+    // Применить настройки ко всем компонентам
+    void applySettings();
 
 private:
     void readWallsXML();

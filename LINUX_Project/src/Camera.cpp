@@ -201,3 +201,23 @@ void Camera::drawCameraView(sf::RenderTarget& window, double playerDirection){
         drawOneCameraSigment(window, heights[i], i, raySectorWidth);
     }
 }
+
+// Реализация методов установки настроек
+void Camera::setRenderDistance(const double dist) {
+    RENDER_DISTANCE = dist;
+}
+
+void Camera::setNumberRaysInFov(const int numRays) {
+    NUMBER_OF_RAYS_IN_FOV = numRays;
+    heights.resize(NUMBER_OF_RAYS_IN_FOV, -1);
+}
+
+void Camera::setFOV(const double _fov) {
+    fov = _fov;
+}
+
+void Camera::applySettings(double newFov, double newRenderDistance, int newNumberOfRays) {
+    setFOV(newFov);
+    setRenderDistance(newRenderDistance);
+    setNumberRaysInFov(newNumberOfRays);
+}

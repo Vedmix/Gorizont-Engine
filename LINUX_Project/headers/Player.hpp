@@ -15,6 +15,8 @@ public:
 
     void moveWithKeyboard(double deltaTime, const Map& map);
 
+    void setSpeed(double newSpeed) { velocity = newSpeed; }
+
     Camera& getCamera() { return camera; }
     const Camera& getCamera() const { return camera; }
 };

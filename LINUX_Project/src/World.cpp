@@ -2,13 +2,17 @@
 #include "../headers/settings.hpp"
 
 World::World():
-    player(Point2D(300, 300), 30, 0xFF0000FF, this->map),  // Создаем только Player
+    player(Point2D(300, 300), 30, 0xFF0000FF, this->map, 150.0),
     window(),
     isRunning(true),
     XMLFilePath("maps/map2.xml")
 {
+    // Загружаем и применяем настройки
+    applySettings();
+
     if(!USE_QT){
-        window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Gorizont(SFML Mode)");
+        auto& settings = AppSettings::instance();
+        window.create(sf::VideoMode(settings.screenWidth(), settings.screenHeight()), "Gorizont(SFML Mode)");
         window.setFramerateLimit(60);
     }
 
@@ -16,7 +20,6 @@ World::World():
     font.loadFromFile("fonts/font.ttf");
     color = sf::Color::Black;
 }
-
 World::~World(){}
 
 void World::run(){
@@ -232,6 +235,23 @@ void World::readCirclesXML(){
 }
 
 void World::loadMapFromXML(){
+    applySettings();
     readWallsXML();
     readCirclesXML();
+}
+
+void World::applySettings() {
+    auto& settings = AppSettings::instance();
+
+    // Читаем настройки
+    m_fov = settings.fov();
+    m_renderDistance = settings.renderDistance();
+    m_numberOfRays = settings.numberOfRays();
+    m_playerSpeed = settings.playerSpeed();
+
+    // Обновляем игрока
+    player.setSpeed(m_playerSpeed);
+
+    // Обновляем камеру
+    player.getCamera().applySettings(m_fov, m_renderDistance, m_numberOfRays);
 }

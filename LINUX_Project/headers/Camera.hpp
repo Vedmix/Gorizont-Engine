@@ -24,9 +24,13 @@ public:
     void drawCameraView(sf::RenderTarget& window, double playerDirection);
     void drawCameraOnMap(sf::RenderTarget& window, double playerDirection);
 
+    // Методы для обновления настроек (только ОДИН РАЗ)
     void setRenderDistance(const double dist);
     void setNumberRaysInFov(const int numRays);
     void setFOV(const double _fov);
+
+    // Метод для применения всех настроек сразу
+    void applySettings(double fov, double renderDistance, int numberOfRays);
 
     double getRenderDistance() const { return RENDER_DISTANCE; }
     int getNumberOfRays() const { return NUMBER_OF_RAYS_IN_FOV; }

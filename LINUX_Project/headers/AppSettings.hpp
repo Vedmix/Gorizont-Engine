@@ -61,6 +61,14 @@ public:
         m_settings.sync();
     }
 
+    QString mapPath() const {
+        return m_settings.value("Last/MapPath", "maps/map2.xml").toString();
+    }
+
+    void setMapPath(const QString& path) {
+        m_settings.setValue("Last/MapPath", path);
+    }
+
 private:
     AppSettings() : m_settings("Gorizont", "Game") {}
     QSettings m_settings;

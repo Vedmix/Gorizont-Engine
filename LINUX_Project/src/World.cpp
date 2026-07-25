@@ -5,13 +5,16 @@ World::World():
     player(Point2D(300, 300), 30, 0xFF0000FF, this->map, 150.0),
     window(),
     isRunning(true),
-    XMLFilePath("maps/map2.xml")
+    XMLFilePath("maps/map2.xml")  // Значение по умолчанию
 {
-    // Загружаем и применяем настройки
+    // Загружаем настройки
     applySettings();
 
+    // Читаем путь к карте из конфига
+    auto& settings = AppSettings::instance();
+    XMLFilePath = settings.mapPath().toStdString();
+
     if(!USE_QT){
-        auto& settings = AppSettings::instance();
         window.create(sf::VideoMode(settings.screenWidth(), settings.screenHeight()), "Gorizont(SFML Mode)");
         window.setFramerateLimit(60);
     }
@@ -20,6 +23,7 @@ World::World():
     font.loadFromFile("fonts/font.ttf");
     color = sf::Color::Black;
 }
+
 World::~World(){}
 
 void World::run(){
@@ -235,7 +239,13 @@ void World::readCirclesXML(){
 }
 
 void World::loadMapFromXML(){
+    // Применяем настройки
     applySettings();
+
+    // Читаем путь к карте из конфига (на случай, если его изменили)
+    auto& settings = AppSettings::instance();
+    XMLFilePath = settings.mapPath().toStdString();
+
     readWallsXML();
     readCirclesXML();
 }

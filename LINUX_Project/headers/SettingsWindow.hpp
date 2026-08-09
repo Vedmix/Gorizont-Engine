@@ -1,3 +1,14 @@
+#pragma once
+#include <QWidget>
+#include <QGuiApplication>
+#include <QkeyEvent>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QApplication>
+#include <QLabel>
+#include <QSlider>
+#include <QRadioButton>
+
 class SettingsWindow : public QWidget
 {
     Q_OBJECT

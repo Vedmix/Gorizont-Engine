@@ -6,16 +6,16 @@
 #include <fstream>
 #include <memory>
 #include <set>
-#include "../headers/Map.hpp"
-#include "../headers/Player.hpp"
-#include "../headers/Camera.hpp"
-#include "../headers/settings.hpp"
-#include "../headers/AppSettings.hpp"
+#include "Map.hpp"
+#include "Player.hpp"
+#include "Camera.hpp"
+#include "settings.hpp"
+#include "AppSettings.hpp"
+#include "settings.hpp"
+
 
 class World {
 private:
-    void initializeFromSettings(); // Новый метод для загрузки настроек
-
     // Игровые параметры
     double m_fov;
     double m_renderDistance;
@@ -44,7 +44,6 @@ public:
     void update(double deltaTime);
     void handleEvents();
     void render();
-    void initFPSCounter();
     void updateFPS();
     void drawFPS();
 
@@ -59,10 +58,8 @@ public:
     void loadMapFromXML();
     void display2DMap(sf::RenderTarget& target);
 
-    // Применить настройки ко всем компонентам
     void applySettings();
 
-    void updateSettings();
     void setFOV(double fov);
     void setRenderDistance(double distance);
     void setNumberOfRays(int rays);

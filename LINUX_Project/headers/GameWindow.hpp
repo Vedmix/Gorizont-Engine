@@ -18,7 +18,6 @@ public:
     virtual ~GameWindow();
 
     void startGame();
-    void updateWorldSettings();
     void stopGame();
 
 signals:
@@ -37,7 +36,6 @@ private:
     bool initializeSFML();
     void renderFrame();
     void handleSFMLEvents();
-    void applySettings();
 
     QTimer* m_timer;
     bool m_initialized;

@@ -1,5 +1,4 @@
 #include "../headers/GameWindow.hpp"
-#include "../headers/AppSettings.hpp"
 
 GameWindow::GameWindow(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this)), m_initialized(false), m_world(), m_currentFPS(0)
 {
@@ -19,11 +18,11 @@ void GameWindow::startGame()
 {
     if(!m_initialized) {
         if (!initializeSFML()) {
-            return; // Если не удалось инициализировать - выходим
+            return;
         }
     }
 
-    applySettings();
+    m_world.applySettings();
 
     if(m_timer && !m_timer->isActive()) {
         m_timer->start(16); // ~60 FPS
@@ -37,24 +36,16 @@ void GameWindow::stopGame()
     }
 }
 
-void GameWindow::applySettings()
-{
-    m_world.updateSettings();
-}
-
 bool GameWindow::initializeSFML()
 {
     auto& settings = AppSettings::instance();
 
-    // Пытаемся создать рендертекстуру
     if (!m_renderTexture.create(settings.screenWidth(), settings.screenHeight())) {
         qDebug() << "Failed to create SFML render texture!";
         return false;
     }
 
-    // Загружаем карту
     m_world.loadMapFromXML();
-    applySettings();
 
     m_initialized = true;
     return true;
@@ -144,13 +135,9 @@ void GameWindow::showEvent(QShowEvent* event)
         initializeSFML();
     }
 
-    updateWorldSettings();
     startGame();
 }
-void GameWindow::updateWorldSettings()
-{
-    applySettings();
-}
+
 void GameWindow::onUpdate()
 {
     if(!m_initialized){

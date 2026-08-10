@@ -49,6 +49,7 @@ void SettingsWindow::initSliders(){
         slider->setFixedWidth(sliderWidth);
         slider->setRange(ranges[i].first, ranges[i].second);
         slider->setValue(defaultValues[i]);
+        sliders.push_back(slider);
 
         connect(slider, &QSlider::valueChanged, [sliderValue](int value) {
             sliderValue->setText(QString::number(value));
@@ -117,8 +118,6 @@ void SettingsWindow::keyPressEvent(QKeyEvent *event)
 void SettingsWindow::onSaveButtonClicked()
 {
     auto& settings = AppSettings::instance();
-
-    QList<QSlider*> sliders = findChildren<QSlider*>();
 
     if (sliders.size() >= 4) {
         double fovDeg = sliders[0]->value();

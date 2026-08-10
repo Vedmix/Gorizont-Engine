@@ -1,7 +1,7 @@
 #include "../headers/GameWindow.hpp"
 #include "../headers/AppSettings.hpp"
 
-GameWindow::GameWindow(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this)), m_initialized(false), m_world(nullptr), m_currentFPS(0)
+GameWindow::GameWindow(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this)), m_initialized(false), m_world(), m_currentFPS(0)
 {
     connect(m_timer, &QTimer::timeout, this, &GameWindow::onUpdate);
 
@@ -18,12 +18,12 @@ GameWindow::~GameWindow()
 void GameWindow::startGame()
 {
     if(!m_initialized) {
-        initializeSFML();
+        if (!initializeSFML()) {
+            return; // Если не удалось инициализировать - выходим
+        }
     }
 
-    if (!m_world) {
-        recreateWorld();
-    }
+    applySettings();
 
     if(m_timer && !m_timer->isActive()) {
         m_timer->start(16); // ~60 FPS
@@ -37,25 +37,27 @@ void GameWindow::stopGame()
     }
 }
 
-void GameWindow::recreateWorld()
+void GameWindow::applySettings()
 {
-    auto& settings = AppSettings::instance();
-
-    m_world = std::make_unique<World>();
-
-    m_world->loadMapFromXML();
+    m_world.updateSettings();
 }
 
-void GameWindow::initializeSFML()
+bool GameWindow::initializeSFML()
 {
     auto& settings = AppSettings::instance();
 
+    // Пытаемся создать рендертекстуру
     if (!m_renderTexture.create(settings.screenWidth(), settings.screenHeight())) {
-        return;
+        qDebug() << "Failed to create SFML render texture!";
+        return false;
     }
 
+    // Загружаем карту
+    m_world.loadMapFromXML();
+    applySettings();
+
     m_initialized = true;
-    m_world->loadMapFromXML();
+    return true;
 }
 
 void GameWindow::renderFrame()
@@ -64,7 +66,7 @@ void GameWindow::renderFrame()
         return;
     }
 
-    m_world->renderToTexture(m_renderTexture);
+    m_world.renderToTexture(m_renderTexture);
 
     const sf::Texture& texture = m_renderTexture.getTexture();
     sf::Image image = texture.copyToImage();
@@ -95,7 +97,7 @@ void GameWindow::handleSFMLEvents()
     }
 
     double deltaTime = deltaTimer.restart() / 1000.0;
-    m_world->update(deltaTime);
+    m_world.update(deltaTime);
 }
 
 void GameWindow::paintEvent(QPaintEvent* event)
@@ -125,7 +127,6 @@ void GameWindow::keyPressEvent(QKeyEvent* event)
     }
 
     if(event->key() == Qt::Key_Escape){
-        stopGame();
         emit gameFinished();
         return;
     }
@@ -137,20 +138,18 @@ void GameWindow::showEvent(QShowEvent* event)
 {
     Q_UNUSED(event);
 
-    updateWorldSettings();
+
 
     if(!m_initialized){
         initializeSFML();
     }
 
+    updateWorldSettings();
     startGame();
 }
 void GameWindow::updateWorldSettings()
 {
-    // При открытии окна пересоздаем мир с новыми настройками
-    // Удаляем старый мир и создаем новый
-    m_world.reset(); // Удаляем старый мир
-    recreateWorld(); // Создаем новый с актуальными настройками
+    applySettings();
 }
 void GameWindow::onUpdate()
 {

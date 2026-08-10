@@ -62,6 +62,12 @@ public:
     // Применить настройки ко всем компонентам
     void applySettings();
 
+    void updateSettings();
+    void setFOV(double fov);
+    void setRenderDistance(double distance);
+    void setNumberOfRays(int rays);
+    void setPlayerSpeed(double speed);
+
 private:
     void readWallsXML();
     void readCirclesXML();

@@ -14,6 +14,13 @@ World::World():
     auto& settings = AppSettings::instance();
     XMLFilePath = settings.mapPath().toStdString();
 
+    this->loadMapFromXML();
+
+    // Загружаем шрифт
+    if(!font.loadFromFile("fonts/font.ttf")) {
+        std::cout << "Warning: Could not load font file!" << std::endl;
+    }
+
     if(!USE_QT){
         window.create(sf::VideoMode(settings.screenWidth(), settings.screenHeight()), "Gorizont(SFML Mode)");
         window.setFramerateLimit(60);
@@ -264,4 +271,37 @@ void World::applySettings() {
 
     // Обновляем камеру
     player.getCamera().applySettings(m_fov, m_renderDistance, m_numberOfRays);
+}
+
+void World::updateSettings()
+{
+    auto& settings = AppSettings::instance();
+
+    setFOV(settings.fov());
+    setRenderDistance(settings.renderDistance());
+    setNumberOfRays(settings.numberOfRays());
+    setPlayerSpeed(settings.playerSpeed());
+
+    player.setSpeed(m_playerSpeed);
+    player.getCamera().applySettings(m_fov, m_renderDistance, m_numberOfRays);
+}
+
+void World::setFOV(double fov)
+{
+    m_fov = fov;
+}
+
+void World::setRenderDistance(double distance)
+{
+    m_renderDistance = distance;
+}
+
+void World::setNumberOfRays(int rays)
+{
+  m_numberOfRays = rays;
+}
+
+void World::setPlayerSpeed(double speed)
+{
+    m_playerSpeed = speed;
 }

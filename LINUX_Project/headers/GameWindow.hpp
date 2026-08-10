@@ -3,6 +3,7 @@
 #include <QTimer>
 #include <QElapsedTimer>
 #include <QPainter>
+#include <QDebug>
 #include <QKeyEvent>
 #include <SFML/Graphics.hpp>
 #include "World.hpp"
@@ -33,14 +34,14 @@ private slots:
     void onUpdate();
 
 private:
-    void initializeSFML();
+    bool initializeSFML();
     void renderFrame();
     void handleSFMLEvents();
-    void recreateWorld();
+    void applySettings();
 
     QTimer* m_timer;
     bool m_initialized;
-    std::unique_ptr<World> m_world;
+    World m_world;
     sf::RenderTexture m_renderTexture;
     QPixmap m_pixmap;
     int m_currentFPS;

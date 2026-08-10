@@ -1,7 +1,8 @@
 #pragma once
 #include <QWidget>
 #include <QGuiApplication>
-#include <QkeyEvent>
+#include <QPushButton>
+#include <QKeyEvent>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QApplication>
@@ -31,18 +32,18 @@ private:
     QHBoxLayout *radioButtonsLayout = new QHBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
 
-    const std::vector<QStrings> sliderNames = {
+    const std::vector<QString> sliderNames = {
         "FOV",
         "Graphics",
         "Distance",
         "Speed"
     };
 
-    const std::vector<QStrings> radioButtonNames = {
+    const std::vector<QString> radioButtonNames = {
         "DRUGS MOD"
     };
 
-    const std::vector<QStrings> buttonNames = {
+    const std::vector<QString> buttonNames = {
         "Сохранить",
         "По умолчанию",
         "Выход"

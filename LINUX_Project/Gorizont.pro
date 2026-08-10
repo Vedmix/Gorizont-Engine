@@ -11,6 +11,7 @@ SOURCES += \
     src/main.cpp \
     src/ui/GameWindow.cpp \
     src/ui/MainMenuWindow.cpp \
+    src/ui/SettingsWindow.cpp \
     src/Camera.cpp \
     src/Circle.cpp \
     src/Map.cpp \
@@ -24,6 +25,7 @@ HEADERS += \
     headers/Entity.hpp \
     headers/GameWindow.hpp \
     headers/MainMenuWindow.hpp \
+    headers/SettingsWindow.hpp \
     headers/Camera.hpp \
     headers/Circle.hpp \
     headers/Map.hpp \

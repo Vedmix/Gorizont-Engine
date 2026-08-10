@@ -66,16 +66,16 @@ void MainMenuWindow::handleButton(int id)
 {
     switch(id) {
     case 0: // Играть
+    {
+        auto& settings = AppSettings::instance();
+
         if (gameWindow == nullptr) {
             gameWindow = new GameWindow(nullptr);
-
-            auto& settings = AppSettings::instance();
-
-            gameWindow->resize(settings.screenWidth(), settings.screenHeight());
-            gameWindow->setWindowTitle("Gorizont(QT MODE)");
-
             connect(gameWindow, &GameWindow::gameFinished, this, &MainMenuWindow::onGameFinished);
         }
+
+        // ← ПРИМЕНЯЕМ НАСТРОЙКИ ПЕРЕД ПОКАЗОМ
+        gameWindow->resize(settings.screenWidth(), settings.screenHeight());
 
         this->hide();
         gameWindow->show();
@@ -84,6 +84,7 @@ void MainMenuWindow::handleButton(int id)
         gameWindow->startGame();
 
         break;
+    }
     case 1: // Настройки
 
         settingsWindow = new SettingsWindow(nullptr);

@@ -5,8 +5,8 @@
 #include <QPainter>
 #include <QKeyEvent>
 #include <SFML/Graphics.hpp>
-#include "../headers/World.hpp"
-#include "../headers/AppSettings.hpp"
+#include "World.hpp"
+#include "AppSettings.hpp"
 
 class GameWindow : public QWidget
 {
@@ -17,6 +17,7 @@ public:
     virtual ~GameWindow();
 
     void startGame();
+    void updateWorldSettings();
     void stopGame();
 
 signals:
@@ -35,10 +36,11 @@ private:
     void initializeSFML();
     void renderFrame();
     void handleSFMLEvents();
+    void recreateWorld();
 
     QTimer* m_timer;
     bool m_initialized;
-    World m_world;
+    std::unique_ptr<World> m_world;
     sf::RenderTexture m_renderTexture;
     QPixmap m_pixmap;
     int m_currentFPS;

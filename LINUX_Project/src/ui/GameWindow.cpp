@@ -1,7 +1,7 @@
 #include "../headers/GameWindow.hpp"
 #include "../headers/AppSettings.hpp"
 
-GameWindow::GameWindow(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this)), m_initialized(false), m_world(), m_currentFPS(0)
+GameWindow::GameWindow(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this)), m_initialized(false), m_world(nullptr), m_currentFPS(0)
 {
     connect(m_timer, &QTimer::timeout, this, &GameWindow::onUpdate);
 
@@ -10,7 +10,6 @@ GameWindow::GameWindow(QWidget *parent) : QWidget(parent), m_timer(new QTimer(th
     setFocusPolicy(Qt::StrongFocus);
 }
 
-// ===== ДЕСТРУКТОР =====
 GameWindow::~GameWindow()
 {
     stopGame();
@@ -20,6 +19,10 @@ void GameWindow::startGame()
 {
     if(!m_initialized) {
         initializeSFML();
+    }
+
+    if (!m_world) {
+        recreateWorld();
     }
 
     if(m_timer && !m_timer->isActive()) {
@@ -34,6 +37,15 @@ void GameWindow::stopGame()
     }
 }
 
+void GameWindow::recreateWorld()
+{
+    auto& settings = AppSettings::instance();
+
+    m_world = std::make_unique<World>();
+
+    m_world->loadMapFromXML();
+}
+
 void GameWindow::initializeSFML()
 {
     auto& settings = AppSettings::instance();
@@ -43,7 +55,7 @@ void GameWindow::initializeSFML()
     }
 
     m_initialized = true;
-    m_world.loadMapFromXML();
+    m_world->loadMapFromXML();
 }
 
 void GameWindow::renderFrame()
@@ -52,7 +64,7 @@ void GameWindow::renderFrame()
         return;
     }
 
-    m_world.renderToTexture(m_renderTexture);
+    m_world->renderToTexture(m_renderTexture);
 
     const sf::Texture& texture = m_renderTexture.getTexture();
     sf::Image image = texture.copyToImage();
@@ -83,7 +95,7 @@ void GameWindow::handleSFMLEvents()
     }
 
     double deltaTime = deltaTimer.restart() / 1000.0;
-    m_world.update(deltaTime);
+    m_world->update(deltaTime);
 }
 
 void GameWindow::paintEvent(QPaintEvent* event)
@@ -105,7 +117,6 @@ void GameWindow::paintEvent(QPaintEvent* event)
     }
 }
 
-// ===== KEY PRESS EVENT =====
 void GameWindow::keyPressEvent(QKeyEvent* event)
 {
     if(!m_initialized){
@@ -114,6 +125,7 @@ void GameWindow::keyPressEvent(QKeyEvent* event)
     }
 
     if(event->key() == Qt::Key_Escape){
+        stopGame();
         emit gameFinished();
         return;
     }
@@ -121,10 +133,11 @@ void GameWindow::keyPressEvent(QKeyEvent* event)
     QWidget::keyPressEvent(event);
 }
 
-// ===== SHOW EVENT =====
 void GameWindow::showEvent(QShowEvent* event)
 {
     Q_UNUSED(event);
+
+    updateWorldSettings();
 
     if(!m_initialized){
         initializeSFML();
@@ -132,8 +145,13 @@ void GameWindow::showEvent(QShowEvent* event)
 
     startGame();
 }
-
-// ===== ON UPDATE =====
+void GameWindow::updateWorldSettings()
+{
+    // При открытии окна пересоздаем мир с новыми настройками
+    // Удаляем старый мир и создаем новый
+    m_world.reset(); // Удаляем старый мир
+    recreateWorld(); // Создаем новый с актуальными настройками
+}
 void GameWindow::onUpdate()
 {
     if(!m_initialized){
@@ -159,11 +177,10 @@ void GameWindow::onUpdate()
     }
 }
 
-// ===== CLOSE EVENT =====
+
 void GameWindow::closeEvent(QCloseEvent* event) {
     auto& settings = AppSettings::instance();
 
-    // Сохраняем сначала ширину, потом высоту
     settings.setScreenWidth(width());
     settings.setScreenHeight(height());
     settings.sync();

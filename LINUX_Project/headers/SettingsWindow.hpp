@@ -1,4 +1,6 @@
 #pragma once
+#include "AppSettings.hpp"
+
 #include <QWidget>
 #include <QGuiApplication>
 #include <QPushButton>
@@ -26,10 +28,13 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 private slots:
     void onBackButtonClicked();
+    void onSaveButtonClicked();
 private:
+    std::vector<QSlider*> sliders;
+
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QVBoxLayout *slidersLayout = new QVBoxLayout();
-    QHBoxLayout *radioButtonsLayout = new QHBoxLayout();
+    QVBoxLayout *radioButtonsLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
 
     const std::vector<QString> sliderNames = {

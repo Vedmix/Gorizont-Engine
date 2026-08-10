@@ -18,6 +18,7 @@ void SettingsWindow::initSliders(){
     slidersLayout->setAlignment(Qt::AlignCenter);
     slidersLayout->addStretch();
 
+    auto& settings = AppSettings::instance();
     int sliderWidth = 300;
 
     std::vector<std::pair<int, int>> ranges = {
@@ -27,20 +28,27 @@ void SettingsWindow::initSliders(){
         {0, 500}
     };
 
+    std::vector<int> defaultValues = {
+        static_cast<int>(settings.fov() * 180 / 3.14159),
+        settings.numberOfRays(),
+        static_cast<int>(settings.renderDistance()),
+        static_cast<int>(settings.playerSpeed())
+    };
+
     for(size_t i = 0; i < sliderNames.size(); i++){
         QHBoxLayout *sliderLayout = new QHBoxLayout();
 
         QLabel *sliderName = new QLabel(sliderNames[i], this);
         sliderName->setFixedWidth(70);
 
-        QLabel *sliderValue = new QLabel("0", this);
+        QLabel *sliderValue = new QLabel(QString::number(defaultValues[i]), this);
         sliderValue->setFixedWidth(40);
         sliderValue->setAlignment(Qt::AlignCenter);
 
         QSlider *slider = new QSlider(Qt::Horizontal, this);
         slider->setFixedWidth(sliderWidth);
         slider->setRange(ranges[i].first, ranges[i].second);
-        slider->setValue(0);
+        slider->setValue(defaultValues[i]);
 
         connect(slider, &QSlider::valueChanged, [sliderValue](int value) {
             sliderValue->setText(QString::number(value));
@@ -84,9 +92,15 @@ void SettingsWindow::initButtons(){
             "}"
             );
         buttonsLayout->addWidget(button);
-
-        if (i == 2){
+        switch(i){
+        case 0:
+            connect(button, &QPushButton::clicked, this, &SettingsWindow::onSaveButtonClicked);
+            break;
+        case 1:
+            break;
+        case 2:
             connect(button, &QPushButton::clicked, this, &SettingsWindow::onBackButtonClicked);
+            break;
         }
     }
 }
@@ -97,6 +111,26 @@ void SettingsWindow::keyPressEvent(QKeyEvent *event)
         onBackButtonClicked();
     }else{
         QWidget::keyPressEvent(event);
+    }
+}
+
+void SettingsWindow::onSaveButtonClicked()
+{
+    auto& settings = AppSettings::instance();
+
+    QList<QSlider*> sliders = findChildren<QSlider*>();
+
+    if (sliders.size() >= 4) {
+        double fovDeg = sliders[0]->value();
+        settings.setFOV(fovDeg * 3.14159 / 180.0);
+
+        settings.setNumberOfRays(sliders[1]->value());
+
+        settings.setRenderDistance(sliders[2]->value());
+
+        settings.setPlayerSpeed(sliders[3]->value());
+
+        settings.sync();
     }
 }
 

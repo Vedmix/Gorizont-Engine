@@ -38,6 +38,8 @@ private:
     QVBoxLayout *radioButtonsLayout = new QVBoxLayout();
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
 
+    int sliderWidth = 300;
+
     const std::vector<QString> sliderNames = {
         "FOV",
         "Graphics",

@@ -19,7 +19,6 @@ void SettingsWindow::initSliders(){
     slidersLayout->addStretch();
 
     auto& settings = AppSettings::instance();
-    int sliderWidth = 300;
 
     std::vector<std::pair<int, int>> ranges = {
         {0, 180},
@@ -29,7 +28,7 @@ void SettingsWindow::initSliders(){
     };
 
     std::vector<int> defaultValues = {
-        static_cast<int>(settings.fov() * 180 / 3.14159),
+        static_cast<int>(settings.fov() * 180 / M_PI),
         settings.numberOfRays(),
         static_cast<int>(settings.renderDistance()),
         static_cast<int>(settings.playerSpeed())
@@ -58,7 +57,6 @@ void SettingsWindow::initSliders(){
         sliderLayout->addWidget(sliderName);
         sliderLayout->addWidget(sliderValue);
         sliderLayout->addWidget(slider);
-
         slidersLayout->addLayout(sliderLayout);
     }
 }

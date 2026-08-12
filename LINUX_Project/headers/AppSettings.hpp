@@ -1,5 +1,4 @@
-#ifndef APPSETTINGS_HPP
-#define APPSETTINGS_HPP
+#pragma once
 
 #include <QSettings>
 #include <QByteArray>
@@ -7,71 +6,42 @@
 
 class AppSettings {
 public:
-    static AppSettings& instance() {
-        static AppSettings instance;
-        return instance;
-    }
+
+    static constexpr double DEFAULT_FOV = 1.5708;
+    static constexpr double DEFAULT_RENDER_DISTANCE = 1000.0;
+    static constexpr int DEFAULT_NUMBER_OF_RAYS = 1920;
+    static constexpr double DEFAULT_PLAYER_SPEED = 150.0;
+
+    static AppSettings& instance();
 
     //Параметры экрана
-    int screenWidth() const {
-        return m_settings.value("Display/Width", 1920).toInt();
-    }
-    int screenHeight() const {
-        return m_settings.value("Display/Height", 1080).toInt();
-    }
+    int screenWidth() const;
+    int screenHeight() const;
 
     //Сеттеры экрана
-    void setScreenWidth(int width) {
-        m_settings.setValue("Display/Width", width);
-    }
-    void setScreenHeight(int height) {
-        m_settings.setValue("Display/Height", height);
-    }
+    void setScreenWidth(int width);
+    void setScreenHeight(int height);
 
     //Параметры игры
-    double fov() const {
-        return m_settings.value("Game/FOV", 1.5708).toDouble();
-    }
-    double renderDistance() const {
-        return m_settings.value("Game/RenderDistance", 1000.0).toDouble();
-    }
-    int numberOfRays() const {
-        return m_settings.value("Game/NumberOfRays", 1920).toInt();
-    }
-    double playerSpeed() const {
-        return m_settings.value("Game/PlayerSpeed", 150.0).toDouble();
-    }
+    double fov() const;
+    double renderDistance() const;
+    int numberOfRays() const;
+    double playerSpeed() const;
 
     //Сеттеры игры
-    void setRenderDistance(double dist) {
-        m_settings.setValue("Game/RenderDistance", dist);
-    }
-    void setFOV(double fov) {
-        m_settings.setValue("Game/FOV", fov);
-    }
-    void setNumberOfRays(int rays) {
-        m_settings.setValue("Game/NumberOfRays", rays);
-    }
-    void setPlayerSpeed(double speed) {
-        m_settings.setValue("Game/PlayerSpeed", speed);
-    }
+    void setRenderDistance(double dist);
+    void setFOV(double fov);
+    void setNumberOfRays(int rays);
+    void setPlayerSpeed(double speed);
 
     //Сохранение настроек
-    void sync() {
-        m_settings.sync();
-    }
+    void sync();
 
-    QString mapPath() const {
-        return m_settings.value("Last/MapPath", "maps/map2.xml").toString();
-    }
+    QString mapPath() const;
 
-    void setMapPath(const QString& path) {
-        m_settings.setValue("Last/MapPath", path);
-    }
+    void setMapPath(const QString& path);
 
 private:
     AppSettings() : m_settings("Gorizont", "Game") {}
     QSettings m_settings;
 };
-
-#endif

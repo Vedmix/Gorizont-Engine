@@ -121,7 +121,7 @@ void SettingsWindow::onSaveButtonClicked()
 
     if (sliders.size() >= 4) {
         double fovDeg = sliders[0]->value();
-        settings.setFOV(fovDeg * 3.14159 / 180.0);
+        settings.setFOV(fovDeg * M_PI / 180.0);
 
         settings.setNumberOfRays(sliders[1]->value());
 

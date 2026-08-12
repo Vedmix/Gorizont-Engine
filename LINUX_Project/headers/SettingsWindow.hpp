@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QSlider>
 #include <QRadioButton>
+#include <cmath>
 
 class SettingsWindow : public QWidget
 {

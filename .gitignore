@@ -15,3 +15,6 @@ Makefile
 *.so
 *.dll
 *.dylib
+
+# Do not respect qtcreator user config files
+*.qtcreator

@@ -17,8 +17,7 @@ class SettingsWindow : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SettingsWindow
-        (QWidget *parent = nullptr);
+    explicit SettingsWindow (QWidget *parent = nullptr);
 signals:
     void backToMenu();
 protected:
@@ -30,6 +29,7 @@ protected:
 private slots:
     void onBackButtonClicked();
     void onSaveButtonClicked();
+    void onDefaultButtonClicked();
 private:
     std::vector<QSlider*> sliders;
 

@@ -24,19 +24,18 @@ void AppSettings::setScreenHeight(int height) {
 
 //Параметры игры
 double AppSettings::fov() const {
-    return m_settings.value("Game/FOV", 1.5708).toDouble();
+    return m_settings.value("Game/FOV", DEFAULT_FOV).toDouble();
 }
 double AppSettings::renderDistance() const {
-    return m_settings.value("Game/RenderDistance", 1000.0).toDouble();
+    return m_settings.value("Game/RenderDistance", DEFAULT_RENDER_DISTANCE).toDouble();
 }
 int AppSettings::numberOfRays() const {
-    return m_settings.value("Game/NumberOfRays", 1920).toInt();
+    return m_settings.value("Game/NumberOfRays", DEFAULT_NUMBER_OF_RAYS).toInt();
 }
 double AppSettings::playerSpeed() const {
-    return m_settings.value("Game/PlayerSpeed", 150.0).toDouble();
+    return m_settings.value("Game/PlayerSpeed", DEFAULT_PLAYER_SPEED).toDouble();
 }
 
-//Сеттеры игры
 void AppSettings::setRenderDistance(double dist) {
     m_settings.setValue("Game/RenderDistance", dist);
 }
@@ -50,7 +49,14 @@ void AppSettings::setPlayerSpeed(double speed) {
     m_settings.setValue("Game/PlayerSpeed", speed);
 }
 
-//Сохранение настроек
+void AppSettings::toDefaultSettings(){
+    setRenderDistance(DEFAULT_RENDER_DISTANCE);
+    setFOV(DEFAULT_FOV);
+    setNumberOfRays(DEFAULT_NUMBER_OF_RAYS);
+    setPlayerSpeed(DEFAULT_PLAYER_SPEED);
+    sync();
+}
+
 void AppSettings::sync() {
     m_settings.sync();
 }

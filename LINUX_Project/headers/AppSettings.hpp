@@ -34,6 +34,9 @@ public:
     void setNumberOfRays(int rays);
     void setPlayerSpeed(double speed);
 
+    //Откат к настройкам по умолчанию
+    void toDefaultSettings();
+
     //Сохранение настроек
     void sync();
 

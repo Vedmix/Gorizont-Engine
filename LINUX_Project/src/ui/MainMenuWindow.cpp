@@ -39,16 +39,8 @@ void MainMenuWindow::initMenu(){
         buttonLayout->addWidget(button);
 
         button->setStyleSheet(
-            "QPushButton {"
-            "    background-color: #4CAF50;"
-            "    border: none;"
-            "    color: white;"
-            "    font-size: 14px;"
-            "    border-radius: 5px;"
-            "}"
-            "QPushButton:hover {"
-            "    background-color: #45a049;"
-            "}"
+            "QPushButton {background-color: #4CAF50; border: none; color: white; font-size: 14px; border-radius: 5px;}"
+            "QPushButton:hover {background-color: #45a049;}"
             );
     }
 

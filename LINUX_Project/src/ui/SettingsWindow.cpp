@@ -81,16 +81,8 @@ void SettingsWindow::initButtons(){
         QPushButton *button = new QPushButton(buttonNames[i], this);
         button->setFixedSize(200, 50);
         button->setStyleSheet(
-            "QPushButton {"
-            "    background-color: #4CAF50;"
-            "    border: none;"
-            "    color: white;"
-            "    font-size: 14px;"
-            "    border-radius: 5px;"
-            "}"
-            "QPushButton:hover {"
-            "    background-color: #45a049;"
-            "}"
+            "QPushButton {background-color: #4CAF50; border: none; color: white; font-size: 14px; border-radius: 5px;}"
+            "QPushButton:hover {background-color: #45a049;}"
             );
         buttonsLayout->addWidget(button);
         switch(i){
@@ -98,6 +90,7 @@ void SettingsWindow::initButtons(){
             connect(button, &QPushButton::clicked, this, &SettingsWindow::onSaveButtonClicked);
             break;
         case 1:
+            connect(button, &QPushButton::clicked, this, &SettingsWindow::onDefaultButtonClicked);
             break;
         case 2:
             connect(button, &QPushButton::clicked, this, &SettingsWindow::onBackButtonClicked);
@@ -119,18 +112,26 @@ void SettingsWindow::onSaveButtonClicked()
 {
     auto& settings = AppSettings::instance();
 
-    if (sliders.size() >= 4) {
-        double fovDeg = sliders[0]->value();
-        settings.setFOV(fovDeg * M_PI / 180.0);
+    double fovDeg = sliders[0]->value();
+    settings.setFOV(fovDeg * M_PI / 180.0);
+    settings.setNumberOfRays(sliders[1]->value());
+    settings.setRenderDistance(sliders[2]->value());
+    settings.setPlayerSpeed(sliders[3]->value());
+    settings.sync();
 
-        settings.setNumberOfRays(sliders[1]->value());
+}
 
-        settings.setRenderDistance(sliders[2]->value());
+void SettingsWindow::onDefaultButtonClicked()
+{
+    auto& settings = AppSettings::instance();
 
-        settings.setPlayerSpeed(sliders[3]->value());
+    settings.toDefaultSettings();
 
-        settings.sync();
-    }
+    sliders[0]->setValue(static_cast<int>(AppSettings::DEFAULT_FOV * 180 / M_PI));
+    sliders[1]->setValue(static_cast<int>(AppSettings::DEFAULT_NUMBER_OF_RAYS));
+    sliders[2]->setValue(static_cast<int>(AppSettings::DEFAULT_RENDER_DISTANCE));
+    sliders[3]->setValue(static_cast<int>(AppSettings::DEFAULT_PLAYER_SPEED));
+
 }
 
 void SettingsWindow::onBackButtonClicked()

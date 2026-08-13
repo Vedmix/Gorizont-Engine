@@ -66,7 +66,6 @@ void MainMenuWindow::handleButton(int id)
             connect(gameWindow, &GameWindow::gameFinished, this, &MainMenuWindow::onGameFinished);
         }
 
-        // ← ПРИМЕНЯЕМ НАСТРОЙКИ ПЕРЕД ПОКАЗОМ
         gameWindow->resize(settings.screenWidth(), settings.screenHeight());
 
         this->hide();
@@ -89,6 +88,18 @@ void MainMenuWindow::handleButton(int id)
         settingsWindow->show();
         settingsWindow->activateWindow();
         settingsWindow->raise();
+        break;
+    case 2:
+        creditsWindow = new CreditsWindow(nullptr);
+        creditsWindow->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        creditsWindow->setWindowTitle("Авторы");
+
+        connect(creditsWindow, &CreditsWindow::backToMenu,this, &MainMenuWindow::onCreditsClosed);
+
+        this->hide();
+        creditsWindow->show();
+        creditsWindow->activateWindow();
+        creditsWindow->raise();
         break;
     case 3: // Выход
         this->close();
@@ -113,11 +124,21 @@ void MainMenuWindow::onSettingsClosed()
         settingsWindow->hide();
     }
 
-    this->showFullScreen();
+    this->show();
     this->activateWindow();
     this->raise();
 }
 
+void MainMenuWindow::onCreditsClosed()
+{
+    if (creditsWindow) {
+        creditsWindow->hide();
+    }
+
+    this->show();
+    this->activateWindow();
+    this->raise();
+}
 void MainMenuWindow::closeEvent(QCloseEvent* event) {
     AppSettings::instance().sync();
     QMainWindow::closeEvent(event);

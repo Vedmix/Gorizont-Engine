@@ -29,7 +29,7 @@ void SettingsWindow::initSliders(){
 
     std::vector<int> defaultValues = {
         static_cast<int>(settings.fov() * 180 / M_PI),
-        settings.numberOfRays(),
+        static_cast<int>(settings.numberOfRays()),
         static_cast<int>(settings.renderDistance()),
         static_cast<int>(settings.playerSpeed())
     };
@@ -78,10 +78,6 @@ void SettingsWindow::initButtons(){
     for(size_t i = 0; i < buttonNames.size(); i++){
         QPushButton *button = new QPushButton(buttonNames[i], this);
         button->setFixedSize(200, 50);
-        button->setStyleSheet(
-            "QPushButton {background-color: #4CAF50; border: none; color: white; font-size: 14px; border-radius: 5px;}"
-            "QPushButton:hover {background-color: #45a049;}"
-            );
         buttonsLayout->addWidget(button);
         switch(i){
         case 0:
@@ -125,7 +121,7 @@ void SettingsWindow::onDefaultButtonClicked()
 
     settings.toDefaultSettings();
 
-    sliders[0]->setValue(static_cast<int>(AppSettings::DEFAULT_FOV * 180 / M_PI));
+    sliders[0]->setValue(static_cast<int>(AppSettings::DEFAULT_FOV * 180.0 / M_PI));
     sliders[1]->setValue(static_cast<int>(AppSettings::DEFAULT_NUMBER_OF_RAYS));
     sliders[2]->setValue(static_cast<int>(AppSettings::DEFAULT_RENDER_DISTANCE));
     sliders[3]->setValue(static_cast<int>(AppSettings::DEFAULT_PLAYER_SPEED));

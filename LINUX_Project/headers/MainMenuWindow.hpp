@@ -3,6 +3,7 @@
 #include <GameWindow.hpp>
 #include <SettingsWindow.hpp>
 #include <CreditsWindow.hpp>
+#include <AppSettings.hpp>
 
 #include <QMainWindow>
 #include <QPushButton>

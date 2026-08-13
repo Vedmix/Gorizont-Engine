@@ -16,10 +16,6 @@ void CreditsWindow::initButtons(){
     for(size_t i = 0; i < buttonNames.size(); i++){
         QPushButton *button = new QPushButton(buttonNames[i], this);
         button->setFixedSize(200, 50);
-        button->setStyleSheet(
-            "QPushButton {background-color: #4CAF50; border: none; color: white; font-size: 14px; border-radius: 5px;}"
-            "QPushButton:hover {background-color: #45a049;}"
-            );
         buttonsLayout->addWidget(button);
         switch(i){
         case 0:

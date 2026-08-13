@@ -1,5 +1,4 @@
 #include "../headers/MainMenuWindow.hpp"
-#include "../headers/AppSettings.hpp"
 
 MainMenuWindow::MainMenuWindow(QWidget* parent, int choice)
     : QMainWindow(parent), gameWindow(nullptr)
@@ -37,11 +36,6 @@ void MainMenuWindow::initMenu(){
 
         buttonGroup->addButton(button, static_cast<int>(i));
         buttonLayout->addWidget(button);
-
-        button->setStyleSheet(
-            "QPushButton {background-color: #4CAF50; border: none; color: white; font-size: 14px; border-radius: 5px;}"
-            "QPushButton:hover {background-color: #45a049;}"
-            );
     }
 
     connect(buttonGroup, &QButtonGroup::idClicked, this, &MainMenuWindow::handleButton);
@@ -63,6 +57,7 @@ void MainMenuWindow::handleButton(int id)
 
         if (gameWindow == nullptr) {
             gameWindow = new GameWindow(nullptr);
+            gameWindow->setWindowTitle("Игра");
             connect(gameWindow, &GameWindow::gameFinished, this, &MainMenuWindow::onGameFinished);
         }
 

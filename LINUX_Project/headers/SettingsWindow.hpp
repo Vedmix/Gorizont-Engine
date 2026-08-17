@@ -12,6 +12,9 @@
 #include <QSlider>
 #include <QRadioButton>
 #include <cmath>
+#include <QPropertyAnimation>
+#include <QTimer>
+#include <QStyle>
 
 class SettingsWindow : public QWidget
 {
@@ -32,7 +35,14 @@ private slots:
     void onDefaultButtonClicked();
 private:
     std::vector<QSlider*> sliders;
+    void initNotification();
+    void showNotification(const QString& text, bool success = true);
+    void hideNotification();
 
+    QWidget* notificationWidget = nullptr;
+    QLabel* notificationLabel = nullptr;
+    QPropertyAnimation* notificationAnimation = nullptr;
+    QTimer* notificationTimer = nullptr;
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QVBoxLayout *slidersLayout = new QVBoxLayout();
     QVBoxLayout *radioButtonsLayout = new QVBoxLayout();

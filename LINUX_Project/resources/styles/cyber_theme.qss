@@ -164,3 +164,29 @@ QRadioButton::indicator:checked {
 QRadioButton::indicator:hover {
     border-color: #00ffff;
 }
+/* ===== УВЕДОМЛЕНИЯ (НОТИФИКАЦИИ) ===== */
+#notificationWidget {
+    background-color: rgba(10, 10, 20, 0.95);
+    border: 2px solid #00ffff;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+}
+
+#notificationWidget[success="false"] {
+    border-color: #ff0044;
+    box-shadow: 0 0 30px rgba(255, 0, 68, 0.2);
+}
+
+#notificationLabel {
+    color: #00ffff;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    background: transparent;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+#notificationLabel[success="false"] {
+    color: #ff0044;
+    text-shadow: 0 0 10px #ff0044;
+}

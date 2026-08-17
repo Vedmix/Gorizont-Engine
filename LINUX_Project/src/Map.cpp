@@ -29,11 +29,12 @@ void Map::render(sf::RenderTarget& window){
     sf::View originalView = window.getView();
 
     // Устанавливаем вид для мини-карты в координатах ЭКРАНА
-    sf::View minimapView(sf::FloatRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
+    auto& settings = AppSettings::instance();
+    sf::View minimapView(sf::FloatRect(0, 0, settings.screenWidth(), settings.screenHeight()));
     window.setView(minimapView);
 
     // Фон мини-карты
-    sf::RectangleShape minimapBg(sf::Vector2f(SCREEN_WIDTH * MAP_SCALE, SCREEN_HEIGHT * MAP_SCALE));
+    sf::RectangleShape minimapBg(sf::Vector2f(settings.screenWidth() * MAP_SCALE, settings.screenHeight() * MAP_SCALE));
     minimapBg.setFillColor(sf::Color::Black);
     minimapBg.setPosition(0, 0);
     window.draw(minimapBg);
@@ -63,10 +64,7 @@ void Map::render(sf::RenderTarget& window){
             shape.setPointCount(points.size());
 
             for (size_t i = 0; i < points.size(); ++i) {
-                shape.setPoint(i, sf::Vector2f(
-                                      (pos.getX() + points[i].getX()) * MAP_SCALE,
-                                      (pos.getY() + points[i].getY()) * MAP_SCALE
-                                      ));
+                shape.setPoint(i, sf::Vector2f((pos.getX() + points[i].getX()) * MAP_SCALE, (pos.getY() + points[i].getY()) * MAP_SCALE ));
             }
 
             shape.setFillColor(sf::Color(150, 150, 150));

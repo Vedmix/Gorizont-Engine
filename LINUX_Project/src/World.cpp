@@ -68,7 +68,7 @@ void World::drawFPS() {
         fpsText.setCharacterSize(30);
         fpsText.setFillColor(sf::Color::Green);
 
-        fpsText.setPosition(SCREEN_WIDTH - 200, 20);
+        fpsText.setPosition(AppSettings::instance().screenWidth() - 200, 20);
         fpsText.setString("FPS: " + std::to_string(static_cast<int>(currentFPS)));
 
         window.draw(fpsText);
@@ -112,9 +112,9 @@ void World::setCircleMovable(double deltaTime){
 
     float moveSpeed = 100.0f;
     float left = 100;
-    float right = SCREEN_WIDTH - 200;
+    float right = AppSettings::instance().screenWidth()  - 200;
     float top = 100;
-    float bottom = SCREEN_HEIGHT - 200;
+    float bottom = AppSettings::instance().screenHeight() - 200;
 
     for(auto& obj:map.objectSet) {
         if (obj->getObjectType() != ObjectType::POLYGON) {

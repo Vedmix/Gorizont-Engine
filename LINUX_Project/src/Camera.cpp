@@ -1,8 +1,8 @@
 #include "../headers/Camera.hpp"
 
-Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, Map& _map):Circle(_position, _radius, _color), map(_map), numThreads(10),RENDER_DISTANCE(1000), NUMBER_OF_RAYS_IN_FOV(SCREEN_WIDTH){
+Camera::Camera(const Point2D& _position, double _radius, unsigned int _color, Map& _map):Circle(_position, _radius, _color), map(_map), numThreads(10),RENDER_DISTANCE(1000), NUMBER_OF_RAYS_IN_FOV(AppSettings::instance().screenWidth()){
     heights.resize(NUMBER_OF_RAYS_IN_FOV, -1);
-    fov = PI/2;
+    fov = M_PI/2;
     objType = ObjectType::CAMERA;
 }
 
@@ -29,7 +29,7 @@ void Camera::drawOneCameraSigment(sf::RenderTarget& window, double viewH, int si
         return;
     }
     sf::RectangleShape sigment(sf::Vector2f(sectorWidth, viewH*2));
-    sigment.setPosition(sectorWidth*sigmentNum, SCREEN_HEIGHT/2 - viewH);
+    sigment.setPosition(sectorWidth*sigmentNum, AppSettings::instance().screenHeight()/2 - viewH);
 
     double brightess = 255 * (viewH/Object2D::height);
     sigment.setFillColor(sf::Color(255,255,255,brightess));
@@ -174,7 +174,7 @@ void Camera::CalculateHeights(double leftExtRay, double rightExtRay, int sigment
                     rayDistance = dist;
                 }
             }
-            heights[i] = (Object2D::height - rayDistance*tan(atan(Object2D::height/rayDistance) - (PI/120)));
+            heights[i] = (Object2D::height - rayDistance*tan(atan(Object2D::height/rayDistance) - (M_PI/120)));
         }
     }
 }
@@ -183,7 +183,7 @@ void Camera::drawCameraView(sf::RenderTarget& window, double playerDirection){
     std::thread threads[10];
     double rightAngle = playerDirection - fov/2;
     double angleStep = fov/numThreads;
-    double raySectorWidth = SCREEN_WIDTH/NUMBER_OF_RAYS_IN_FOV;
+    double raySectorWidth = AppSettings::instance().screenWidth()/NUMBER_OF_RAYS_IN_FOV;
     double currRightAngle=rightAngle;
     double currLeftAngle=rightAngle+angleStep;
 

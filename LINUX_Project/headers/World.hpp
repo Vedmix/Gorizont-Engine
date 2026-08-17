@@ -9,9 +9,7 @@
 #include "Map.hpp"
 #include "Player.hpp"
 #include "Camera.hpp"
-#include "settings.hpp"
 #include "AppSettings.hpp"
-#include "settings.hpp"
 
 
 class World {

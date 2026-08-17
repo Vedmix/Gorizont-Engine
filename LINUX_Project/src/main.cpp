@@ -1,5 +1,4 @@
 #include "../headers/MainMenuWindow.hpp"
-#include "../headers/settings.hpp"
 #include "../headers/World.hpp"
 #include "../headers/AppSettings.hpp"
 

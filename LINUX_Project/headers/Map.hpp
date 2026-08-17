@@ -2,9 +2,11 @@
 #include <memory>
 #include <set>
 #include <vector>
-#include "../headers/Circle.hpp"
-#include "../headers/Polygon2D.hpp"
-#include "../headers/Wall.hpp"
+#include "Circle.hpp"
+#include "Polygon2D.hpp"
+#include "Wall.hpp"
+#include <AppSettings.hpp>
+
 
 class Map
 {

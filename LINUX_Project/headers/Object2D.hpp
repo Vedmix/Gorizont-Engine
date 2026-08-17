@@ -1,7 +1,7 @@
 #pragma once
-#include "settings.hpp"
 #include "Point2D.hpp"
 #include "ObjectType.hpp"
+#include <SFML/Graphics.hpp>
 
 class Object2D
 {

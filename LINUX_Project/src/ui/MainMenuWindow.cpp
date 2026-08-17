@@ -78,7 +78,7 @@ void MainMenuWindow::handleButton(int id)
     case 1: // Настройки
 
         settingsWindow = new SettingsWindow(nullptr);
-        settingsWindow->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        settingsWindow->setGeometry(0, 0, AppSettings::instance().screenWidth(), AppSettings::instance().screenHeight());
         settingsWindow->setWindowTitle("Настройки");
 
         connect(settingsWindow, &SettingsWindow::backToMenu,this, &MainMenuWindow::onSettingsClosed);
@@ -90,7 +90,7 @@ void MainMenuWindow::handleButton(int id)
         break;
     case 2:
         creditsWindow = new CreditsWindow(nullptr);
-        creditsWindow->setGeometry(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        creditsWindow->setGeometry(0, 0, AppSettings::instance().screenWidth(), AppSettings::instance().screenHeight());
         creditsWindow->setWindowTitle("Авторы");
 
         connect(creditsWindow, &CreditsWindow::backToMenu,this, &MainMenuWindow::onCreditsClosed);

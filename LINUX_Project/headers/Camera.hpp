@@ -1,6 +1,9 @@
 #pragma once
 #include "Map.hpp"
+#include <AppSettings.hpp>
+
 #include <thread>
+#include <cmath>
 
 class Camera:public Circle
 {

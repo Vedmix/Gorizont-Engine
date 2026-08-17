@@ -3,6 +3,7 @@ QT += core gui widgets
 TARGET = bin/Gorizont-Engine
 TEMPLATE = app
 CONFIG += c++17
+DEFINES += USE_QT=1 #Режим отладки GUI 0, обычный 1
 
 # Исходные файлы (явное перечисление)
 SOURCES += \
@@ -39,7 +40,6 @@ HEADERS += \
     headers/Player.hpp \
     headers/Point2D.hpp \
     headers/Polygon2D.hpp \
-    headers/settings.hpp \
     headers/Wall.hpp \
     headers/World.hpp
 

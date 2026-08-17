@@ -23,19 +23,19 @@ public:
     explicit SettingsWindow (QWidget *parent = nullptr);
 signals:
     void backToMenu();
-protected:
-    void initSliders();
-    void initRadioButtons();
-    void initButtons();
-
-    void keyPressEvent(QKeyEvent *event) override;
 private slots:
     void onBackButtonClicked();
     void onSaveButtonClicked();
     void onDefaultButtonClicked();
 private:
     std::vector<QSlider*> sliders;
+
+    void initSliders();
+    void initRadioButtons();
+    void initButtons();
     void initNotification();
+
+    void keyPressEvent(QKeyEvent *event) override;
     void showNotification(const QString& text, bool success = true);
     void hideNotification();
 
@@ -43,6 +43,7 @@ private:
     QLabel* notificationLabel = nullptr;
     QPropertyAnimation* notificationAnimation = nullptr;
     QTimer* notificationTimer = nullptr;
+
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QVBoxLayout *slidersLayout = new QVBoxLayout();
     QVBoxLayout *radioButtonsLayout = new QVBoxLayout();

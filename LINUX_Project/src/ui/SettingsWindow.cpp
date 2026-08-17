@@ -14,76 +14,7 @@ SettingsWindow::SettingsWindow(QWidget *parent): QWidget(parent)
 
     setLayout(mainLayout);
 }
-void SettingsWindow::initNotification()
-{
-    notificationWidget = new QWidget(this);
-    notificationWidget->setObjectName("notificationWidget");  // Для QSS
-    notificationWidget->setFixedHeight(50);
-    notificationWidget->setFixedWidth(180);
-    notificationWidget->hide();
 
-    notificationLabel = new QLabel("✅ Сохранено!", notificationWidget);
-    notificationLabel->setObjectName("notificationLabel");  // Для QSS
-    notificationLabel->setAlignment(Qt::AlignCenter);
-
-    QVBoxLayout* layout = new QVBoxLayout(notificationWidget);
-    layout->addWidget(notificationLabel);
-    layout->setContentsMargins(0, 0, 0, 0);
-
-    notificationAnimation = new QPropertyAnimation(notificationWidget, "geometry");
-    notificationAnimation->setDuration(400);
-    notificationAnimation->setEasingCurve(QEasingCurve::OutCubic);
-
-    notificationTimer = new QTimer(this);
-    notificationTimer->setSingleShot(true);
-    connect(notificationTimer, &QTimer::timeout, this, &SettingsWindow::hideNotification);
-}
-
-void SettingsWindow::showNotification(const QString& text, bool success)
-{
-    if (!notificationWidget) return;
-
-    notificationLabel->setText(text);
-
-    // Меняем класс для QSS
-    notificationWidget->setProperty("success", success);
-    notificationWidget->style()->unpolish(notificationWidget);
-    notificationWidget->style()->polish(notificationWidget);
-
-    int x = width() - notificationWidget->width() - 20;
-    int y = 20;
-
-    QRect startRect(x + notificationWidget->width(), y,notificationWidget->width(), notificationWidget->height());
-    QRect endRect(x, y, notificationWidget->width(), notificationWidget->height());
-
-    notificationWidget->setGeometry(startRect);
-    notificationWidget->show();
-    notificationWidget->raise();
-
-    notificationAnimation->setStartValue(startRect);
-    notificationAnimation->setEndValue(endRect);
-    notificationAnimation->start();
-
-    notificationTimer->start(2000);
-}
-
-void SettingsWindow::hideNotification()
-{
-    if (!notificationWidget) return;
-
-    QRect currentRect = notificationWidget->geometry();
-    QRect endRect(currentRect.x() + currentRect.width(), currentRect.y(),currentRect.width(), currentRect.height());
-
-    notificationAnimation->setStartValue(currentRect);
-    notificationAnimation->setEndValue(endRect);
-    notificationAnimation->start();
-
-    QTimer::singleShot(400, [this]() {
-        if (notificationWidget) {
-            notificationWidget->hide();
-        }
-    });
-}
 void SettingsWindow::initSliders(){
     slidersLayout->setAlignment(Qt::AlignCenter);
     slidersLayout->addStretch();
@@ -141,6 +72,76 @@ void SettingsWindow::initRadioButtons(){
 
         radioButtonsLayout->addWidget(radioButton);
     }
+}
+
+
+void SettingsWindow::initNotification()
+{
+    notificationWidget = new QWidget(this);
+    notificationWidget->setObjectName("notificationWidget");
+    notificationWidget->setFixedSize(180, 50);
+    notificationWidget->hide();
+
+    notificationLabel = new QLabel("Uved", notificationWidget);
+    notificationLabel->setObjectName("notificationLabel");
+    notificationLabel->setAlignment(Qt::AlignCenter);
+
+    QVBoxLayout* layout = new QVBoxLayout(notificationWidget);
+    layout->addWidget(notificationLabel);
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    notificationAnimation = new QPropertyAnimation(notificationWidget, "geometry");
+    notificationAnimation->setDuration(400);
+
+    notificationTimer = new QTimer(this);
+    notificationTimer->setSingleShot(true);
+    connect(notificationTimer, &QTimer::timeout, this, &SettingsWindow::hideNotification);
+}
+
+void SettingsWindow::showNotification(const QString& text, bool success)
+{
+
+    notificationLabel->setText(text);
+
+    notificationWidget->setProperty("success", success);
+    notificationLabel->setProperty("success", success);
+    notificationWidget->style()->polish(notificationWidget);
+    notificationLabel->style()->polish(notificationLabel);
+
+    int x = width() - notificationWidget->width() - 20;
+    int y = 20;
+
+    QRect startRect(x + notificationWidget->width(), y, notificationWidget->width(), notificationWidget->height());
+    QRect endRect(x, y,notificationWidget->width(), notificationWidget->height());
+
+    notificationWidget->setGeometry(startRect);
+    notificationWidget->show();
+    notificationWidget->raise();
+
+    notificationAnimation->setStartValue(startRect);
+    notificationAnimation->setEndValue(endRect);
+    notificationAnimation->start();
+
+    notificationTimer->start(2000);
+}
+
+void SettingsWindow::hideNotification()
+{
+
+    QRect currentRect = notificationWidget->geometry();
+    QRect endRect(currentRect.x() + currentRect.width() + 20, currentRect.y(), currentRect.width(), currentRect.height());
+
+    notificationAnimation->stop();
+    notificationAnimation->setStartValue(currentRect);
+    notificationAnimation->setEndValue(endRect);
+    notificationAnimation->start();
+
+    QTimer::singleShot(400, [this]() {
+        if (notificationWidget) {
+            notificationWidget->hide();
+            notificationWidget->move(width() - notificationWidget->width() - 20, 20);
+        }
+    });
 }
 
 void SettingsWindow::initButtons(){

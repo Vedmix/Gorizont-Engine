@@ -1,23 +1,23 @@
-/* ===== ТЕМНАЯ ТЕМА ===== */
+/* ===== СВЕТЛАЯ ТЕМА ===== */
 /* Основные цвета */
 QWidget {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
+    background-color: #f0ece6;
+    color: #2d2d2d;
 }
 
 QMainWindow {
-    background-color: #1e1e1e;
+    background-color: #f0ece6;
 }
 
 SettingsWindow, CreditsWindow {
-    background-color: #1e1e1e;
+    background-color: #f0ece6;
 }
 
 /* Кнопки */
 QPushButton {
-    background-color: #2d2d2d;
+    background-color: #e8e4de;
     border: 2px solid #4CAF50;
-    color: #e0e0e0;
+    color: #2d2d2d;
     font-size: 14px;
     border-radius: 8px;
     padding: 8px 16px;
@@ -33,6 +33,7 @@ QPushButton:hover {
 QPushButton:pressed {
     background-color: #388e3c;
     border-color: #2e7d32;
+    color: white;
 }
 
 QPushButton#playButton {
@@ -54,12 +55,13 @@ QPushButton#exitButton {
 QPushButton#exitButton:hover {
     background-color: #e74c3c;
     border-color: #ff6b6b;
+    color: white;
 }
 
 /* Слайдеры */
 QSlider::groove:horizontal {
     height: 6px;
-    background: #3a3a3a;
+    background: #d5d0ca;
     border-radius: 3px;
 }
 
@@ -84,7 +86,7 @@ QSlider::sub-page:horizontal {
 
 /* Метки - теперь как текст на кнопках */
 QLabel {
-    color: #e0e0e0;
+    color: #2d2d2d;
     font-size: 14px;
     font-weight: bold;
 }
@@ -97,7 +99,7 @@ QLabel[class="valueLabel"] {
 
 /* Радио-кнопки */
 QRadioButton {
-    color: #e0e0e0;
+    color: #2d2d2d;
     font-size: 14px;
     font-weight: bold;
     spacing: 8px;
@@ -107,8 +109,8 @@ QRadioButton::indicator {
     width: 16px;
     height: 16px;
     border-radius: 8px;
-    border: 2px solid #555555;
-    background: #2d2d2d;
+    border: 2px solid #b0aaa4;
+    background: #ffffff;
 }
 
 QRadioButton::indicator:checked {

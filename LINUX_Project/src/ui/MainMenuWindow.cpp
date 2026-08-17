@@ -34,11 +34,13 @@ void MainMenuWindow::initMenu(){
         QPushButton *button = new QPushButton(buttonNames[i], this);
         button->setFixedSize(200, 50);
 
-        buttonGroup->addButton(button, static_cast<int>(i));
-        buttonLayout->addWidget(button);
         if (i == 0) {
             playButton = button;
         }
+
+        buttonGroup->addButton(button, static_cast<int>(i));
+        buttonLayout->addWidget(button);
+
     }
 
     connect(buttonGroup, &QButtonGroup::idClicked, this, &MainMenuWindow::handleButton);

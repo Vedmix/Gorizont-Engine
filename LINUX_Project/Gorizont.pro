@@ -4,6 +4,7 @@ TARGET = bin/Gorizont-Engine
 TEMPLATE = app
 CONFIG += c++17
 DEFINES += USE_QT=1 #Режим отладки GUI 0, обычный 1
+RESOURCES += resources/styles.qrc
 
 # Исходные файлы (явное перечисление)
 SOURCES += \

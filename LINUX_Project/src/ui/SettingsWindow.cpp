@@ -38,11 +38,13 @@ void SettingsWindow::initSliders(){
         QHBoxLayout *sliderLayout = new QHBoxLayout();
 
         QLabel *sliderName = new QLabel(sliderNames[i], this);
-        sliderName->setFixedWidth(70);
+        sliderName->setFixedWidth(80);
 
         QLabel *sliderValue = new QLabel(QString::number(defaultValues[i]), this);
         sliderValue->setFixedWidth(40);
         sliderValue->setAlignment(Qt::AlignCenter);
+
+        sliderValue->setProperty("class", "valueLabel");
 
         QSlider *slider = new QSlider(Qt::Horizontal, this);
         slider->setFixedWidth(sliderWidth);

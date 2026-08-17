@@ -36,6 +36,9 @@ void MainMenuWindow::initMenu(){
 
         buttonGroup->addButton(button, static_cast<int>(i));
         buttonLayout->addWidget(button);
+        if (i == 0) {
+            playButton = button;
+        }
     }
 
     connect(buttonGroup, &QButtonGroup::idClicked, this, &MainMenuWindow::handleButton);
@@ -57,6 +60,7 @@ void MainMenuWindow::handleButton(int id)
 
         if (gameWindow == nullptr) {
             gameWindow = new GameWindow(nullptr);
+            playButton->setText("Продолжить");
             gameWindow->setWindowTitle("Игра");
             connect(gameWindow, &GameWindow::gameFinished, this, &MainMenuWindow::onGameFinished);
         }

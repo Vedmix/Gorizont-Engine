@@ -35,7 +35,11 @@ int AppSettings::numberOfRays() const {
 double AppSettings::playerSpeed() const {
     return m_settings.value("Game/PlayerSpeed", DEFAULT_PLAYER_SPEED).toDouble();
 }
+QString AppSettings::mapPath() const {
+    return m_settings.value("Last/MapPath", "maps/map2.xml").toString();
+}
 
+//Сеттеры игры
 void AppSettings::setRenderDistance(double dist) {
     m_settings.setValue("Game/RenderDistance", dist);
 }
@@ -48,23 +52,39 @@ void AppSettings::setNumberOfRays(int rays) {
 void AppSettings::setPlayerSpeed(double speed) {
     m_settings.setValue("Game/PlayerSpeed", speed);
 }
+void AppSettings::setMapPath(const QString& path) {
+    m_settings.setValue("Last/MapPath", path);
+}
 
+//Соxранение параметров
 void AppSettings::toDefaultSettings(){
     setRenderDistance(DEFAULT_RENDER_DISTANCE);
     setFOV(DEFAULT_FOV);
     setNumberOfRays(DEFAULT_NUMBER_OF_RAYS);
     setPlayerSpeed(DEFAULT_PLAYER_SPEED);
+    setTheme(DEFAULT_THEME);
     sync();
 }
 
+//Сохранение параметров
 void AppSettings::sync() {
     m_settings.sync();
 }
 
-QString AppSettings::mapPath() const {
-    return m_settings.value("Last/MapPath", "maps/map2.xml").toString();
+
+
+//Параметры интерфейса
+QString AppSettings::theme() const {
+    return m_settings.value("Interface/Theme", DEFAULT_THEME).toString();
 }
 
-void AppSettings::setMapPath(const QString& path) {
-    m_settings.setValue("Last/MapPath", path);
+QStringList AppSettings::availableThemes() const {
+    return m_availableThemes;
+}
+
+//Сеттеры интерфейса
+void AppSettings::setTheme(const QString& theme) {
+    if (m_availableThemes.contains(theme)) {
+        m_settings.setValue("Interface/Theme", theme);
+    }
 }

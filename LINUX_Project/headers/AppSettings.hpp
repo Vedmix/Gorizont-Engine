@@ -12,6 +12,10 @@ public:
     static constexpr int DEFAULT_NUMBER_OF_RAYS = 1920;
     static constexpr double DEFAULT_PLAYER_SPEED = 150.0;
 
+    static constexpr const char* DEFAULT_THEME = "Dark";
+    static constexpr const char* THEME_DARK = "Dark";
+    static constexpr const char* THEME_LIGHT = "Light";
+
     static AppSettings& instance();
 
     //Параметры экрана
@@ -47,4 +51,11 @@ public:
 private:
     AppSettings() : m_settings("Gorizont", "Game") {}
     QSettings m_settings;
+    QStringList m_availableThemes = { THEME_DARK, THEME_LIGHT };
+
+    QString theme() const;
+    void setTheme(const QString& theme);
+    QStringList availableThemes() const;
+
+
 };

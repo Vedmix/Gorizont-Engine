@@ -45,17 +45,19 @@ public:
     void sync();
 
     QString mapPath() const;
+    QString theme() const;
 
     void setMapPath(const QString& path);
+    void setTheme(const QString& theme);
+    QStringList availableThemes() const;
 
 private:
     AppSettings() : m_settings("Gorizont", "Game") {}
     QSettings m_settings;
     QStringList m_availableThemes = { THEME_DARK, THEME_LIGHT };
 
-    QString theme() const;
-    void setTheme(const QString& theme);
-    QStringList availableThemes() const;
+
+
 
 
 };

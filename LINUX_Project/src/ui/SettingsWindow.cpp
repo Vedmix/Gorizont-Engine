@@ -59,14 +59,7 @@ void SettingsWindow::initInterfaceSettings() {
 void SettingsWindow::initSliders(){
     auto& settings = AppSettings::instance();
 
-    std::vector<std::pair<int, int>> ranges = {
-        {30, 120},   // FOV
-        {100, 3840}, // Количество лучей
-        {100, 2000}, // Дальность
-        {50, 500}    // Скорость
-    };
-
-    std::vector<int> defaultValues = {
+    std::vector<int> slidersDefaultValues = {
         static_cast<int>(settings.fov() * 180 / M_PI),
         settings.numberOfRays(),
         static_cast<int>(settings.renderDistance()),
@@ -78,7 +71,7 @@ void SettingsWindow::initSliders(){
         QLabel* nameLabel = new QLabel(sliderNames[i], this);
         nameLabel->setFixedWidth(80);
 
-        QLabel* valueLabel = new QLabel(QString::number(defaultValues[i]), this);
+        QLabel* valueLabel = new QLabel(QString::number(slidersDefaultValues[i]), this);
         valueLabel->setFixedWidth(40);
         valueLabel->setAlignment(Qt::AlignCenter);
         valueLabel->setProperty("class", "valueLabel");
@@ -86,13 +79,11 @@ void SettingsWindow::initSliders(){
 
         QSlider* slider = new QSlider(Qt::Horizontal, this);
         slider->setFixedWidth(sliderWidth);
-        slider->setRange(ranges[i].first, ranges[i].second);
-        slider->setValue(defaultValues[i]);
+        slider->setRange(slidersRanges[i].first, slidersRanges[i].second);
+        slider->setValue(slidersDefaultValues[i]);
         m_gameSliders.push_back(slider);
 
-        connect(slider, &QSlider::valueChanged, [valueLabel](int value) {
-            valueLabel->setText(QString::number(value));
-        });
+        connect(slider, &QSlider::valueChanged, [valueLabel](int value) {valueLabel->setText(QString::number(value));});
 
         l_sliderLayout->addWidget(nameLabel);
         l_sliderLayout->addWidget(valueLabel);
@@ -135,10 +126,9 @@ void SettingsWindow::initRadioButton(){
     radioLayout->addStretch();
 }
 
-void initThemeSelector(){
+void SettingsWindow::initThemeSelector(){
     auto& settings = AppSettings::instance();
 
-    QHBoxLayout* themeLayout = new QHBoxLayout();
     QLabel* themeLabel = new QLabel("Тема:", this);
     themeLabel->setFixedWidth(80);
 
@@ -156,8 +146,7 @@ void initThemeSelector(){
         m_themeComboBox->setCurrentIndex(themeIndex);
     }
 
-    connect(m_themeComboBox, &QComboBox::currentTextChanged,
-            this, &SettingsWindow::onThemeChanged);
+   // connect(m_themeComboBox, &QComboBox::currentTextChanged, this, &SettingsWindow::onThemeChanged);
 
     themeLayout->addWidget(themeLabel);
     themeLayout->addWidget(m_themeComboBox);
@@ -258,11 +247,22 @@ void SettingsWindow::initButtons(){
 }
 
 void SettingsWindow::chooseTheme(const QString& theme){
-    if (theme == "Light") {
-        qApp->setStyleSheet("");
-        qApp->setStyle(QStyleFactory::create("Fusion"));
-    } else {
+    if (theme == "Light"){
+        QFile styleFile(":/styles/styles/light_theme.qss");
+        if (styleFile.open(QFile::ReadOnly)) {
+            QString styleSheet = QLatin1String(styleFile.readAll());
+            qApp->setStyleSheet(styleSheet);
+            styleFile.close();
+        }
+    }else if (theme == "Dark"){
         QFile styleFile(":/styles/styles/dark_theme.qss");
+        if (styleFile.open(QFile::ReadOnly)) {
+            QString styleSheet = QLatin1String(styleFile.readAll());
+            qApp->setStyleSheet(styleSheet);
+            styleFile.close();
+        }
+    }else if  (theme == "Cyber"){
+        QFile styleFile(":/styles/styles/cyber_theme.qss");
         if (styleFile.open(QFile::ReadOnly)) {
             QString styleSheet = QLatin1String(styleFile.readAll());
             qApp->setStyleSheet(styleSheet);
@@ -293,6 +293,8 @@ void SettingsWindow::onSaveButtonClicked()
     settings.setMapPath("maps/" + mapName);
 
     settings.setTheme(m_themeComboBox->currentText());
+
+    chooseTheme(m_themeComboBox->currentText());
 
     settings.sync();
 
@@ -348,9 +350,6 @@ void SettingsWindow::onSelectMapClicked() {
     }
 }
 
-void SettingsWindow::onThemeChanged(const QString& theme) {
-    chooseTheme(theme);
-}
 
 void SettingsWindow::onBackButtonClicked()
 {

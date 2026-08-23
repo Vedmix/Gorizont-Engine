@@ -45,16 +45,19 @@ private:
     void initUI();
     void initGameSettings();
     void initInterfaceSettings();
+
     void initRadioButton();
     void initMapSelector();
+    void initThemeSelector();
     void initSliders();
     void initButtons();
-    void initNotification();
 
-    void keyPressEvent(QKeyEvent *event) override;
+    void initNotification();
     void showNotification(const QString& text, bool success = true);
     void hideNotification();
-    void onThemeChanged(const QString& theme);
+
+    void keyPressEvent(QKeyEvent *event) override;
+
     void chooseTheme(const QString& theme);
 
     QVBoxLayout* m_mainLayout;
@@ -97,6 +100,15 @@ private:
         "Distance",
         "Speed"
     };
+
+    std::vector<std::pair<int, int>> slidersRanges = {
+        {30, 120},   // FOV
+        {100, 3840}, // Количество лучей
+        {100, 2000}, // Дальность
+        {50, 500}    // Скорость
+    };
+
+
 
     const std::vector<QString> radioButtonNames = {
         "DRUGS MOD"

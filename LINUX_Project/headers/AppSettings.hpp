@@ -15,6 +15,7 @@ public:
     static constexpr const char* DEFAULT_THEME = "Dark";
     static constexpr const char* THEME_DARK = "Dark";
     static constexpr const char* THEME_LIGHT = "Light";
+    static constexpr const char* THEME_CYBER= "Cyber";
 
     static AppSettings& instance();
 
@@ -54,7 +55,7 @@ public:
 private:
     AppSettings() : m_settings("Gorizont", "Game") {}
     QSettings m_settings;
-    QStringList m_availableThemes = { THEME_DARK, THEME_LIGHT };
+    QStringList m_availableThemes = { THEME_DARK, THEME_LIGHT, THEME_CYBER };
 
 
 

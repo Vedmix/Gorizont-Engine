@@ -144,3 +144,75 @@ QRadioButton::indicator:hover {
 #notificationLabel[success="false"] {
     color: #e74c3c;
 }
+
+/* ===== КОМБОБОКСЫ ===== */
+QComboBox {
+    background-color: #ffffff;
+    border: 2px solid #b0aaa4;
+    border-radius: 0px;
+    padding: 6px 12px;
+    color: #2d2d2d;
+    font-size: 14px;
+    font-weight: bold;
+    min-height: 32px;
+}
+
+QComboBox:hover {
+    border-color: #4CAF50;
+}
+
+QComboBox:focus {
+    border-color: #4CAF50;
+}
+
+QComboBox::drop-down {
+    background-color: #e8e4de;
+    border: none;
+    width: 30px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+QComboBox::down-arrow {
+    width: 10px;
+    height: 10px;
+    background-color: #4CAF50;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #ffffff;
+    border: 2px solid #4CAF50;
+    border-radius: 0px;
+    color: #2d2d2d;
+    selection-background-color: #4CAF50;
+    selection-color: #ffffff;
+    padding: 4px;
+}
+
+QComboBox QAbstractItemView::item {
+    padding: 6px 12px;
+}
+
+QComboBox QAbstractItemView::item:hover {
+    background-color: #e8f5e9;
+}
+
+/* ===== ГРУППОВЫЕ БОКСЫ ===== */
+QGroupBox {
+    background-color: transparent;
+    border: 2px solid #b0aaa4;
+    border-radius: 0px;
+    margin-top: 20px;
+    padding-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #2d2d2d;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 10px;
+    background-color: #f0ece6;
+    color: #2d2d2d;
+}

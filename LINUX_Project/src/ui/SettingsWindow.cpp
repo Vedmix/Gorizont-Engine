@@ -35,11 +35,9 @@ void SettingsWindow::initGameSettings(){
 
 
     initSliders();
-    initMapSelector();
     initRadioButton();
 
     m_gameLayout->addLayout(sliderLayout);
-    m_gameLayout->addLayout(mapLayout);
     m_gameLayout->addLayout(radioLayout);
     m_gameLayout->addStretch();
 }
@@ -51,8 +49,10 @@ void SettingsWindow::initInterfaceSettings() {
     m_interfaceLayout = new QVBoxLayout(m_interfaceGroup);
 
     initThemeSelector();
+    initMapSelector();
 
     m_interfaceLayout->addLayout(themeLayout);
+    m_interfaceLayout->addLayout(mapLayout);
     m_interfaceLayout->addStretch();
 }
 

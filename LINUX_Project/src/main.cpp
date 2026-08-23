@@ -14,14 +14,9 @@ int main(int argc, char *argv[])
         app.setOrganizationName("Gorizont");
         app.setApplicationName("Gorizont");
 
-        QFile styleFile(":/styles/styles/dark_theme.qss");
-        if (styleFile.open(QFile::ReadOnly)) {
-            QString styleSheet = QLatin1String(styleFile.readAll());
-            app.setStyleSheet(styleSheet);
-            styleFile.close();
-        }
-
         auto& settings = AppSettings::instance();
+
+        AppSettings::applyTheme(AppSettings::instance().theme());
 
         MainMenuWindow mainWindow;
         mainWindow.resize(settings.screenWidth(), settings.screenHeight());

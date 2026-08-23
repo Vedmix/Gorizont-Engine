@@ -88,3 +88,23 @@ void AppSettings::setTheme(const QString& theme) {
         m_settings.setValue("Interface/Theme", theme);
     }
 }
+
+void AppSettings::applyTheme(const QString& theme) {
+    QString styleFile;
+    if (theme == THEME_LIGHT) {
+        styleFile = ":/styles/styles/light_theme.qss";
+    } else if (theme == THEME_DARK) {
+        styleFile = ":/styles/styles/dark_theme.qss";
+    } else if (theme == THEME_CYBER) {
+        styleFile = ":/styles/styles/cyber_theme.qss";
+    } else {
+        styleFile = ":/styles/styles/dark_theme.qss";
+    }
+
+    QFile file(styleFile);
+    if (file.open(QFile::ReadOnly)) {
+        QString styleSheet = QLatin1String(file.readAll());
+        qApp->setStyleSheet(styleSheet);
+        file.close();
+    }
+}

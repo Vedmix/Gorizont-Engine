@@ -3,6 +3,9 @@
 #include <QSettings>
 #include <QByteArray>
 #include <QString>
+#include <QApplication>
+#include <QWidget>
+#include <QFile>
 
 class AppSettings {
 public:
@@ -41,6 +44,8 @@ public:
 
     //Откат к настройкам по умолчанию
     void toDefaultSettings();
+
+    static void applyTheme(const QString& theme);
 
     //Сохранение настроек
     void sync();

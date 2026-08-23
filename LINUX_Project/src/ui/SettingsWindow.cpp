@@ -3,6 +3,7 @@
 SettingsWindow::SettingsWindow(QWidget *parent): QWidget(parent)
 {
     initUI();
+
 }
 
 void SettingsWindow::initUI(){
@@ -23,7 +24,8 @@ void SettingsWindow::initUI(){
 
     setLayout(m_mainLayout);
 
-    chooseTheme(AppSettings::instance().theme());
+    AppSettings::applyTheme(AppSettings::instance().theme());
+
 
 }
 
@@ -146,8 +148,6 @@ void SettingsWindow::initThemeSelector(){
         m_themeComboBox->setCurrentIndex(themeIndex);
     }
 
-   // connect(m_themeComboBox, &QComboBox::currentTextChanged, this, &SettingsWindow::onThemeChanged);
-
     themeLayout->addWidget(themeLabel);
     themeLayout->addWidget(m_themeComboBox);
     themeLayout->addStretch();
@@ -246,30 +246,6 @@ void SettingsWindow::initButtons(){
     }
 }
 
-void SettingsWindow::chooseTheme(const QString& theme){
-    if (theme == "Light"){
-        QFile styleFile(":/styles/styles/light_theme.qss");
-        if (styleFile.open(QFile::ReadOnly)) {
-            QString styleSheet = QLatin1String(styleFile.readAll());
-            qApp->setStyleSheet(styleSheet);
-            styleFile.close();
-        }
-    }else if (theme == "Dark"){
-        QFile styleFile(":/styles/styles/dark_theme.qss");
-        if (styleFile.open(QFile::ReadOnly)) {
-            QString styleSheet = QLatin1String(styleFile.readAll());
-            qApp->setStyleSheet(styleSheet);
-            styleFile.close();
-        }
-    }else if  (theme == "Cyber"){
-        QFile styleFile(":/styles/styles/cyber_theme.qss");
-        if (styleFile.open(QFile::ReadOnly)) {
-            QString styleSheet = QLatin1String(styleFile.readAll());
-            qApp->setStyleSheet(styleSheet);
-            styleFile.close();
-        }
-    }
-}
 void SettingsWindow::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_Escape){
@@ -292,9 +268,9 @@ void SettingsWindow::onSaveButtonClicked()
     QString mapName = m_mapComboBox->currentText();
     settings.setMapPath("maps/" + mapName);
 
-    settings.setTheme(m_themeComboBox->currentText());
-
-    chooseTheme(m_themeComboBox->currentText());
+    QString themeName = m_themeComboBox->currentText();
+    settings.setTheme(themeName);
+    AppSettings::applyTheme(themeName);
 
     settings.sync();
 
@@ -313,17 +289,6 @@ void SettingsWindow::onDefaultButtonClicked()
     m_gameSliders[2]->setValue(static_cast<int>(AppSettings::DEFAULT_RENDER_DISTANCE));
     m_gameSliders[3]->setValue(static_cast<int>(AppSettings::DEFAULT_PLAYER_SPEED));
 
-    int mapIndex = m_mapComboBox->findText("map2.xml");
-    if (mapIndex >= 0) {
-        m_mapComboBox->setCurrentIndex(mapIndex);
-    }
-
-    int themeIndex = m_themeComboBox->findText(AppSettings::DEFAULT_THEME);
-    if (themeIndex >= 0) {
-        m_themeComboBox->setCurrentIndex(themeIndex);
-    }
-
-    chooseTheme(AppSettings::DEFAULT_THEME);
 
     showNotification("Сброшено!", true);
 

@@ -277,3 +277,7 @@ void World::setPlayerSpeed(double speed)
 {
     m_playerSpeed = speed;
 }
+
+void World::clearMap() {
+    map.objectSet.clear();
+}

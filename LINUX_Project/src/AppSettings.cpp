@@ -108,3 +108,13 @@ void AppSettings::applyTheme(const QString& theme) {
         file.close();
     }
 }
+
+void AppSettings::applyMap(const QString& map) {
+    QFileInfo fileInfo(map);
+    if (!fileInfo.exists()) {
+        return;
+    }
+
+    AppSettings::instance().setMapPath(map);
+    AppSettings::instance().sync();
+}

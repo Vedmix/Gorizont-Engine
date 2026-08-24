@@ -23,6 +23,8 @@ void GameWindow::startGame()
     }
 
     m_world.applySettings();
+    m_world.clearMap();
+    m_world.loadMapFromXML();
 
     if(m_timer && !m_timer->isActive()) {
         m_timer->start(16); // ~60 FPS

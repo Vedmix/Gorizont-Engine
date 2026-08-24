@@ -266,11 +266,13 @@ void SettingsWindow::onSaveButtonClicked()
     settings.setPlayerSpeed(m_gameSliders[3]->value());
 
     QString mapName = m_mapComboBox->currentText();
-    settings.setMapPath("maps/" + mapName);
+
 
     QString themeName = m_themeComboBox->currentText();
     settings.setTheme(themeName);
+
     AppSettings::applyTheme(themeName);
+    AppSettings::applyMap("maps/" + mapName);
 
     settings.sync();
 

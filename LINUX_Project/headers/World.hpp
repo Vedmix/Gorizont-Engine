@@ -44,6 +44,7 @@ public:
     void render();
     void updateFPS();
     void drawFPS();
+    void clearMap();
 
     // Qt
     void renderToTexture(sf::RenderTexture& texture);

@@ -5,6 +5,7 @@
 #include <QString>
 #include <QApplication>
 #include <QWidget>
+#include <QFileInfo>
 #include <QFile>
 
 class AppSettings {
@@ -46,6 +47,7 @@ public:
     void toDefaultSettings();
 
     static void applyTheme(const QString& theme);
+    static void applyMap(const QString& map);
 
     //Сохранение настроек
     void sync();

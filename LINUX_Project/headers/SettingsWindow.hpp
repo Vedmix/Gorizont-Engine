@@ -36,11 +36,30 @@ private slots:
     void onSelectMapClicked();
 
 private:
+    QVBoxLayout* mainLayout = nullptr;
+    QHBoxLayout* settingsLayout = nullptr;
+    QHBoxLayout* buttonsLayout = nullptr;
 
-    QVBoxLayout *sliderLayout = new QVBoxLayout();
-    QHBoxLayout *mapLayout = new QHBoxLayout();
-    QHBoxLayout *radioLayout = new QHBoxLayout();
-    QHBoxLayout *themeLayout = new QHBoxLayout();
+    QVBoxLayout* gameSettingsLayout = nullptr;
+    QVBoxLayout* interfaceSettingsLayout = nullptr;
+
+    QGroupBox* gameSettingsGroup = nullptr;
+    QGroupBox* interfaceSettingsGroup = nullptr;
+
+    QVBoxLayout* sliderLayout = nullptr;
+    QHBoxLayout* mapLayout = nullptr;
+    QHBoxLayout* radioLayout = nullptr;
+    QHBoxLayout* themeLayout = nullptr;
+
+    std::vector<QSlider*> gameSliders;
+    std::vector<QLabel*> sliderValueLabels;
+    QComboBox* mapComboBox = nullptr;
+    QComboBox* themeComboBox = nullptr;
+
+    QWidget* notificationWidget = nullptr;
+    QLabel* notificationLabel = nullptr;
+    QPropertyAnimation* notificationAnimation = nullptr;
+    QTimer* notificationTimer = nullptr;
 
     void initUI();
     void initGameSettings();
@@ -59,38 +78,6 @@ private:
     void keyPressEvent(QKeyEvent *event) override;
 
     void chooseTheme(const QString& theme);
-
-    QVBoxLayout* m_mainLayout;
-    QHBoxLayout* m_contentLayout;
-    QHBoxLayout* m_buttonsLayout;
-
-     QRadioButton* m_drugsRadioButton;
-
-    QWidget* notificationWidget = nullptr;
-    QLabel* notificationLabel = nullptr;
-    QPropertyAnimation* notificationAnimation = nullptr;
-    QTimer* notificationTimer = nullptr;
-
-    // Колонка "Игра"
-    QGroupBox* m_gameGroup;
-    QVBoxLayout* m_gameLayout;
-    std::vector<QSlider*> m_gameSliders;
-    std::vector<QLabel*> m_sliderValueLabels;
-    QComboBox* m_mapComboBox;
-    QPushButton* m_selectMapButton;
-
-    // Колонка "Интерфейс"
-    QGroupBox* m_interfaceGroup;
-    QVBoxLayout* m_interfaceLayout;
-    QComboBox* m_themeComboBox;
-
-    // Уведомления
-    QWidget* m_notificationWidget = nullptr;
-    QLabel* m_notificationLabel = nullptr;
-    QPropertyAnimation* m_notificationAnimation = nullptr;
-    QTimer* m_notificationTimer = nullptr;
-
-    // Кнопки
 
     int sliderWidth = 300;
 

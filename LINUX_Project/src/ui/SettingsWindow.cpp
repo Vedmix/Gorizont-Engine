@@ -7,22 +7,22 @@ SettingsWindow::SettingsWindow(QWidget *parent): QWidget(parent)
 }
 
 void SettingsWindow::initUI(){
-    m_mainLayout = new QVBoxLayout(this);
-    m_contentLayout = new QHBoxLayout();
+    mainLayout = new QVBoxLayout(this);
+    settingsLayout = new QHBoxLayout();
 
     initGameSettings();
     initInterfaceSettings();
 
-    m_contentLayout->addWidget(m_gameGroup);
-    m_contentLayout->addWidget(m_interfaceGroup);
+    settingsLayout->addWidget(gameSettingsGroup);
+    settingsLayout->addWidget(interfaceSettingsGroup);
 
     initButtons();
     initNotification();
 
-    m_mainLayout->addLayout(m_contentLayout);
-    m_mainLayout->addLayout(m_buttonsLayout);
+    mainLayout->addLayout(settingsLayout);
+    mainLayout->addLayout(buttonsLayout);
 
-    setLayout(m_mainLayout);
+    setLayout(mainLayout);
 
     AppSettings::applyTheme(AppSettings::instance().theme());
 
@@ -30,32 +30,38 @@ void SettingsWindow::initUI(){
 }
 
 void SettingsWindow::initGameSettings(){
-    m_gameGroup = new QGroupBox("Игра", this);
-    m_gameGroup->setFixedWidth(960);
-    m_gameGroup->setFixedHeight(300);
-    m_gameLayout = new QVBoxLayout(m_gameGroup);
+    gameSettingsGroup = new QGroupBox("Игра", this);
+    gameSettingsGroup->setFixedWidth(960);
+    gameSettingsGroup->setFixedHeight(300);
+    gameSettingsLayout = new QVBoxLayout(gameSettingsGroup);
+
+    sliderLayout = new QVBoxLayout();
+    radioLayout = new QHBoxLayout();
 
 
     initSliders();
     initRadioButton();
 
-    m_gameLayout->addLayout(sliderLayout);
-    m_gameLayout->addLayout(radioLayout);
-    m_gameLayout->addStretch();
+    gameSettingsLayout->addLayout(sliderLayout);
+    gameSettingsLayout->addLayout(radioLayout);
+    gameSettingsLayout->addStretch();
 }
 
 void SettingsWindow::initInterfaceSettings() {
-    m_interfaceGroup = new QGroupBox("Интерфейс", this);
-    m_interfaceGroup->setFixedWidth(920);
-    m_interfaceGroup->setFixedHeight(300);
-    m_interfaceLayout = new QVBoxLayout(m_interfaceGroup);
+    interfaceSettingsGroup = new QGroupBox("Интерфейс", this);
+    interfaceSettingsGroup->setFixedWidth(920);
+    interfaceSettingsGroup->setFixedHeight(300);
+    interfaceSettingsLayout = new QVBoxLayout(interfaceSettingsGroup);
+
+    themeLayout = new QHBoxLayout();
+    mapLayout = new QHBoxLayout();
 
     initThemeSelector();
     initMapSelector();
 
-    m_interfaceLayout->addLayout(themeLayout);
-    m_interfaceLayout->addLayout(mapLayout);
-    m_interfaceLayout->addStretch();
+    interfaceSettingsLayout->addLayout(themeLayout);
+    interfaceSettingsLayout->addLayout(mapLayout);
+    interfaceSettingsLayout->addStretch();
 }
 
 void SettingsWindow::initSliders(){
@@ -77,13 +83,13 @@ void SettingsWindow::initSliders(){
         valueLabel->setFixedWidth(40);
         valueLabel->setAlignment(Qt::AlignCenter);
         valueLabel->setProperty("class", "valueLabel");
-        m_sliderValueLabels.push_back(valueLabel);
+        sliderValueLabels.push_back(valueLabel);
 
         QSlider* slider = new QSlider(Qt::Horizontal, this);
         slider->setFixedWidth(sliderWidth);
         slider->setRange(slidersRanges[i].first, slidersRanges[i].second);
         slider->setValue(slidersDefaultValues[i]);
-        m_gameSliders.push_back(slider);
+        gameSliders.push_back(slider);
 
         connect(slider, &QSlider::valueChanged, [valueLabel](int value) {valueLabel->setText(QString::number(value));});
 
@@ -97,64 +103,66 @@ void SettingsWindow::initSliders(){
 
 void SettingsWindow::initMapSelector(){
     auto& settings = AppSettings::instance();
+    static QPushButton* selectMapButton = nullptr;
     QLabel* mapLabel = new QLabel("Карта:", this);
     mapLabel->setFixedWidth(120);
 
-    m_mapComboBox = new QComboBox(this);
-    m_mapComboBox->setFixedWidth(150);
-    m_mapComboBox->addItem("map1.xml");
-    m_mapComboBox->addItem("map2.xml");
+    mapComboBox = new QComboBox(this);
+    mapComboBox->setFixedWidth(150);
+    mapComboBox->addItem("map1.xml");
+    mapComboBox->addItem("map2.xml");
 
     QString currentMap = settings.mapPath();
-    int index = m_mapComboBox->findText(QFileInfo(currentMap).fileName());
+    int index = mapComboBox->findText(QFileInfo(currentMap).fileName());
     if (index >= 0) {
-        m_mapComboBox->setCurrentIndex(index);
+        mapComboBox->setCurrentIndex(index);
     }
 
-    m_selectMapButton = new QPushButton("Обзор...", this);
-    m_selectMapButton->setFixedSize(200, 50);
-    connect(m_selectMapButton, &QPushButton::clicked, this, &SettingsWindow::onSelectMapClicked);
+    selectMapButton = new QPushButton("Обзор...", this);
+    selectMapButton->setFixedSize(200, 50);
+    connect(selectMapButton, &QPushButton::clicked, this, &SettingsWindow::onSelectMapClicked);
 
     mapLayout->addWidget(mapLabel);
-    mapLayout->addWidget(m_mapComboBox);
-    mapLayout->addWidget(m_selectMapButton);
+    mapLayout->addWidget(mapComboBox);
+    mapLayout->addWidget(selectMapButton);
     mapLayout->addStretch();
 }
 
 void SettingsWindow::initRadioButton(){
-    m_drugsRadioButton = new QRadioButton("DRUGS MOD", this);
-    m_drugsRadioButton->setFixedSize(200, 50);
-    radioLayout->addWidget(m_drugsRadioButton);
+    static QRadioButton* drugsRadioButton = nullptr;
+    drugsRadioButton = new QRadioButton("DRUGS MOD", this);
+    drugsRadioButton->setFixedSize(200, 50);
+    radioLayout->addWidget(drugsRadioButton);
     radioLayout->addStretch();
 }
 
 void SettingsWindow::initThemeSelector(){
     auto& settings = AppSettings::instance();
-
     QLabel* themeLabel = new QLabel("Тема:", this);
     themeLabel->setFixedWidth(80);
 
-    m_themeComboBox = new QComboBox(this);
-    m_themeComboBox->setFixedWidth(200);
+    themeComboBox = new QComboBox(this);
+    themeComboBox->setFixedWidth(200);
 
     QStringList themes = settings.availableThemes();
     for (const QString& theme : themes) {
-        m_themeComboBox->addItem(theme);
+        themeComboBox->addItem(theme);
     }
 
     QString currentTheme = settings.theme();
-    int themeIndex = m_themeComboBox->findText(currentTheme);
+    int themeIndex = themeComboBox->findText(currentTheme);
     if (themeIndex >= 0) {
-        m_themeComboBox->setCurrentIndex(themeIndex);
+        themeComboBox->setCurrentIndex(themeIndex);
     }
 
     themeLayout->addWidget(themeLabel);
-    themeLayout->addWidget(m_themeComboBox);
+    themeLayout->addWidget(themeComboBox);
     themeLayout->addStretch();
 }
 
 void SettingsWindow::initNotification()
 {
+
     notificationWidget = new QWidget(this);
     notificationWidget->setObjectName("notificationWidget");
     notificationWidget->setFixedSize(180, 50);
@@ -223,15 +231,15 @@ void SettingsWindow::hideNotification()
 }
 
 void SettingsWindow::initButtons(){
-    m_buttonsLayout = new QHBoxLayout();
-    m_buttonsLayout->setAlignment(Qt::AlignCenter);
-    m_buttonsLayout->setSpacing(20);
+    buttonsLayout = new QHBoxLayout();
+    buttonsLayout->setAlignment(Qt::AlignCenter);
+    buttonsLayout->setSpacing(20);
 
 
     for(size_t i = 0; i < buttonNames.size(); i++){
         QPushButton *button = new QPushButton(buttonNames[i], this);
         button->setFixedSize(200, 50);
-        m_buttonsLayout->addWidget(button);
+        buttonsLayout->addWidget(button);
         switch(i){
         case 0:
             connect(button, &QPushButton::clicked, this, &SettingsWindow::onSaveButtonClicked);
@@ -259,16 +267,16 @@ void SettingsWindow::onSaveButtonClicked()
 {
     auto& settings = AppSettings::instance();
 
-    double fovDeg = m_gameSliders[0]->value();
+    double fovDeg = gameSliders[0]->value();
     settings.setFOV(fovDeg * M_PI / 180.0);
-    settings.setNumberOfRays(m_gameSliders[1]->value());
-    settings.setRenderDistance(m_gameSliders[2]->value());
-    settings.setPlayerSpeed(m_gameSliders[3]->value());
+    settings.setNumberOfRays(gameSliders[1]->value());
+    settings.setRenderDistance(gameSliders[2]->value());
+    settings.setPlayerSpeed(gameSliders[3]->value());
 
-    QString mapName = m_mapComboBox->currentText();
+    QString mapName = mapComboBox->currentText();
 
 
-    QString themeName = m_themeComboBox->currentText();
+    QString themeName = themeComboBox->currentText();
     settings.setTheme(themeName);
 
     AppSettings::applyTheme(themeName);
@@ -281,15 +289,16 @@ void SettingsWindow::onSaveButtonClicked()
 }
 
 void SettingsWindow::onDefaultButtonClicked()
+
 {
     auto& settings = AppSettings::instance();
 
     settings.toDefaultSettings();
 
-    m_gameSliders[0]->setValue(static_cast<int>(AppSettings::DEFAULT_FOV * 180.0 / M_PI));
-    m_gameSliders[1]->setValue(static_cast<int>(AppSettings::DEFAULT_NUMBER_OF_RAYS));
-    m_gameSliders[2]->setValue(static_cast<int>(AppSettings::DEFAULT_RENDER_DISTANCE));
-    m_gameSliders[3]->setValue(static_cast<int>(AppSettings::DEFAULT_PLAYER_SPEED));
+    gameSliders[0]->setValue(static_cast<int>(AppSettings::DEFAULT_FOV * 180.0 / M_PI));
+    gameSliders[1]->setValue(static_cast<int>(AppSettings::DEFAULT_NUMBER_OF_RAYS));
+    gameSliders[2]->setValue(static_cast<int>(AppSettings::DEFAULT_RENDER_DISTANCE));
+    gameSliders[3]->setValue(static_cast<int>(AppSettings::DEFAULT_PLAYER_SPEED));
 
 
     showNotification("Сброшено!", true);
@@ -306,12 +315,12 @@ void SettingsWindow::onSelectMapClicked() {
 
     if (!filePath.isEmpty()) {
         QString fileName = QFileInfo(filePath).fileName();
-        int index = m_mapComboBox->findText(fileName);
+        int index = mapComboBox->findText(fileName);
         if (index >= 0) {
-            m_mapComboBox->setCurrentIndex(index);
+            mapComboBox->setCurrentIndex(index);
         } else {
-            m_mapComboBox->addItem(fileName);
-            m_mapComboBox->setCurrentIndex(m_mapComboBox->count() - 1);
+            mapComboBox->addItem(fileName);
+            mapComboBox->setCurrentIndex(mapComboBox->count() - 1);
         }
         showNotification("Карта выбрана", true);
     }

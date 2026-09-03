@@ -11,7 +11,7 @@ void Player::moveWithKeyboard(double deltaTime, const Map& map) {
     Point2D newPos;
     Point2D moveVec;
 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
         moveVec = calculateMovementVector(speed);
         newPos = position + moveVec;
 
@@ -24,7 +24,7 @@ void Player::moveWithKeyboard(double deltaTime, const Map& map) {
         }
     }
 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){
         moveVec = calculateMovementVector(-speed);
         newPos = position + moveVec;
 
@@ -37,7 +37,7 @@ void Player::moveWithKeyboard(double deltaTime, const Map& map) {
         }
     }
 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)){
         moveVec = calculateMovementVector(speed, -M_PI/2);
         newPos = position + moveVec;
 
@@ -50,7 +50,7 @@ void Player::moveWithKeyboard(double deltaTime, const Map& map) {
         }
     }
 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){
         moveVec = calculateMovementVector(speed, M_PI/2);
         newPos = position + moveVec;
 
@@ -63,11 +63,11 @@ void Player::moveWithKeyboard(double deltaTime, const Map& map) {
         }
     }
 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)){
         direction += velocity * deltaTime * 0.01;
     }
 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)){
         direction -= velocity * deltaTime * 0.01;
     }
 

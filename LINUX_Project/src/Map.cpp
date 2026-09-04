@@ -30,13 +30,13 @@ void Map::render(sf::RenderTarget& window){
 
     // Устанавливаем вид для мини-карты в координатах ЭКРАНА
     auto& settings = AppSettings::instance();
-    sf::View minimapView(sf::FloatRect(0, 0, settings.screenWidth(), settings.screenHeight()));
+    sf::View minimapView(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(settings.screenWidth(), settings.screenHeight())));
     window.setView(minimapView);
 
     // Фон мини-карты
     sf::RectangleShape minimapBg(sf::Vector2f(settings.screenWidth() * MAP_SCALE, settings.screenHeight() * MAP_SCALE));
     minimapBg.setFillColor(sf::Color::Black);
-    minimapBg.setPosition(0, 0);
+    minimapBg.setPosition(sf::Vector2f(0, 0));
     window.draw(minimapBg);
 
     for (const auto& obj : objectSet) {
@@ -50,8 +50,8 @@ void Map::render(sf::RenderTarget& window){
 
             sf::CircleShape shape(radius * MAP_SCALE);
             shape.setFillColor(sf::Color(200, 200, 200));
-            shape.setPosition(pos.getX() * MAP_SCALE, pos.getY() * MAP_SCALE);
-            shape.setOrigin(radius * MAP_SCALE, radius * MAP_SCALE);
+            shape.setPosition(sf::Vector2f(pos.getX() * MAP_SCALE, pos.getY() * MAP_SCALE));
+            shape.setOrigin(sf::Vector2f(radius * MAP_SCALE, radius * MAP_SCALE));
             window.draw(shape);
         }
         else if (auto polygon = std::dynamic_pointer_cast<Polygon2D>(obj)) {

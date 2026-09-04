@@ -41,8 +41,14 @@ void GameWindow::stopGame()
 bool GameWindow::initializeSFML()
 {
     auto& settings = AppSettings::instance();
+    unsigned int width = settings.screenWidth();
+    unsigned int height = settings.screenHeight();
 
-    if (!m_renderTexture.create(settings.screenWidth(), settings.screenHeight())) {
+    // SFML 3.x - используем конструктор с параметрами
+    m_renderTexture = sf::RenderTexture({width, height});
+
+    // Проверяем, что текстура создалась
+    if (m_renderTexture.getSize().x == 0 || m_renderTexture.getSize().y == 0) {
         qDebug() << "Failed to create SFML render texture!";
         return false;
     }

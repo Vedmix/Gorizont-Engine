@@ -51,17 +51,10 @@ linux {
     QMAKE_CXXFLAGS += -Wall -Wextra -std=c++17
 
     # Пути к заголовкам SFML
-    INCLUDEPATH += /usr/include/SFML
+    INCLUDEPATH += /usr/include
 
-    # Только ОСНОВНЫЕ библиотеки SFML (в ALT Linux: libsfml-*)
-    LIBS += -lsfml-graphics
-    LIBS += -lsfml-window
-    LIBS += -lsfml-system
-
-    # Минимальный набор системных библиотек
-    LIBS += -lGL
-    LIBS += -lpthread
-    LIBS += -lX11
+     LIBS += -L/usr/lib/x86_64-linux-gnu
+     LIBS += -lsfml-graphics -lsfml-window -lsfml-system
 }
 
 DISTFILES += \

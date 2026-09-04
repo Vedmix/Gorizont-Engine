@@ -12,16 +12,19 @@ Camera::~Camera(){}
 void Camera::drawCameraOnMap(sf::RenderTarget& window, double playerDirection){
     sf::CircleShape cameraShape(8);
     cameraShape.setFillColor(sf::Color::Green);
-    cameraShape.setPosition(position.getX() * Map::MAP_SCALE, position.getY() * Map::MAP_SCALE);
-    cameraShape.setOrigin(8, 8);
+    cameraShape.setPosition(sf::Vector2f(position.getX() * Map::MAP_SCALE, position.getY() * Map::MAP_SCALE));
+    cameraShape.setOrigin(sf::Vector2f(8, 8));
     window.draw(cameraShape);
 
-    sf::Vertex directionLine[] = {
-        sf::Vertex(sf::Vector2f(position.getX() * Map::MAP_SCALE, position.getY() * Map::MAP_SCALE), sf::Color::Red),
-        sf::Vertex(sf::Vector2f(position.getX() * Map::MAP_SCALE + cos(playerDirection) * 30, position.getY() * Map::MAP_SCALE + sin(playerDirection) * 30), sf::Color::Red)
-    };
+    sf::Vertex directionLine[2];
 
-    window.draw(directionLine, 2, sf::Lines);
+    directionLine[0].position = sf::Vector2f(position.getX() * Map::MAP_SCALE,position.getY() * Map::MAP_SCALE);
+    directionLine[0].color = sf::Color::Red;
+
+    directionLine[1].position = sf::Vector2f(position.getX() * Map::MAP_SCALE + cos(playerDirection) * 30,position.getY() * Map::MAP_SCALE + sin(playerDirection) * 30);
+    directionLine[1].color = sf::Color::Red;
+
+    window.draw(directionLine, 2, sf::PrimitiveType::Lines);
 }
 
 void Camera::drawOneCameraSigment(sf::RenderTarget& window, double viewH, int sigmentNum, double sectorWidth){
@@ -29,7 +32,7 @@ void Camera::drawOneCameraSigment(sf::RenderTarget& window, double viewH, int si
         return;
     }
     sf::RectangleShape sigment(sf::Vector2f(sectorWidth, viewH*2));
-    sigment.setPosition(sectorWidth*sigmentNum, AppSettings::instance().screenHeight()/2 - viewH);
+    sigment.setPosition(sf::Vector2f(sectorWidth*sigmentNum, AppSettings::instance().screenHeight()/2 - viewH));
 
     double brightess = 255 * (viewH/Object2D::height);
     sigment.setFillColor(sf::Color(255,255,255,brightess));

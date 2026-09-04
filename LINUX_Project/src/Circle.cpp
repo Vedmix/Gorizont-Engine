@@ -26,9 +26,9 @@ double Circle::getRadius() const{
 void Circle::draw(sf::RenderTarget& window, const double mapScale){
     sf::CircleShape cirShape;
     cirShape.setRadius(radius*mapScale);
-    cirShape.setPosition(position.getX()*mapScale, position.getY()*mapScale);
+    cirShape.setPosition(sf::Vector2f(position.getX()*mapScale, position.getY()*mapScale));
     cirShape.setFillColor(color);
-    cirShape.setOrigin(radius*mapScale, radius*mapScale);
+    cirShape.setOrigin(sf::Vector2f(radius*mapScale, radius*mapScale));
     window.draw(cirShape);
 }
 

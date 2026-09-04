@@ -23,7 +23,7 @@ void Polygon2D::draw(sf::RenderTarget& window, const double mapScale){
         i++;
     }
     polygon.setFillColor(color);
-    polygon.setPosition(position.getX()*mapScale, position.getY()*mapScale);
+    polygon.setPosition(sf::Vector2f(position.getX()*mapScale, position.getY()*mapScale));
     window.draw(polygon);
 }
 

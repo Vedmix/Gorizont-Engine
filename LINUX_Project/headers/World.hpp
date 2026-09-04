@@ -10,6 +10,7 @@
 #include "Player.hpp"
 #include "Camera.hpp"
 #include "AppSettings.hpp"
+#include <optional>
 
 
 class World {

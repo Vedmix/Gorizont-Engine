@@ -16,11 +16,11 @@ World::World():
     this->loadMapFromXML();
 
     if(!USE_QT){
-        window.create(sf::VideoMode(settings.screenWidth(), settings.screenHeight()), "Gorizont(SFML Mode)");
+        window.create(sf::VideoMode(sf::Vector2u(settings.screenWidth(), settings.screenHeight())), "Gorizont(SFML Mode)");
         window.setFramerateLimit(60);
     }
 
-    font.loadFromFile("fonts/font.ttf");
+    font.openFromFile("fonts/font.ttf");
 }
 
 World::~World(){}
@@ -63,12 +63,11 @@ void World::updateFPS() {
 
 void World::drawFPS() {
     if(!USE_QT){
-        sf::Text fpsText;
-        fpsText.setFont(font);
+        sf::Text fpsText(font);
         fpsText.setCharacterSize(30);
         fpsText.setFillColor(sf::Color::Green);
 
-        fpsText.setPosition(AppSettings::instance().screenWidth() - 200, 20);
+        fpsText.setPosition(sf::Vector2f(AppSettings::instance().screenWidth() - 200, 20));
         fpsText.setString("FPS: " + std::to_string(static_cast<int>(currentFPS)));
 
         window.draw(fpsText);
@@ -94,13 +93,21 @@ void World::setColor(unsigned int _color){
 
 void World::handleEvents(){
     if(!USE_QT){
-        sf::Event event;
-        while (window.pollEvent(event))
+        while (auto event = window.pollEvent())
         {
-            if (event.type == sf::Event::Closed)
+            if (event->is<sf::Event::Closed>())
+            {
                 isRunning = false;
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-                isRunning = false;
+            }
+            else if (event->is<sf::Event::KeyPressed>())
+            {
+                // Используем getIf() который возвращает указатель
+                if (const auto* keyEvent = event->getIf<sf::Event::KeyPressed>())
+                {
+                    if (keyEvent->scancode == sf::Keyboard::Scan::Escape)
+                        isRunning = false;
+                }
+            }
         }
     }
 }

@@ -18,3 +18,4 @@ Makefile
 
 # Do not respect qtcreator user config files
 *.qtcreator
+*.qtc_clangd

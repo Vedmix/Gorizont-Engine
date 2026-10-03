@@ -175,8 +175,6 @@ void GameWindow::onUpdate()
 void GameWindow::closeEvent(QCloseEvent* event) {
     auto& settings = AppSettings::instance();
 
-    settings.setScreenWidth(width());
-    settings.setScreenHeight(height());
     settings.sync();
 
     QWidget::closeEvent(event);

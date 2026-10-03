@@ -3,6 +3,7 @@
 #include <GameWindow.hpp>
 #include <SettingsWindow.hpp>
 #include <CreditsWindow.hpp>
+#include <EditorWindow.hpp>
 #include <AppSettings.hpp>
 
 #include <QMainWindow>
@@ -26,6 +27,7 @@ private slots:
 
     void onGameFinished();
     void onSettingsClosed();
+    void onEditorClosed();
     void onCreditsClosed();
 protected:
     void closeEvent(QCloseEvent* event) override;
@@ -36,10 +38,12 @@ private:
     GameWindow* gameWindow;
     SettingsWindow* settingsWindow;
     CreditsWindow* creditsWindow;
+    EditorWindow* editorWindow;
 
     const std::vector<QString> buttonNames = {
         "Играть",
         "Настройки",
+        "Редактор",
         "Об игре",
         "Выход",
     };

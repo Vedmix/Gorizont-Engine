@@ -91,6 +91,18 @@ void MainMenuWindow::handleButton(int id)
         settingsWindow->raise();
         break;
     case 2:
+        editorWindow = new EditorWindow(nullptr);
+        editorWindow->setGeometry(0, 0, AppSettings::instance().screenWidth(), AppSettings::instance().screenHeight());
+        editorWindow->setWindowTitle("Редактор");
+
+        connect(editorWindow, &EditorWindow::backToMenu,this, &MainMenuWindow::onEditorClosed);
+
+        this->hide();
+        editorWindow->show();
+        editorWindow->activateWindow();
+        editorWindow->raise();
+        break;
+    case 3:
         creditsWindow = new CreditsWindow(nullptr);
         creditsWindow->setGeometry(0, 0, AppSettings::instance().screenWidth(), AppSettings::instance().screenHeight());
         creditsWindow->setWindowTitle("Авторы");
@@ -102,7 +114,7 @@ void MainMenuWindow::handleButton(int id)
         creditsWindow->activateWindow();
         creditsWindow->raise();
         break;
-    case 3: // Выход
+    case 4: // Выход
         this->close();
         break;
     }
@@ -123,6 +135,17 @@ void MainMenuWindow::onSettingsClosed()
 {
     if (settingsWindow) {
         settingsWindow->hide();
+    }
+
+    this->show();
+    this->activateWindow();
+    this->raise();
+}
+
+void MainMenuWindow::onEditorClosed()
+{
+    if (editorWindow) {
+        editorWindow->hide();
     }
 
     this->show();

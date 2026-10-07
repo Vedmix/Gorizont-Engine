@@ -24,12 +24,20 @@ signals:
 private slots:
     void onBackButtonClicked();
 private:
-    void initButtons();
+    void initEditor();
+    void initMap();
+    void initToolsBar();
+    void initButtonsBar();
 
+    QHBoxLayout* mainLayout;
+    QHBoxLayout* mapLayout;
+    QHBoxLayout* buttonsLayout;
+    QVBoxLayout* toolsLayout;
+    QVBoxLayout* editorLayout;
+
+    void initButtons();
     void keyPressEvent(QKeyEvent *event) override;
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    QHBoxLayout *buttonsLayout = new QHBoxLayout();
 
     const std::vector<QString> buttonNames = {
         "Выход"

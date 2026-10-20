@@ -1,8 +1,13 @@
 #include "../headers/GameWindow.hpp"
 
-GameWindow::GameWindow(QWidget *parent) : QWidget(parent), m_timer(new QTimer(this)), m_initialized(false), m_world(), m_currentFPS(0)
+GameWindow::GameWindow(QWidget *parent, const QString& mapPath)
+    : QWidget(parent), m_timer(new QTimer(this)), m_initialized(false), m_world(), m_currentFPS(0)
 {
     connect(m_timer, &QTimer::timeout, this, &GameWindow::onUpdate);
+
+    if(!mapPath.isEmpty()){
+        m_world.setMapPath(mapPath.toStdString());
+    }
 
     auto& settings = AppSettings::instance();
     resize(settings.screenWidth(), settings.screenHeight());

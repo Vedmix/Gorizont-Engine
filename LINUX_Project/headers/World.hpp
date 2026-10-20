@@ -34,6 +34,8 @@ private:
     float fps;
     float currentFPS = 0;
 
+    //test
+    bool m_customMapPath = false;
 public:
     World();
     ~World();
@@ -46,6 +48,7 @@ public:
     void updateFPS();
     void drawFPS();
     void clearMap();
+
 
     // Qt
     void renderToTexture(sf::RenderTexture& texture);
@@ -64,6 +67,10 @@ public:
     void setRenderDistance(double distance);
     void setNumberOfRays(int rays);
     void setPlayerSpeed(double speed);
+
+    void setMapPath(const std::string& path);
+    void renderMapPreview(sf::RenderTarget& target);
+
 
 private:
     void readWallsXML();

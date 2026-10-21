@@ -18,6 +18,7 @@
 #include <QTextStream>
 #include "World.hpp"
 #include "GameWindow.hpp"
+#include "MapCanvas.hpp"
 
 class EditorWindow : public QWidget
 {
@@ -30,6 +31,8 @@ signals:
 private slots:
     void onBackButtonClicked();
     void onTestButtonClicked();
+    void onSaveButtonClicked();
+    void onAddCircleClicked();
     void onTestFinished();
 
 private:
@@ -46,7 +49,9 @@ private:
     QVBoxLayout* toolsLayout;
     QVBoxLayout* editorLayout;
 
-    QString createTemplateMap();
+    QString saveTemplateMap();
+
+    MapCanvas* m_canvas = nullptr;
 
     void initEditor();
     void initMap();
@@ -59,6 +64,7 @@ private:
 
     const std::vector<QString> buttonNames = {
         "Протестировать",
+        "Сохранить",
         "Выход"
     };    
 };

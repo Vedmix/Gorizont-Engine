@@ -12,7 +12,7 @@ EditorWindow::EditorWindow(QWidget *parent):QWidget(parent)
 
     setLayout(mainLayout);
 
-    m_templatePath = createTemplateMap();
+    m_templatePath = saveTemplateMap();
     updateMinimap();
 }
 
@@ -30,17 +30,16 @@ void EditorWindow::initEditor(){
 void EditorWindow::initToolsBar(){
     toolsLayout = new QVBoxLayout();
 
+    QPushButton* addCircleButton = new QPushButton("Добавить круг", this);
+    connect(addCircleButton, &QPushButton::clicked, this, &EditorWindow::onAddCircleClicked);
+    toolsLayout->addWidget(addCircleButton);
+    toolsLayout->addStretch();
 }
 
 void EditorWindow::initMap() {
     mapLayout = new QHBoxLayout();
-
-    m_mapLabel = new QLabel();
-    m_mapLabel->setAlignment(Qt::AlignCenter);
-    m_mapLabel->setMinimumSize(1, 1);
-    m_mapLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    m_mapLabel->installEventFilter(this);
-    mapLayout->addWidget(m_mapLabel);
+    m_canvas = new MapCanvas(this);
+    mapLayout->addWidget(m_canvas);
 }
 
 void EditorWindow::initButtonsBar(){
@@ -53,19 +52,25 @@ void EditorWindow::initButtonsBar(){
         button->setFixedSize(200, 50);
         buttonsLayout->addWidget(button);
         switch(i){
-        case 0:
-            connect(button, &QPushButton::clicked, this, &EditorWindow::onTestButtonClicked);
-            break;
-        case 1:
-            connect(button, &QPushButton::clicked, this, &EditorWindow::onBackButtonClicked);
-            break;
+        case 0: connect(button, &QPushButton::clicked, this, &EditorWindow::onTestButtonClicked); break;
+        case 1: connect(button, &QPushButton::clicked, this, &EditorWindow::onSaveButtonClicked); break;
+        case 2: connect(button, &QPushButton::clicked, this, &EditorWindow::onBackButtonClicked); break;
         }
     }
 }
 
-QString EditorWindow::createTemplateMap(){
+QString EditorWindow::saveTemplateMap(){
     auto& settings = AppSettings::instance();
-    const int  wall_size = 30;
+    const int width  = settings.screenWidth();
+    const int height = settings.screenHeight();
+    const int thickness = 30;
+
+    const QList<QRect> walls = {
+        QRect(0,                 0,                  width,     thickness),
+        QRect(0,                 height - thickness, width,     thickness),
+        QRect(0,                 0,                  thickness, height - thickness),
+        QRect(width - thickness, 0,                  thickness, height - thickness)
+    };
 
     QDir().mkpath("maps");
     const QString path = "maps/template_map.xml";
@@ -77,16 +82,12 @@ QString EditorWindow::createTemplateMap(){
     }
 
     QTextStream out(&file);
-    out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<map>\n    <walls>\n";
-    auto wall = [&](int x, int y, int w, int h){
-        out << "        <wall x=\"" << x << "\" y=\"" << y << "\" width=\"" << w
-            << "\" height=\"" << h << "\" color=\"0x808080FF\"/>\n";
-    };
-    wall(0, 0, settings.screenWidth(), wall_size);
-    wall(0, settings.screenHeight() - wall_size, settings.screenWidth(), wall_size);
-    wall(0, 0, wall_size, settings.screenHeight() - wall_size);
-    wall(settings.screenWidth() - wall_size, 0, wall_size, settings.screenHeight() - wall_size);
-    out << "    </walls>\n</map>\n";
+    out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<map>\n     <circles>\n";
+    for(const CircleItem& c : m_canvas->circles()){
+        out << QString("        <circle x=\"%1\" y=\"%2\" radius=\"%3\" color=\"0xC8C8C8FF\"/>\n")
+        .arg(c.pos.x(), 0, 'f', 1).arg(c.pos.y(), 0, 'f', 1).arg(c.radius, 0, 'f', 1);
+    }
+    out << "    </circles>\n</map>\n";
 
     return path;
 }
@@ -94,21 +95,20 @@ QString EditorWindow::createTemplateMap(){
 void EditorWindow::updateMinimap(){
     if(m_templatePath.isEmpty()) return;
 
-    auto& settings = AppSettings::instance();
+    auto& s = AppSettings::instance();
 
     m_previewWorld.clearMap();
     m_previewWorld.setMapPath(m_templatePath.toStdString());
     m_previewWorld.loadMapFromXML();
 
-    sf::RenderTexture tex({(unsigned)settings.screenWidth(), (unsigned)settings.screenHeight()});
-    tex.clear(sf::Color(30, 30, 30));
+    sf::RenderTexture tex({(unsigned)s.screenWidth(), (unsigned)s.screenHeight()});
     m_previewWorld.renderMapPreview(tex);
     tex.display();
 
     sf::Image img = tex.getTexture().copyToImage();
-    m_mapPixmap = QPixmap::fromImage(QImage(img.getPixelsPtr(), img.getSize().x, img.getSize().y,QImage::Format_RGBA8888).copy());
+    QPixmap bg = QPixmap::fromImage(QImage(img.getPixelsPtr(), img.getSize().x, img.getSize().y, QImage::Format_RGBA8888).copy());
 
-    m_mapLabel->setPixmap(m_mapPixmap.scaled(m_mapLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    m_canvas->setBackground(bg, QSize(s.screenWidth(), s.screenHeight()), 30);
 }
 
 // Подгон миникарты под размер label
@@ -137,7 +137,14 @@ void EditorWindow::onBackButtonClicked(){
     close();
 }
 
+void EditorWindow::onAddCircleClicked(){ m_canvas->addCircle(); }
+
+void EditorWindow::onSaveButtonClicked(){ m_templatePath = saveTemplateMap(); }
+
+
 void EditorWindow::onTestButtonClicked(){
+    m_templatePath = saveTemplateMap();   // сохраняем, чтобы игра увидела текущие круги
+    if(m_templatePath.isEmpty()) return;
 
     m_game = new GameWindow(nullptr, QDir::current().absoluteFilePath(m_templatePath));
     m_game->setAttribute(Qt::WA_DeleteOnClose);

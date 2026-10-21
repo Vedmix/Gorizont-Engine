@@ -129,6 +129,10 @@ void EditorWindow::keyPressEvent(QKeyEvent *event)
 }
 
 void EditorWindow::onBackButtonClicked(){
+    QFile file("maps/template_map.xml");
+    if (!file.remove()) {
+        qDebug() << "Cannot delete template map";
+    }
     emit backToMenu();
     close();
 }

@@ -34,39 +34,26 @@ private:
     float fps;
     float currentFPS = 0;
 
+    void readWallsXML();
+    void readCirclesXML();
+    void setCircleMovable(double deltaTime);
+
 public:
     World();
     ~World();
-
-    // SFML
-    void run();
-    void update(double deltaTime);
-    void handleEvents();
-    void render();
-    void updateFPS();
-    void drawFPS();
-    void clearMap();
-
-    // Qt
-    void renderToTexture(sf::RenderTexture& texture);
-
-    void setMap(const Map& newMap);
     const Map& getMap() const;
+
+    void update(double deltaTime);
+    void clearMap();
+    void renderToTexture(sf::RenderTexture& texture);
+    void setMap(const Map& newMap);
     void addObject(std::shared_ptr<Object2D> object);
     void setColor(unsigned int _color);
-
     void loadMapFromXML();
     void display2DMap(sf::RenderTarget& target);
-
     void applySettings();
-
     void setFOV(double fov);
     void setRenderDistance(double distance);
     void setNumberOfRays(int rays);
     void setPlayerSpeed(double speed);
-
-private:
-    void readWallsXML();
-    void readCirclesXML();
-    void setCircleMovable(double deltaTime);
 };

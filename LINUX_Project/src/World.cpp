@@ -15,63 +15,15 @@ World::World():
 
     this->loadMapFromXML();
 
-    if(!USE_QT){
-        window.create(sf::VideoMode(sf::Vector2u(settings.screenWidth(), settings.screenHeight())), "Gorizont(SFML Mode)");
-        window.setFramerateLimit(60);
-    }
-
     font.openFromFile("fonts/font.ttf");
 }
 
 World::~World(){}
 
-void World::run(){
-    if(!USE_QT){
-        while (isRunning && window.isOpen()){
-            double deltaTime = clock.restart().asSeconds();
-            handleEvents();
-            update(deltaTime);
-            render();
-        }
-    }
-}
-
 void World::update(double deltaTime){
-    if(!USE_QT){
-        window.clear(color);
-        updateFPS();
-    }
-
     player.moveWithKeyboard(deltaTime, map);
     // camera.setMap(map); //ПОКА НИЧЕГО НЕ ДВИЖЕТСЯ НА КАРТЕ - НЕ ЮЗАТЬ ОБНОВЛЕНИЕ КАРТЫ
     // setCircleMovable(deltaTime);
-}
-
-void World::updateFPS() {
-    if(!USE_QT){
-        static int frameCount = 0;
-        static sf::Clock fpsClock;
-
-        frameCount++;
-
-        if (fpsClock.getElapsedTime().asMilliseconds() >= 100) {
-            currentFPS = frameCount / (fpsClock.restart().asMilliseconds() / 1000.0f);
-            frameCount = 0;
-        }
-    }
-}
-
-void World::drawFPS() {
-    if(!USE_QT){
-        sf::Text fpsText(font);
-        fpsText.setCharacterSize(30);
-        fpsText.setFillColor(sf::Color::Green);
-
-        fpsText.setPosition(sf::Vector2f(AppSettings::instance().screenWidth() - 200, 20));
-        fpsText.setString("FPS: " + std::to_string(static_cast<int>(currentFPS)));
-
-        window.draw(fpsText);
-    }
 }
 
 void World::setMap(const Map& newMap){
@@ -89,30 +41,6 @@ void World::addObject(std::shared_ptr<Object2D> object){
 void World::setColor(unsigned int _color){
     color = sf::Color(_color);
 }
-
-
-void World::handleEvents(){
-    if(!USE_QT){
-        while (auto event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-            {
-                isRunning = false;
-            }
-            else if (event->is<sf::Event::KeyPressed>())
-            {
-                // Используем getIf() который возвращает указатель
-                if (const auto* keyEvent = event->getIf<sf::Event::KeyPressed>())
-                {
-                    if (keyEvent->scancode == sf::Keyboard::Scan::Escape)
-                        isRunning = false;
-                }
-            }
-        }
-    }
-}
-
-
 
 void World::setCircleMovable(double deltaTime){
     static int currentDirection = 0;
@@ -155,15 +83,6 @@ void World::setCircleMovable(double deltaTime){
 void World::display2DMap(sf::RenderTarget& target){
     map.render(target);
     player.getCamera().drawCameraOnMap(target, player.getDirection());
-}
-
-void World::render(){
-    if(!USE_QT){
-         player.getCamera().drawCameraView(window, player.getDirection());
-        display2DMap(window);
-        drawFPS();
-        window.display();
-    }
 }
 
 void World::renderToTexture(sf::RenderTexture& texture) {

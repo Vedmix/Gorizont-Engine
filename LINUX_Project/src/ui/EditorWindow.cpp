@@ -108,7 +108,7 @@ void EditorWindow::updateMinimap(){
     sf::Image img = tex.getTexture().copyToImage();
     QPixmap bg = QPixmap::fromImage(QImage(img.getPixelsPtr(), img.getSize().x, img.getSize().y, QImage::Format_RGBA8888).copy());
 
-    m_canvas->setBackground(bg, QSize(s.screenWidth(), s.screenHeight()), 30);
+    m_canvas->setBackground(bg, QSize(s.screenWidth(), s.screenHeight()));
 }
 
 // Подгон миникарты под размер label

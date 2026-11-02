@@ -86,12 +86,12 @@ void World::display2DMap(sf::RenderTarget& target){
 }
 
 void World::renderToTexture(sf::RenderTexture& texture) {
-    if(USE_QT){
-        texture.clear(color);
-        player.getCamera().drawCameraView(texture, player.getDirection());
-        display2DMap(texture);
-        texture.display();
-    }
+
+    texture.clear(color);
+    player.getCamera().drawCameraView(texture, player.getDirection());
+    display2DMap(texture);
+    texture.display();
+
 }
 
 void World::readWallsXML(){

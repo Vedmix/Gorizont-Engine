@@ -9,10 +9,9 @@
 #include <QMouseEvent>
 #include <QLineF>
 
-struct CircleItem {
-    QPointF pos;//центр в координатах карты
-    double radius;
-};
+#include "Circle.hpp"
+#include "Object2D.hpp"
+#include "Point2D.hpp"
 
 class MapCanvas : public QWidget
 {
@@ -23,7 +22,7 @@ public:
 
     void setBackground(const QPixmap& pixmap, const QSize& mapSize);
     void addCircle();
-    const QVector<CircleItem>& circles() const { return m_circles; }
+    const QVector<std::shared_ptr<Circle>>& circles() const { return m_circles; }
 
 private slots:
     void onDeleteClicked();
@@ -37,15 +36,12 @@ private:
     QPointF toWidget(const QPointF& mapPos) const;
 
     int circleAt(const QPointF& mapPos) const;
-    bool onEdge(const CircleItem& circle, const QPointF& widgetPos) const;
-    double maxRadiusAt(const QPointF& center) const;
-    void clampCircle(CircleItem& circle) const;
     void updateDeleteButton();              //ставит кнопку над выбранным кругом
 
     QPixmap m_background;
     QSize m_mapSize;
 
-    QVector<CircleItem> m_circles;//вектор кругов
+    QVector<std::shared_ptr<Circle>> m_circles;
     int m_selected = -1;
 
     Drag m_drag = Drag::None;

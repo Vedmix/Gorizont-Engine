@@ -21,11 +21,9 @@ void MapCanvas::setBackground(const QPixmap& pixmap, const QSize& mapSize)
 
 void MapCanvas::addCircle()
 {
-    CircleItem circle;
-    circle.pos = QPointF(m_mapSize.width() / 2.0, m_mapSize.height() / 2.0);
-    circle.radius = 30;
-
+    auto circle = std::make_shared<Circle>(Point2D(m_mapSize.width() / 2.0, m_mapSize.height() / 2.0), 30, 0xC8C8C8FF);
     m_circles.push_back(circle);
+
     m_selected = m_circles.size() - 1;
 
     updateDeleteButton();
@@ -75,24 +73,14 @@ QPointF MapCanvas::toWidget(const QPointF& mapPos) const
     return mapRect().topLeft() + mapPos * scale();
 }
 
-// ---------- поиск и ограничения ----------
 int MapCanvas::circleAt(const QPointF& mapPos) const
 {
-    // Идём с конца списка: верхние круги проверяем первыми
     for (int i = m_circles.size() - 1; i >= 0; --i) {
-        double distance = QLineF(mapPos, m_circles[i].pos).length();
-        if (distance <= m_circles[i].radius) {
+        if (m_circles[i]->isCrossing(Point2D(mapPos.x(), mapPos.y()))) {
             return i;
         }
     }
     return -1;
-}
-
-bool MapCanvas::onEdge(const CircleItem& circle, const QPointF& widgetPos) const
-{
-    double distance = QLineF(toWidget(circle.pos), widgetPos).length();
-    double edge = circle.radius * scale();
-    return qAbs(distance - edge) <= 8;
 }
 
 void MapCanvas::updateDeleteButton()
@@ -102,12 +90,11 @@ void MapCanvas::updateDeleteButton()
         return;
     }
 
-    const CircleItem& circle = m_circles[m_selected];
-    QPointF center = toWidget(circle.pos);
-    double top = center.y() - circle.radius * scale();
+    QRectF rect = m_circles[m_selected]->boundingRect();
+    QPointF top = toWidget(QPointF(rect.center().x(), rect.top()));
 
-    int x = int(center.x()) - m_deleteButton->width() / 2;
-    int y = int(top) - m_deleteButton->height() - 10; // 10 это отступ кнопки от круга
+    int x = int(top.x()) - m_deleteButton->width() / 2;
+    int y = int(top.y()) - m_deleteButton->height() - 10;
     if (y < 0) {
         y = 0;
     }
@@ -127,36 +114,17 @@ void MapCanvas::paintEvent(QPaintEvent*)
         painter.drawPixmap(mapRect(), m_background, QRectF(m_background.rect()));
     }
 
-    for (int i = 0; i < m_circles.size(); ++i) {
-        QPointF center = toWidget(m_circles[i].pos);
-        double radius = m_circles[i].radius * scale();
+    painter.save();
+    painter.translate(mapRect().topLeft());
+    painter.scale(scale(), scale());
 
-        painter.setBrush(QColor(200, 200, 200));
-        if (i == m_selected) {
-            painter.setPen(QPen(QColor(80, 160, 255), 2));
-        } else {
-            painter.setPen(Qt::NoPen);
-        }
-        painter.drawEllipse(center, radius, radius);
+    for (const auto& circle : m_circles) {
+        circle->drawQt(painter);
     }
-
-    // У выбранного круга рисуем 4 точки на границе: за них можно тянуть
     if (m_selected >= 0) {
-        QPointF center = toWidget(m_circles[m_selected].pos);
-        double radius = m_circles[m_selected].radius * scale();
-
-        QVector<QPointF> handles;
-        handles.push_back(center + QPointF(radius, 0));
-        handles.push_back(center + QPointF(-radius, 0));
-        handles.push_back(center + QPointF(0, radius));
-        handles.push_back(center + QPointF(0, -radius));
-
-        painter.setPen(QPen(QColor(80, 160, 255), 2));
-        painter.setBrush(Qt::white);
-        for (const QPointF& handle : handles) {
-            painter.drawEllipse(handle, 4, 4);
-        }
+        m_circles[m_selected]->drawSelection(painter);
     }
+    painter.restore();
 }
 
 void MapCanvas::resizeEvent(QResizeEvent* event)
@@ -167,25 +135,28 @@ void MapCanvas::resizeEvent(QResizeEvent* event)
 
 void MapCanvas::mousePressEvent(QMouseEvent* event)
 {
+    QPointF widgetPos = event->pos();
+    QPointF mapPos = toMap(widgetPos);
+
     if (event->button() != Qt::LeftButton) {
         return;
     }
 
-    QPointF widgetPos = event->pos();
-
     //Отработка границы
-    if (m_selected >= 0 && onEdge(m_circles[m_selected], widgetPos)) {
-        m_drag = Drag::Resize;
-        return;
+    if (m_selected >= 0) {
+        double tolerance = 8 / scale();   // 8 пикселей экрана в единицах карты
+        if (m_circles[m_selected]->hitHandle(Point2D(mapPos.x(), mapPos.y()), tolerance) >= 0) {
+            m_drag = Drag::Resize;
+            return;
+        }
     }
 
-    //Отработка наведения на центр
-    QPointF mapPos = toMap(widgetPos);
     m_selected = circleAt(mapPos);
 
     if (m_selected >= 0) {
+        Point2D pos = m_circles[m_selected]->getPos();
+        m_dragOffset = QPointF(pos.getX(), pos.getY()) - mapPos;
         m_drag = Drag::Move;
-        m_dragOffset = m_circles[m_selected].pos - mapPos;
     }
 
     updateDeleteButton();
@@ -195,10 +166,16 @@ void MapCanvas::mousePressEvent(QMouseEvent* event)
 void MapCanvas::mouseMoveEvent(QMouseEvent* event)
 {
     QPointF widgetPos = event->pos();
+    QPointF mapPos = toMap(widgetPos);
 
     if (m_drag == Drag::Move) {
-        CircleItem& circle = m_circles[m_selected];
-        circle.pos = toMap(widgetPos) + m_dragOffset;
+        QPointF newPos = mapPos + m_dragOffset;
+
+        //readCirclesXML не читает минус
+        newPos.setX(qBound(0.0, newPos.x(), double(m_mapSize.width())));
+        newPos.setY(qBound(0.0, newPos.y(), double(m_mapSize.height())));
+
+        m_circles[m_selected]->setPos(Point2D(newPos.x(), newPos.y()));
 
         updateDeleteButton();
         update();
@@ -206,19 +183,23 @@ void MapCanvas::mouseMoveEvent(QMouseEvent* event)
     }
 
     if (m_drag == Drag::Resize) {
-        CircleItem& circle = m_circles[m_selected];
-        double distance = QLineF(circle.pos, toMap(widgetPos)).length();
-        circle.radius = qBound(10.0, distance, 1000.0); //круг растягивается от 10 до 1000
+
+        m_circles[m_selected]->dragHandle(0, Point2D(mapPos.x(), mapPos.y()));
 
         updateDeleteButton();
         update();
         return;
     }
 
-    // Изменение курсора при навведении на разные области
-    if (m_selected >= 0 && onEdge(m_circles[m_selected], widgetPos)) {
+    bool onEdge = false;
+    if (m_selected >= 0) {
+        double tolerance = 8 / scale();
+        onEdge = m_circles[m_selected]->hitHandle(Point2D(mapPos.x(), mapPos.y()), tolerance) >= 0;
+    }
+
+    if (onEdge) {
         setCursor(Qt::SizeFDiagCursor);
-    } else if (circleAt(toMap(widgetPos)) >= 0) {
+    } else if (circleAt(mapPos) >= 0) {
         setCursor(Qt::SizeAllCursor);
     } else {
         setCursor(Qt::ArrowCursor);

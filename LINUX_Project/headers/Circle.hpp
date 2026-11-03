@@ -1,5 +1,9 @@
 #pragma once
 
+#include <QPainter>
+#include <QRectF>
+#include <QString>
+
 #include "Object2D.hpp"
 
 class Circle : public Object2D
@@ -15,4 +19,13 @@ public:
     bool isCrossing(const Point2D& point) override;
     void setPos(const Point2D& _position) override;
     void draw(sf::RenderTarget& window, const double mapScale) override;
+
+    //QT отрисовка
+    void setRadiusQt(double _radius);
+    void drawQt(QPainter& painter) override;
+    void drawSelection(QPainter& painter) override;
+    int  hitHandle(const Point2D& point, double tolerance) const override;
+    void dragHandle(int handle, const Point2D& point) override;
+    QRectF boundingRect() const override;
+    QString toXml() const override;
 };

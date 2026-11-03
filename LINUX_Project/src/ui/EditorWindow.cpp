@@ -60,17 +60,6 @@ void EditorWindow::initButtonsBar(){
 }
 
 QString EditorWindow::saveTemplateMap(){
-    auto& settings = AppSettings::instance();
-    const int width  = settings.screenWidth();
-    const int height = settings.screenHeight();
-    const int thickness = 30;
-
-    const QList<QRect> walls = {
-        QRect(0,                 0,                  width,     thickness),
-        QRect(0,                 height - thickness, width,     thickness),
-        QRect(0,                 0,                  thickness, height - thickness),
-        QRect(width - thickness, 0,                  thickness, height - thickness)
-    };
 
     QDir().mkpath("maps");
     const QString path = "maps/template_map.xml";
@@ -82,10 +71,12 @@ QString EditorWindow::saveTemplateMap(){
     }
 
     QTextStream out(&file);
-    out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<map>\n     <circles>\n";
-    for(const CircleItem& c : m_canvas->circles()){
-        out << QString("        <circle x=\"%1\" y=\"%2\" radius=\"%3\" color=\"0xC8C8C8FF\"/>\n")
-        .arg(c.pos.x(), 0, 'f', 1).arg(c.pos.y(), 0, 'f', 1).arg(c.radius, 0, 'f', 1);
+    out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<map>\n    <circles>\n";
+
+    for (const auto& c : m_canvas->circles()) {
+        if (!c) continue;
+        const Point2D pos = c->getPos();
+        out << QString("        <circle x=\"%1\" y=\"%2\" radius=\"%3\" color=\"0xC8C8C8FF\"/>\n").arg(pos.getX(), 0, 'f', 1).arg(pos.getY(), 0, 'f', 1).arg(c->getRadius(), 0, 'f', 1);
     }
     out << "    </circles>\n</map>\n";
 

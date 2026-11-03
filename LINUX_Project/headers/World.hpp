@@ -38,6 +38,8 @@ private:
     void readCirclesXML();
     void setCircleMovable(double deltaTime);
 
+    bool m_customMapPath = false;
+
 public:
     World();
     ~World();
@@ -56,4 +58,7 @@ public:
     void setRenderDistance(double distance);
     void setNumberOfRays(int rays);
     void setPlayerSpeed(double speed);
+
+    void setMapPath(const std::string& path);
+    void renderMapPreview(sf::RenderTarget& target);
 };

@@ -8,10 +8,13 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QLineF>
+#include <set>
+#include <memory>
 
 #include "Circle.hpp"
 #include "Object2D.hpp"
 #include "Point2D.hpp"
+#include "Wall.hpp"
 
 class MapCanvas : public QWidget
 {
@@ -22,8 +25,8 @@ public:
 
     void setBackground(const QPixmap& pixmap, const QSize& mapSize);
     void addCircle();
-    const QVector<std::shared_ptr<Circle>>& circles() const { return m_circles; }
-
+    void addWall();
+const std::set<std::shared_ptr<Object2D>>& objects() const { return m_objects; }
 private slots:
     void onDeleteClicked();
 
@@ -35,14 +38,15 @@ private:
     QPointF toMap(const QPointF& widgetPos) const;
     QPointF toWidget(const QPointF& mapPos) const;
 
-    int circleAt(const QPointF& mapPos) const;
+    std::shared_ptr<Object2D> objectAt(const QPointF& mapPos) const;
     void updateDeleteButton();              //ставит кнопку над выбранным кругом
 
     QPixmap m_background;
     QSize m_mapSize;
 
-    QVector<std::shared_ptr<Circle>> m_circles;
-    int m_selected = -1;
+    std::set<std::shared_ptr<Object2D>> m_objects;
+    std::shared_ptr<Object2D> m_selected;     // пусто = ничего не выбрано
+    int m_handle = -1;
 
     Drag m_drag = Drag::None;
     QPointF m_dragOffset;

@@ -22,9 +22,9 @@ void MapCanvas::setBackground(const QPixmap& pixmap, const QSize& mapSize)
 void MapCanvas::addCircle()
 {
     auto circle = std::make_shared<Circle>(Point2D(m_mapSize.width() / 2.0, m_mapSize.height() / 2.0), 30, 0xC8C8C8FF);
-    m_circles.push_back(circle);
+    m_objects.insert(circle);
 
-    m_selected = m_circles.size() - 1;
+    m_selected = circle;
 
     updateDeleteButton();
     update();
@@ -36,8 +36,8 @@ void MapCanvas::onDeleteClicked()
         return;
     }
 
-    m_circles.remove(m_selected);
-    m_selected = -1;
+    m_objects.erase(m_selected);
+    m_selected.reset();
 
     updateDeleteButton();
     update();
@@ -73,24 +73,25 @@ QPointF MapCanvas::toWidget(const QPointF& mapPos) const
     return mapRect().topLeft() + mapPos * scale();
 }
 
-int MapCanvas::circleAt(const QPointF& mapPos) const
+std::shared_ptr<Object2D> MapCanvas::objectAt(const QPointF& mapPos) const
 {
-    for (int i = m_circles.size() - 1; i >= 0; --i) {
-        if (m_circles[i]->isCrossing(Point2D(mapPos.x(), mapPos.y()))) {
-            return i;
+    Point2D point(mapPos.x(), mapPos.y());
+    for (const auto& obj : m_objects) {
+        if (obj->isCrossing(point)) {
+            return obj;
         }
     }
-    return -1;
+    return nullptr;
 }
 
 void MapCanvas::updateDeleteButton()
 {
-    if (m_selected < 0) {
+    if (!m_selected) {
         m_deleteButton->hide();
         return;
     }
 
-    QRectF rect = m_circles[m_selected]->boundingRect();
+    QRectF rect = m_selected->boundingRect();
     QPointF top = toWidget(QPointF(rect.center().x(), rect.top()));
 
     int x = int(top.x()) - m_deleteButton->width() / 2;
@@ -118,11 +119,11 @@ void MapCanvas::paintEvent(QPaintEvent*)
     painter.translate(mapRect().topLeft());
     painter.scale(scale(), scale());
 
-    for (const auto& circle : m_circles) {
-        circle->drawQt(painter);
+    for (const auto& obj : m_objects) {
+        obj->drawQt(painter);
     }
-    if (m_selected >= 0) {
-        m_circles[m_selected]->drawSelection(painter);
+    if (m_selected) {
+        m_selected->drawSelection(painter);
     }
     painter.restore();
 }
@@ -143,18 +144,20 @@ void MapCanvas::mousePressEvent(QMouseEvent* event)
     }
 
     //Отработка границы
-    if (m_selected >= 0) {
+    if (m_selected) {
         double tolerance = 8 / scale();   // 8 пикселей экрана в единицах карты
-        if (m_circles[m_selected]->hitHandle(Point2D(mapPos.x(), mapPos.y()), tolerance) >= 0) {
+        int handle = m_selected->hitHandle(Point2D(mapPos.x(), mapPos.y()), tolerance);
+        if (handle >= 0) {
+            m_handle = handle;
             m_drag = Drag::Resize;
             return;
         }
     }
 
-    m_selected = circleAt(mapPos);
+    m_selected = objectAt(mapPos);
 
-    if (m_selected >= 0) {
-        Point2D pos = m_circles[m_selected]->getPos();
+    if (m_selected) {
+        Point2D pos = m_selected->getPos();
         m_dragOffset = QPointF(pos.getX(), pos.getY()) - mapPos;
         m_drag = Drag::Move;
     }
@@ -175,7 +178,7 @@ void MapCanvas::mouseMoveEvent(QMouseEvent* event)
         newPos.setX(qBound(0.0, newPos.x(), double(m_mapSize.width())));
         newPos.setY(qBound(0.0, newPos.y(), double(m_mapSize.height())));
 
-        m_circles[m_selected]->setPos(Point2D(newPos.x(), newPos.y()));
+        m_selected->setPos(Point2D(newPos.x(), newPos.y()));
 
         updateDeleteButton();
         update();
@@ -184,7 +187,7 @@ void MapCanvas::mouseMoveEvent(QMouseEvent* event)
 
     if (m_drag == Drag::Resize) {
 
-        m_circles[m_selected]->dragHandle(0, Point2D(mapPos.x(), mapPos.y()));
+        m_selected->dragHandle(m_handle, Point2D(mapPos.x(), mapPos.y()));
 
         updateDeleteButton();
         update();
@@ -192,14 +195,14 @@ void MapCanvas::mouseMoveEvent(QMouseEvent* event)
     }
 
     bool onEdge = false;
-    if (m_selected >= 0) {
+    if (m_selected) {
         double tolerance = 8 / scale();
-        onEdge = m_circles[m_selected]->hitHandle(Point2D(mapPos.x(), mapPos.y()), tolerance) >= 0;
+        onEdge = m_selected->hitHandle(Point2D(mapPos.x(), mapPos.y()), tolerance) >= 0;
     }
 
     if (onEdge) {
         setCursor(Qt::SizeFDiagCursor);
-    } else if (circleAt(mapPos) >= 0) {
+    } else if (objectAt(mapPos)) {
         setCursor(Qt::SizeAllCursor);
     } else {
         setCursor(Qt::ArrowCursor);
@@ -209,4 +212,14 @@ void MapCanvas::mouseMoveEvent(QMouseEvent* event)
 void MapCanvas::mouseReleaseEvent(QMouseEvent*)
 {
     m_drag = Drag::None;
+}
+
+void MapCanvas::addWall()
+{
+    auto wall = std::make_shared<Wall>(Point2D(m_mapSize.width() / 2.0, m_mapSize.height() / 2.0), 300, 50, 0xC8C8C8FF);
+    m_objects.insert(wall);
+    m_selected = wall;
+
+    updateDeleteButton();
+    update();
 }

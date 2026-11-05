@@ -30,10 +30,22 @@ void EditorWindow::initEditor(){
 void EditorWindow::initToolsBar(){
     toolsLayout = new QVBoxLayout();
 
-    QPushButton* addCircleButton = new QPushButton("Добавить круг", this);
-    connect(addCircleButton, &QPushButton::clicked, this, &EditorWindow::onAddCircleClicked);
-    toolsLayout->addWidget(addCircleButton);
+    for(size_t i = 0; i < editorNames.size(); i++){
+        QPushButton *button = new QPushButton(editorNames[i], this);
+        button->setFixedSize(200, 50);
+        toolsLayout->addWidget(button);
+        switch(i){
+        case 0:
+            connect(button, &QPushButton::clicked, this, &EditorWindow::onAddCircleClicked);
+            break;
+        case 1:
+            connect(button, &QPushButton::clicked, this, &EditorWindow::onAddWallClicked);
+            break;
+        }
+    }
+
     toolsLayout->addStretch();
+
 }
 
 void EditorWindow::initMap() {
@@ -52,36 +64,20 @@ void EditorWindow::initButtonsBar(){
         button->setFixedSize(200, 50);
         buttonsLayout->addWidget(button);
         switch(i){
-        case 0: connect(button, &QPushButton::clicked, this, &EditorWindow::onTestButtonClicked); break;
-        case 1: connect(button, &QPushButton::clicked, this, &EditorWindow::onSaveButtonClicked); break;
-        case 2: connect(button, &QPushButton::clicked, this, &EditorWindow::onBackButtonClicked); break;
+        case 0:
+            connect(button, &QPushButton::clicked, this, &EditorWindow::onTestButtonClicked);
+            break;
+        case 1:
+            connect(button, &QPushButton::clicked, this, &EditorWindow::onSaveButtonClicked);
+            break;
+        case 2:
+            connect(button, &QPushButton::clicked, this, &EditorWindow::onBackButtonClicked);
+            break;
         }
     }
 }
 
-QString EditorWindow::saveTemplateMap(){
 
-    QDir().mkpath("maps");
-    const QString path = "maps/template_map.xml";
-
-    QFile file(path);
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)){
-        qDebug() << "Cannot write template map:" << path;
-        return QString();
-    }
-
-    QTextStream out(&file);
-    out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<map>\n    <circles>\n";
-
-    for (const auto& c : m_canvas->circles()) {
-        if (!c) continue;
-        const Point2D pos = c->getPos();
-        out << QString("        <circle x=\"%1\" y=\"%2\" radius=\"%3\" color=\"0xC8C8C8FF\"/>\n").arg(pos.getX(), 0, 'f', 1).arg(pos.getY(), 0, 'f', 1).arg(c->getRadius(), 0, 'f', 1);
-    }
-    out << "    </circles>\n</map>\n";
-
-    return path;
-}
 
 void EditorWindow::updateMinimap(){
     if(m_templatePath.isEmpty()) return;
@@ -128,11 +124,6 @@ void EditorWindow::onBackButtonClicked(){
     close();
 }
 
-void EditorWindow::onAddCircleClicked(){ m_canvas->addCircle(); }
-
-void EditorWindow::onSaveButtonClicked(){ m_templatePath = saveTemplateMap(); }
-
-
 void EditorWindow::onTestButtonClicked(){
     m_templatePath = saveTemplateMap();   // сохраняем, чтобы игра увидела текущие круги
     if(m_templatePath.isEmpty()) return;
@@ -158,3 +149,38 @@ void EditorWindow::onTestFinished(){
     m_game->close();
     m_game = nullptr;
 }
+
+QString EditorWindow::saveTemplateMap(){
+
+    QDir().mkpath("maps");
+    const QString path = "maps/template_map.xml";
+
+    QFile file(path);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)){
+        qDebug() << "Cannot write template map:" << path;
+        return QString();
+    }
+
+    QTextStream out(&file);
+    out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<map>\n    <walls>\n";
+    for(const auto& obj : m_canvas->objects()){
+        if(obj->getObjectType() == ObjectType::POLYGON){
+            out << obj->toXml();
+        }
+    }
+    out << "    </walls>\n    <circles>\n";
+    for(const auto& obj : m_canvas->objects()){
+        if(obj->getObjectType() == ObjectType::CIRCLE){
+            out << obj->toXml();
+        }
+    }
+    out << "    </circles>\n</map>\n";
+
+    return path;
+}
+
+void EditorWindow::onAddCircleClicked(){ m_canvas->addCircle(); }
+
+void EditorWindow::onSaveButtonClicked(){ m_templatePath = saveTemplateMap(); }
+
+void EditorWindow::onAddWallClicked(){ m_canvas->addWall(); }

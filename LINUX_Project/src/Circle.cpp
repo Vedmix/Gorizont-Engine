@@ -85,3 +85,13 @@ void Circle::dragHandle(int handle, const Point2D& point){
 QRectF Circle::boundingRect() const{
     return QRectF(position.getX() - radius, position.getY() - radius, radius * 2, radius * 2);
 }
+
+QString Circle::toXml() const{
+    QString colorHex = QString::number(color.toInteger(), 16).rightJustified(8, '0').toUpper();
+
+    return QString("        <circle x=\"%1\" y=\"%2\" radius=\"%3\" color=\"0x%4\"/>\n")
+        .arg(position.getX(), 0, 'f', 1)
+        .arg(position.getY(), 0, 'f', 1)
+        .arg(radius, 0, 'f', 1)
+        .arg(colorHex);
+}

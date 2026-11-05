@@ -32,7 +32,10 @@ private slots:
     void onBackButtonClicked();
     void onTestButtonClicked();
     void onSaveButtonClicked();
+
     void onAddCircleClicked();
+    void onAddWallClicked();
+
     void onTestFinished();
 
 private:
@@ -66,5 +69,10 @@ private:
         "Протестировать",
         "Сохранить",
         "Выход"
-    };    
+    };
+
+    const std::vector<QString> editorNames = {
+        "Добавить круг",
+        "Добавить стену"
+    };
 };

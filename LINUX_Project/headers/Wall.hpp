@@ -9,4 +9,14 @@ public:
     ~Wall();
 
     void setSize(const double _width, const double _lenght);
+    double getWidth() const  { return points[2].getX(); }
+    double getHeight() const { return points[2].getY(); }
+
+    void drawQt(QPainter& painter) override;
+    void drawSelection(QPainter& painter) override;
+    int  hitHandle(const Point2D& point, double tolerance) const override;
+    void dragHandle(int handle, const Point2D& point) override;
+    QRectF boundingRect() const override;
+    QString toXml() const override;
+
 };

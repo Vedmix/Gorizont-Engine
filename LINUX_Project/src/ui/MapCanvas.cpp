@@ -145,7 +145,7 @@ void MapCanvas::mousePressEvent(QMouseEvent* event)
 
     //Отработка границы
     if (m_selected) {
-        double tolerance = 8 / scale();   // 8 пикселей экрана в единицах карты
+        double tolerance = 8 / scale();
         int handle = m_selected->hitHandle(Point2D(mapPos.x(), mapPos.y()), tolerance);
         if (handle >= 0) {
             m_handle = handle;

@@ -89,10 +89,18 @@ void Wall::dragHandle(int handle, const Point2D& point){
     double y = qMax(0.0, point.getY());
 
     switch (handle) {
-    case 0: top    = qMin(y, bottom - 10); break;
-    case 1: right  = qMax(x, left + 10);   break;
-    case 2: bottom = qMax(y, top + 10);    break;
-    case 3: left   = qMin(x, right - 10);  break;
+    case 0:
+        top    = qMin(y, bottom - 10);
+        break;
+    case 1:
+        right  = qMax(x, left + 10);
+        break;
+    case 2:
+        bottom = qMax(y, top + 10);
+        break;
+    case 3:
+        left   = qMin(x, right - 10);
+        break;
     }
 
     setPos(Point2D(left, top));
@@ -102,10 +110,5 @@ void Wall::dragHandle(int handle, const Point2D& point){
 QString Wall::toXml() const{
     QString colorHex = QString::number(color.toInteger(), 16).rightJustified(8, '0').toUpper();
 
-    return QString("        <wall x=\"%1\" y=\"%2\" width=\"%3\" height=\"%4\" color=\"0x%5\"/>\n")
-        .arg(position.getX(), 0, 'f', 1)
-        .arg(position.getY(), 0, 'f', 1)
-        .arg(getWidth(), 0, 'f', 1)
-        .arg(getHeight(), 0, 'f', 1)
-        .arg(colorHex);
+    return QString("        <wall x=\"%1\" y=\"%2\" width=\"%3\" height=\"%4\" color=\"0x%5\"/>\n").arg(position.getX(), 0, 'f', 1).arg(position.getY(), 0, 'f', 1).arg(getWidth(), 0, 'f', 1).arg(getHeight(), 0, 'f', 1).arg(colorHex);
 }

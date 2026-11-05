@@ -12,6 +12,8 @@ GameWindow::GameWindow(QWidget *parent, const QString& mapPath)
     auto& settings = AppSettings::instance();
     resize(settings.screenWidth(), settings.screenHeight());
     setFocusPolicy(Qt::StrongFocus);
+
+    showFullScreen();
 }
 
 GameWindow::~GameWindow()

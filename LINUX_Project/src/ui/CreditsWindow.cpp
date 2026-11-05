@@ -8,6 +8,7 @@ CreditsWindow::CreditsWindow(QWidget *parent):QWidget(parent)
     mainLayout->addStretch();
 
     setLayout(mainLayout);
+    showFullScreen();
 }
 void CreditsWindow::initButtons(){
 

@@ -14,6 +14,8 @@ EditorWindow::EditorWindow(QWidget *parent):QWidget(parent)
 
     m_templatePath = saveTemplateMap();
     updateMinimap();
+
+    showFullScreen();
 }
 
 void EditorWindow::initEditor(){
@@ -136,13 +138,13 @@ void EditorWindow::onTestButtonClicked(){
     connect(m_game, &GameWindow::gameFinished, this, &EditorWindow::onTestFinished);
 
     hide();
-    m_game->show();
+    m_game->showFullScreen();
     m_game->activateWindow();
     m_game->raise();
 }
 
 void EditorWindow::onTestFinished(){
-    show();
+    showFullScreen();
     activateWindow();
     raise();
 

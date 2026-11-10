@@ -25,11 +25,13 @@ private slots:
     void onBackButtonClicked();
 private:
     void initButtons();
+    void initCredits();
 
     void keyPressEvent(QKeyEvent *event) override;
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     QHBoxLayout *buttonsLayout = new QHBoxLayout();
+    QLabel      *creditsLabel  = nullptr;
 
     const std::vector<QString> buttonNames = {
         "Выход"

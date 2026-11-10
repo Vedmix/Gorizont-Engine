@@ -3,9 +3,12 @@
 CreditsWindow::CreditsWindow(QWidget *parent):QWidget(parent)
 {
     initButtons();
+    initCredits();
 
-    mainLayout->addLayout(buttonsLayout);
     mainLayout->addStretch();
+    mainLayout->addWidget(creditsLabel, 0, Qt::AlignCenter);
+    mainLayout->addStretch();
+    mainLayout->addLayout(buttonsLayout);
 
     setLayout(mainLayout);
     showFullScreen();
@@ -24,6 +27,17 @@ void CreditsWindow::initButtons(){
             break;
         }
     }
+}
+
+void CreditsWindow::initCredits()
+{
+    creditsLabel = new QLabel(this);
+    creditsLabel->setText("Vedmix — Игрок на мышке\n   \nEnvelopeDev — Игрок на стрелочках\n  \n Greno4ka — Автор единственного верифицированного коммита\n   \nDerseTTing, tiliberkoo — Погибли при создании проекта");
+    creditsLabel->setAlignment(Qt::AlignCenter);
+
+    QFont font = creditsLabel->font();
+    font.setPointSize(80);
+    creditsLabel->setFont(font);
 }
 
 void CreditsWindow::keyPressEvent(QKeyEvent *event)

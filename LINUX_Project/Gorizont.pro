@@ -13,8 +13,10 @@ SOURCES += \
     src/main.cpp \
     src/ui/GameWindow.cpp \
     src/ui/MainMenuWindow.cpp \
+    src/ui/EditorWindow.cpp \
     src/ui/CreditsWindow.cpp \
     src/ui/SettingsWindow.cpp \
+    src/ui/MapCanvas.cpp \
     src/Camera.cpp \
     src/Circle.cpp \
     src/Map.cpp \
@@ -30,7 +32,9 @@ HEADERS += \
     headers/MainMenuWindow.hpp \
     headers/SettingsWindow.hpp \
     headers/MainMenuWindow.hpp \
+    headers/EditorWindow.hpp \
     headers/CreditsWindow.hpp \
+    headers/MapCanvas.hpp \
     headers/AppSettings.hpp \
     headers/Camera.hpp \
     headers/Circle.hpp \

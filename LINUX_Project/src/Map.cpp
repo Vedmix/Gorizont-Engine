@@ -24,7 +24,7 @@ void Map::addObject(std::shared_ptr<Object2D> object){
     objectSet.insert(object);
 }
 
-void Map::render(sf::RenderTarget& window){
+void Map::render(sf::RenderTarget& window, double scale){
     // Сохраняем текущий вид
     sf::View originalView = window.getView();
 
@@ -34,7 +34,7 @@ void Map::render(sf::RenderTarget& window){
     window.setView(minimapView);
 
     // Фон мини-карты
-    sf::RectangleShape minimapBg(sf::Vector2f(settings.screenWidth() * MAP_SCALE, settings.screenHeight() * MAP_SCALE));
+    sf::RectangleShape minimapBg(sf::Vector2f(settings.screenWidth() * scale, settings.screenHeight() * scale));
     minimapBg.setFillColor(sf::Color::Black);
     minimapBg.setPosition(sf::Vector2f(0, 0));
     window.draw(minimapBg);
@@ -48,10 +48,10 @@ void Map::render(sf::RenderTarget& window){
             Point2D pos = circle->getPos();
             double radius = circle->getRadius();
 
-            sf::CircleShape shape(radius * MAP_SCALE);
+            sf::CircleShape shape(radius * scale);
             shape.setFillColor(sf::Color(200, 200, 200));
-            shape.setPosition(sf::Vector2f(pos.getX() * MAP_SCALE, pos.getY() * MAP_SCALE));
-            shape.setOrigin(sf::Vector2f(radius * MAP_SCALE, radius * MAP_SCALE));
+            shape.setPosition(sf::Vector2f(pos.getX() * scale, pos.getY() * scale));
+            shape.setOrigin(sf::Vector2f(radius * scale, radius * scale));
             window.draw(shape);
         }
         else if (auto polygon = std::dynamic_pointer_cast<Polygon2D>(obj)) {
@@ -64,7 +64,7 @@ void Map::render(sf::RenderTarget& window){
             shape.setPointCount(points.size());
 
             for (size_t i = 0; i < points.size(); ++i) {
-                shape.setPoint(i, sf::Vector2f((pos.getX() + points[i].getX()) * MAP_SCALE, (pos.getY() + points[i].getY()) * MAP_SCALE ));
+                shape.setPoint(i, sf::Vector2f((pos.getX() + points[i].getX()) * scale, (pos.getY() + points[i].getY()) * scale ));
             }
 
             shape.setFillColor(sf::Color(150, 150, 150));

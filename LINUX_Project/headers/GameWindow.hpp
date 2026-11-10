@@ -14,7 +14,7 @@ class GameWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit GameWindow(QWidget *parent = nullptr);
+    explicit GameWindow(QWidget *parent = nullptr, const QString& mapPath = QString());
     virtual ~GameWindow();
 
     void startGame();

@@ -164,9 +164,10 @@ void World::readCirclesXML(){
 }
 
 void World::loadMapFromXML(){
-    auto& settings = AppSettings::instance();
-    XMLFilePath = settings.mapPath().toStdString();
-
+    //учитывание переопределения
+    if(!m_customMapPath){
+        XMLFilePath = AppSettings::instance().mapPath().toStdString();
+    }
     readWallsXML();
     readCirclesXML();
 }
@@ -206,4 +207,13 @@ void World::setPlayerSpeed(double speed)
 
 void World::clearMap() {
     map.objectSet.clear();
+}
+
+void World::setMapPath(const std::string& path){
+    XMLFilePath = path;
+    m_customMapPath = true;
+}
+
+void World::renderMapPreview(sf::RenderTarget& target){
+    map.render(target, 1.0);
 }

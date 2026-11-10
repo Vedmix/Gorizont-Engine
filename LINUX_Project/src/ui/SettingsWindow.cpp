@@ -4,6 +4,8 @@ SettingsWindow::SettingsWindow(QWidget *parent): QWidget(parent)
 {
     initUI();
 
+    showFullScreen();
+
 }
 
 void SettingsWindow::initUI(){
@@ -25,6 +27,7 @@ void SettingsWindow::initUI(){
     setLayout(mainLayout);
 
     AppSettings::applyTheme(AppSettings::instance().theme());
+
 
 
 }

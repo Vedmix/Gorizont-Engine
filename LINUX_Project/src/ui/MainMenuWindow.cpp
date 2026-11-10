@@ -12,6 +12,8 @@ MainMenuWindow::MainMenuWindow(QWidget* parent, int choice)
         }
         gameWindow->startGame();
     }
+
+    showFullScreen();
 }
 
 MainMenuWindow::~MainMenuWindow() {}
@@ -70,7 +72,7 @@ void MainMenuWindow::handleButton(int id)
         gameWindow->resize(settings.screenWidth(), settings.screenHeight());
 
         this->hide();
-        gameWindow->show();
+        gameWindow->showFullScreen();
         gameWindow->activateWindow();
         gameWindow->raise();
         gameWindow->startGame();
@@ -86,11 +88,23 @@ void MainMenuWindow::handleButton(int id)
         connect(settingsWindow, &SettingsWindow::backToMenu,this, &MainMenuWindow::onSettingsClosed);
 
         this->hide();
-        settingsWindow->show();
+        settingsWindow->showFullScreen();
         settingsWindow->activateWindow();
         settingsWindow->raise();
         break;
     case 2:
+        editorWindow = new EditorWindow(nullptr);
+        editorWindow->setGeometry(0, 0, AppSettings::instance().screenWidth(), AppSettings::instance().screenHeight());
+        editorWindow->setWindowTitle("Редактор");
+
+        connect(editorWindow, &EditorWindow::backToMenu,this, &MainMenuWindow::onEditorClosed);
+
+        this->hide();
+        editorWindow->showFullScreen();
+        editorWindow->activateWindow();
+        editorWindow->raise();
+        break;
+    case 3:
         creditsWindow = new CreditsWindow(nullptr);
         creditsWindow->setGeometry(0, 0, AppSettings::instance().screenWidth(), AppSettings::instance().screenHeight());
         creditsWindow->setWindowTitle("Авторы");
@@ -98,11 +112,11 @@ void MainMenuWindow::handleButton(int id)
         connect(creditsWindow, &CreditsWindow::backToMenu,this, &MainMenuWindow::onCreditsClosed);
 
         this->hide();
-        creditsWindow->show();
+        creditsWindow->showFullScreen();
         creditsWindow->activateWindow();
         creditsWindow->raise();
         break;
-    case 3: // Выход
+    case 4: // Выход
         this->close();
         break;
     }
@@ -114,7 +128,7 @@ void MainMenuWindow::onGameFinished()
         gameWindow->hide();
     }
 
-    this->show();
+    this->showFullScreen();
     this->activateWindow();
     this->raise();
 }
@@ -125,7 +139,18 @@ void MainMenuWindow::onSettingsClosed()
         settingsWindow->hide();
     }
 
-    this->show();
+    this->showFullScreen();
+    this->activateWindow();
+    this->raise();
+}
+
+void MainMenuWindow::onEditorClosed()
+{
+    if (editorWindow) {
+        editorWindow->hide();
+    }
+
+    this->showFullScreen();
     this->activateWindow();
     this->raise();
 }
@@ -136,7 +161,7 @@ void MainMenuWindow::onCreditsClosed()
         creditsWindow->hide();
     }
 
-    this->show();
+    this->showFullScreen();
     this->activateWindow();
     this->raise();
 }
